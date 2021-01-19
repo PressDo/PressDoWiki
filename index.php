@@ -4,7 +4,7 @@ use PressDo\WikiSkin;
 use PressDo\SQL;
 include 'config.php';
 require_once 'PressDoLib.php';
-require_once './skins/'.$conf['Skin'].'/skin.php';
+require_once './skin/'.$conf['Skin'].'/skin.php';
 
 if(!$_GET['title']){
     $Title = $conf['Title'];
