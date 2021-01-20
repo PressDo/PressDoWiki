@@ -16,7 +16,7 @@ if($conf['DBType'] == 'mysql'){
     {
         global $SQL;
         $q = $SQL->query($Command);
-        return array(mysqli_fetch_assoc($q), $q->num_rows);
+        return $q;
     }
 }elseif($conf['DBType'] == 'pgsql'){
     $DBHost = $conf['DBHost'];
