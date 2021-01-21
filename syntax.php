@@ -30,21 +30,23 @@ function readSyntax($content)
     $content = preg_replace('/(?<!{{{)\/\*(.*?)\*\//s', '', $content);
 
     // 링크
-    $content = preg_replace('/\[\[(.*?)\]\]/', '<a href="/index.php?title='.urlencode(trim('$1')).'">$1</a>', $content);
+    $content = preg_replace('/\[\[(.*?)\]\]/', '<a href="/index.php?title=$1">$1</a>', $content);
 
-    // Process nowiki(항상 마지막)
-    $content = preg_replace('/(?<!{{{){{{(.*?)}}}$/s', '<xmp>$1</xmp>', $content);
 
     // XSS 방지 (script, img)
     $content = preg_replace('/(<|&lt;)script(.*?)script(>|&gt;)/s', '<xmp>$0<\/xmp>', $content);
     $content = preg_replace('/(<|&lt;)img(.*?)(>|&gt;)/s', '<xmp>$0<\/xmp>', $content);
 
     // 틀(수정요)
-    $content = preg_replace('/(?<!{{{){{틀:(.*?)}}$/s', '<xmp>$1</xmp>', $content);
-    $content = preg_replace('/(?<!{{{){{유튜브:(.*?)}}$/s', '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>', $content);
+    $content = preg_replace('/(?<!{{{){{틀:(.*?)}}/s', '<xmp>$1</xmp>', $content);
+    $content = preg_replace('/(?<!{{{){{유튜브:(.*?)}}/s', '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>', $content);
 
     // 공백
     $content = preg_replace('/\n/', '<br>', $content);
-    return $content;
+
+    // Process nowiki(항상 마지막)
+    $content = preg_replace('/(?<!{{{){{{(.*?)}}}/s', '<xmp>$1</xmp>', $content);
+
+     return $content;
 }
 ?>
