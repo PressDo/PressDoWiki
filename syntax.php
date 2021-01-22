@@ -22,9 +22,6 @@ function readSyntax($content)
     // toHtml을 호출하면 HTML 페이지가 생성됩니다.
     $content = $wEngine->toHtml();
 
-
-    $title = '대문';
-
     // 각주 크기
     $content = preg_replace('/<a id=\"rfn-(.*?)<\/a>/s', '<sup>$0</sup>', $content);
 
