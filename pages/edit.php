@@ -75,7 +75,7 @@ if (!$_SESSION['userid']) { ?>
 </form><?php
 if($_POST['action'] == 'preview'){
     ?><p> 아래는 저장되지 않은 미리 보기의 모습입니다. </p><hr><?php
-    echo PressDo::readSyntax($_POST['content']);
+    echo PressDo::readSyntax($_POST['content'], 1);
 }
 WikiSkin::footer();
 ?>
