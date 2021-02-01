@@ -1,11 +1,17 @@
 <?php
 include 'config.php';
-global $conf;
 /*
 PressDo Wiki Syntax Processor
 */
-function readSyntax($content)
+function readSyntax($content, $noredirect = 0)
 {
+    global $conf;
+
+    if(preg_match('/^#(redirect|넘겨주기) (.*)/', $content, $rd))
+        if($noredirect !== 1)
+            Header('Location: http://'.$conf['Domain'].$conf['ViewerUri'].$rd[2]);
+        
+    
 
     /* NamuMark PHP Library by koreapyj */
     // 라이브러리를 불러옵니다.
@@ -18,12 +24,10 @@ function readSyntax($content)
     $wEngine = new NamuMark($wPage);
 
     // 위키링크의 앞에 붙을 경로를 prefix에 넣습니다.
-    $wEngine->prefix = $conf['Domain'].'/w/';
+    $wEngine->prefix = $conf['ViewerUri'];
 
     // toHtml을 호출하면 HTML 페이지가 생성됩니다.
     $content = $wEngine->toHtml(); 
-
-    // 리스트
     
 
     // 각주 크기
