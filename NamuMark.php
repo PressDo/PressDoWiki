@@ -1,7 +1,6 @@
 <?php
 //include 'config.php';
 // 745행 인근 https://attachment.namu.wiki/ 수정필요
-
 /**
  * namumark.php - Namu Mark Renderer
  * Copyright (C) 2015 koreapyj koreapyj0@gmail.com
@@ -25,12 +24,20 @@
  * 설명 주석이 +로 시작하는 경우 PRASEOD-의 2차 수정 과정에서 추가된 코드입니다.
  * 
  * ::::::::: 변경 사항 ::::::::::
+ * 카카오TV 영상 문법 추가 [나무위키]
  * 커스텀 영상 문법 추가 [video(url)]
- * 목차 문법 미작동 문제 수정
+ * 문단 문법 미작동 문제 수정
  * 일부 태그 속성 수정
+ * 글씨크기 관련 문법 수정
  * {{{#!wiki }}} 문법 오류 수정
  * anchor 문법 추가
  * 테이블 글씨색 속성 추가
+ * 수평선 문법 미작동 오류 수정
+ * <nowiki>, <pre> 태그 <code>로 대체
+ * 취소선 태그 <s>에서 <del>로 변경
+ * 본문 영역 문단별 <div> 적용
+ * 접힌목차 기능 추가
+ * 
  * 
  * :: Bugs ::
  * 맨 처음 여는 {{{#!wiki }}} 괄호에서 이중 따옴표로 인해 스타일이 적용되지 않음
@@ -224,14 +231,6 @@ class NamuMark {
 		$now = '';
 		$line = '';
 
-		// 리다이렉트 문법
-		// + noredirect 값이 1일 경우 리다이렉트 하지 않음
-		if(self::startsWith($text, '#') && preg_match('/^#(?:redirect|넘겨주기) (.+)$/im', $text, $target) && $_GET['noredirect'] !== 1) {
-			array_push($this->links, array('target'=>$target[1], 'type'=>'redirect'));
-			@header('Location: '.$this->prefix.'/'.self::encodeURI($target[1]));
-			return;
-		}
-
 		// 리스트
 		for($i=0;$i<$len && $i>=0;self::nextChar($text,$i)) {
 			$now = self::getChar($text,$i);
@@ -289,6 +288,7 @@ class NamuMark {
 		$result .= $this->printFootnote();
 
 		// 분류 모음
+		// + HTML 구조 약간 변경함
 		if(!empty($this->category)) {
 			$result .= '<div id="categories" pressdo-doc-category>
 							<h2>분류</h2>
@@ -323,7 +323,7 @@ class NamuMark {
 			return false;
 
 		$offset = $i-1;
-		return '<blockquote class="_blockquote">'.$innerhtml.'</blockquote>';
+		return '<blockquote pressdo-doc-blockquote>'.$innerhtml.'</blockquote>';
 	}
 
 	// 표
@@ -656,13 +656,22 @@ class NamuMark {
 		$result = '';
 		$line_len = strlen($line);
 
-		// == Title == (목차)
+		// == Title == (문단)
 		// + 공백 있어서 안 되는 오류 수정
-		if(self::startsWith($line, '=') && preg_match('/^(=+) (.*) (=+) *$/', trim($line), $match) && $match[1]===$match[3]) {	
+		if(self::startsWith($line, '=') && preg_match('/^(=+)(.*?)(=+) *$/', trim($line), $match) && $match[1]===$match[3]) {	
 			$level = strlen($match[1]);
 			$innertext = $this->blockParser($match[2]);
+
+			// + 접힌문단 기능 추가
+            if (preg_match('/^# (.*) #$/', $innertext, $ftoc)) {
+				$folded = 'pressdo-toc-fold="fold"';
+				$innertext = $ftoc[1];
+            }else{
+                $folded = 'pressdo-toc-fold="show"';
+            }
 			$id = $this->tocInsert($this->toc, $innertext, $level);
-			$result .= '</div><h'.$level.' pressdo-toc id="s-'.$id.'">
+			$js = 'onclick="hiddencontents(\'s-'.$id.'\')"';
+			$result .= '</div><h'.$level.' pressdo-toc '.$js.' '.$folded.' id="s-'.$id.'">
 						<a name="s-'.$id.'" href="#_toc">'.$id.'. </a>';
 
 			// + 문단에서 앵커가 태그속에 들어가는 부분 수정
@@ -674,9 +683,10 @@ class NamuMark {
 			}
 
 			// + 부분 편집 기능 작업
+			// + content-s- 속성 추가 (문단 숨기기용)
 			$result .= '<span pressdo-edit-section><a href="/edit/@@@PressDo-Replace-Title-Here@@@?section='.$id.'" rel="nofollow">[편집]</a></span>
 							</span>
-						</h'.$level.'><div pressdo-doc-paragraph>';
+						</h'.$level.'><div id="content-s-'.$id.'" pressdo-doc-paragraph '.$folded.'>';
 			$line = '';
 			
 		}
@@ -1131,9 +1141,12 @@ class NamuMark {
             case '--':
 			case '~~':
 				// 취소선
-                if (!self::startsWith($text, 'item-') && !self::endsWith($text, 'UNIQ') && !self::startsWith($text, 'QINU') && !preg_match('/^.*?-.*-QINU/', $text) && !self::startsWith($text, 'h-')) {
+				// + 수평선 적용 안 되는 오류 수정
+                if (!self::startsWith($text, 'item-') && !self::endsWith($text, 'UNIQ') && !self::startsWith($text, 'QINU') && !preg_match('/^.*?-.*-QINU/', $text) && !self::startsWith($text, 'h-') && strlen($text) !== 0) {
                     return '<del>'.$text.'</del>';
-                } else {
+                } elseif (strlen($text) == 0) {
+					return '<hr>';
+				} else{
                     return $type.$text.$type;
                 }
                     // no break
@@ -1293,7 +1306,7 @@ class NamuMark {
 		foreach($lines as $line) {
 			$matched = false;
 			foreach($this->h_tag as $tag_ar) {
-				// 목차 생성을 위한 목차문법 추출
+				// 목차 생성을 위한 문단 추출
                 if (is_array($tag_ar)) {
                     $tag = $tag_ar[0];
                     $level = $tag_ar[1];
