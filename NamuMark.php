@@ -22,12 +22,20 @@
  * :::::::::::: ORIGINAL CODE: koreapyj, 김동동(1st edited) ::::::::::::
  * :::::::::::::::::::::: 2nd Edited by PRASEOD- ::::::::::::::::::::::
  * 코드 설명 주석 추가: PRASEOD-
+ * 설명 주석이 +로 시작하는 경우 PRASEOD-의 2차 수정 과정에서 추가된 코드입니다.
  * 
  * ::::::::: 변경 사항 ::::::::::
  * 커스텀 영상 문법 추가 [video(url)]
  * 목차 문법 미작동 문제 수정
  * 일부 태그 속성 수정
  * {{{#!wiki }}} 문법 오류 수정
+ * anchor 문법 추가
+ * 테이블 글씨색 속성 추가
+ * 
+ * :: Bugs ::
+ * 맨 처음 여는 {{{#!wiki }}} 괄호에서 이중 따옴표로 인해 스타일이 적용되지 않음
+ * 텍스트 + 표를 하나의 {{{#!wiki }}}로 감쌀 경우 표 문법이 적용되지 않음
+ * 표 td에 적용된 {{{#!wiki }}} 내부에서 개행 시 표 문법에 영향을 줌
  */
 
 class PlainWikiPage {
@@ -207,7 +215,7 @@ class NamuMark {
 			return '';
 		$this->whtml = htmlspecialchars(@$this->WikiPage->text);
 		$this->whtml = $this->htmlScan($this->whtml);
-		return $this->whtml;
+		return '<div pressdo-doc-paragraph>'.$this->whtml.'</div>';
 	}
 
 	private function htmlScan($text) {
@@ -282,9 +290,11 @@ class NamuMark {
 
 		// 분류 모음
 		if(!empty($this->category)) {
-			$result .= '<div><h2 category-t>분류</h2><ul>';
+			$result .= '<div id="categories" pressdo-doc-category>
+							<h2>분류</h2>
+							<ul>';
 			foreach($this->category as $category) {
-				$result .= '<li category-content>'.$this->linkProcessor(':분류:'.$category.'|'.$category, '[[').'</h2>';
+				$result .= '<li pressdo-doc-category>'.$this->linkProcessor(':분류:'.$category.'|'.$category, '[[').'</li>';
 			}
 			$result .= '</ul></div>';
 		}
@@ -307,7 +317,7 @@ class NamuMark {
 			if($this->wapRender)
 				$innerhtml .= $line.'<br/>';
 			else
-				$innerhtml .= '<p>'.$line.'</p>';
+				$innerhtml .= '<div pressdo-wikitext>'.$line.'</div>';
 		}
 		if(empty($innerhtml))
 			return false;
@@ -377,6 +387,7 @@ class NamuMark {
 							break;
 						default:
 							if(self::startsWith($prop, 'table ')) {
+								// <table style>
 								$tbprops = explode(' ', $prop);
 								foreach($tbprops as $tbprop) {
 									if(!preg_match('/^([^=]+)=(?|"(.*)"|\'(.*)\'|(.*))$/', $tbprop, $tbprop))
@@ -393,6 +404,10 @@ class NamuMark {
 													$tableStyleList['margin-left'] = '10px';
 													break;
 											}
+											break;
+										case 'color':
+											// + 글씨색 설정 추가
+											$tableStyleList['color'] = $tbprop[2];
 											break;
 										case 'bgcolor':
 											$tableStyleList['background-color'] = $tbprop[2];
@@ -440,6 +455,13 @@ class NamuMark {
 							}
 							elseif(preg_match('/^([^=]+)=(?|"(.*)"|\'(.*)\'|(.*))$/', $prop, $match)) {
 								switch($match[1]) {
+									// + td, tr 글씨색 설정 추가
+									case 'color':
+										$tdStyleList['color'] = $match[2];
+										break;
+									case 'rowcolor':
+										$trStyleList['color'] = $match[2];
+										break;
 									case 'bgcolor':
 										$tdStyleList['background-color'] = $match[2];
 										break;
@@ -464,9 +486,9 @@ class NamuMark {
                     if(self::startsWith($innerstr, ' ') && self::endsWith($innerstr, ' '))
                         $tdStyleList['text-align'] = 'center';
                     elseif(self::startsWith($innerstr, ' ') && !self::endsWith($innerstr, ' '))
-                        $tdStyleList['text-align'] = null;
-                    elseif(!self::startsWith($innerstr, ' ') && self::endsWith($innerstr, ' '))
                         $tdStyleList['text-align'] = 'right';
+                    elseif(!self::startsWith($innerstr, ' ') && self::endsWith($innerstr, ' '))
+                        $tdStyleList['text-align'] = 'left';
                     else
                         $tdStyleList['text-align'] = null;
                 }
@@ -521,7 +543,7 @@ class NamuMark {
 
 		// HTML <table> 태그 생성
 		$tableAttrStr = ($tableStyleStr?' style="'.$tableStyleStr.'"':'');
-		$result = '<table border="1" class="_table"'.$tableAttrStr.'>'.$caption.$tableInnerStr."</table>\n";
+		$result = '<div pressdo-doc-tablewrap><table pressdo-doc-table'.$tableAttrStr.'>'.$caption.$tableInnerStr."</table></div>\n";
 		$offset = $i-1;
 		return $result;
 	}
@@ -640,7 +662,21 @@ class NamuMark {
 			$level = strlen($match[1]);
 			$innertext = $this->blockParser($match[2]);
 			$id = $this->tocInsert($this->toc, $innertext, $level);
-			$result .= '<h'.$level.' class="_ref" id="s-'.$id.'"><a name="s-'.$id.'" href="#_toc">'.$id.'</a>. '.$innertext.'</h'.$level.'>';
+			$result .= '</div><h'.$level.' pressdo-toc id="s-'.$id.'">
+						<a name="s-'.$id.'" href="#_toc">'.$id.'. </a>';
+
+			// + 문단에서 앵커가 태그속에 들어가는 부분 수정
+			if(preg_match('/\[anchor\((.*)\)\]/', $innertext, $anchor)){
+				$RealContent = str_replace($anchor[0], '', $innertext);
+				$result .= '<a id="'.$anchor[1].'"></a><span id="'.$RealContent.'">'.$RealContent;
+			}else{
+				$result .= '<span id="'.$innertext.'">'.$innertext;
+			}
+
+			// + 부분 편집 기능 작업
+			$result .= '<span pressdo-edit-section><a href="/edit/@@@PressDo-Replace-Title-Here@@@?section='.$id.'" rel="nofollow">[편집]</a></span>
+							</span>
+						</h'.$level.'><div pressdo-doc-paragraph>';
 			$line = '';
 			
 		}
@@ -663,7 +699,7 @@ class NamuMark {
 			if($this->wapRender)
 				$result .= $line.'<br/><br/>';
 			else
-				$result .= '<p>'.$line.'</p>';
+				$result .= '<div pressdo-wikitext>'.$line.'</div>';
 		}
 
 		return $result;
@@ -836,42 +872,37 @@ class NamuMark {
 				// HTML
                 return '<html>' . preg_replace('/UNIQ--.*?--QINU/', '', substr($text, 7)) . '</html>';
             } elseif(self::startsWithi($text, '#!wiki') && preg_match('/^([^=]+)=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
-				// + 심화문법
-				// BUG: 스타일 적용 시 따옴표가 이중으로 들어가는 현상 있음.
-				/*
-				{{{#!wiki style="word-break: keep-all"
-텍스트의 색상을 [[헥스 코드]][* # 뒤에 붙는 여섯자리 숫자로 색상을 나타낸 것. 숫자는 두 자리씩 끊어서 각각 'Red', 'Green', 'Blue'의 강도를 256(=16^^2^^)단계에 걸쳐 나타낸 것이며, 16진수로 표현되어 00(=0,,10,,)일 때 가장 어둡고 FF(=255,,10,,)일 때 가장 밝습니다. 중간값은 80(=128,,10,,)입니다.]나 [[헥스 코드#s-5.1|CSS 색상명]][* # 뒤에 이미 정의된 색상명을 그대로 입력하는 방식을 말합니다. 해당 링크 참조.]을 입력하여 조절할 수 있습니다. 색상코드표는 [[헥스 코드]] 문서 또는 [[https://html-color-codes.info/Korean|이 사이트]]를 참고하세요. 
-||<rowbgcolor=#00a495><rowcolor=#fff> 유형 || 입력 || 출력 ||<width=40%> 비고 ||
-||<|7> 기본 예시 || {{{#!wiki style="min-width:400px"
-{{{{{{#ff0000 텍스트}}}}}}}}} ||<|3> {{{#ff0000 텍스트}}} ||<|7>{{{#!wiki style="min-width:300px"
-헥스 코드와 CSS 색상명 모두 대소문자 구별없이 입력 가능합니다.[br][br]예시와 같이 일부 색상의 경우 세 자리만 입력하는 축약형 헥스코드[* 'Red', 'Green', 'Blue'의 강도를 256단계 대신 16단계로만 표현한 방식입니다. 0일때 가장 어둡고 F(=15,,10,,)일 때 가장 밝습니다.]를 사용할 수도 있습니다.[br][br]투명도 요소가 추가된 #transparent, #RRGGBBAA 색상은 지원하지 않습니다.}}}||
-|| {{{{{{#f00 텍스트}}}}}} ||
-|| {{{{{{#red 텍스트}}}}}} ||
-|| {{{{{{#800080 text}}}}}} ||<|3> {{{#808 text}}} ||
-|| {{{{{{#808 text}}}}}} ||
-|| {{{{{{#purple text}}}}}} ||
-|| {{{{{{#00a495 나무위키색}}}}}}[* 축약형 헥스 코드 또는 CSS 색상명으로 나타낼 수 없는 색상입니다. 6자리 코드를 써야만 표현할 수 있습니다.] || {{{#00a495 나무위키색}}} ||
-||<|2> [[다크 테마]]용 색상 별도 지정 || {{{{{{#888,#ff0 다크테스트}}}}}} ||<|2> {{{#888,#ff0 다크테스트}}} ||<|2>첫 번째 색상은 라이트 테마, 두 번째 색상은 다크 테마에서 적용됩니다. 확인을 위해 다크 테마와 라이트 테마를 전환해보세요.[br][br]두 색상코드 끼리는 쉼표를 사이에 두고 붙여써야만 합니다. 쉼표 뒤에 공백을 넣을 경우 정상 출력이 되지 않습니다.[br][br]색상 문법이 적용되지 않은 일반 텍스트는 라이트 모드에서 #373a3c(검정색), 다크 모드에서 #dddddd(옅은 회색) 색상이 자동으로 적용됩니다. ||
-|| {{{{{{#grey,#yellow 다크테스트}}}}}} ||
-||<|2> 밑줄 서식과 중첩 || {{{{{{#red __밑줄 포함__}}}}}} || {{{#red __밑줄 포함__}}} ||<|2>색상 문법과 밑줄 문법의 순서에 따라 밑줄에 색상 지정 여부가 다릅니다. ||
-|| {{{__{{{#red 밑줄 제외}}}__}}} || __{{{#red 밑줄 제외}}}__ ||
-||<|2> 크기 서식과 중첩 || {{{{{{+1 {{{#blue 큰글자파랑}}} }}}}}} ||<|2> {{{+1 {{{#blue 큰글자파랑}}} }}} ||<|2>밑줄과 달리 크기 서식을 색상과 결합할 경우 문법의 순서가 출력에 영향을 미치지 않습니다.[br][br]닫는 괄호 '\}}}'끼리는 띄어쓰든 붙여쓰든 상관이 없습니다. ||
-|| {{{{{{#blue {{{+1 큰글자파랑}}}}}}}}} ||
-}}}
-				*/
+				
 				$text = str_replace($match[0], '', substr($text,7));
 				$lines = explode("\n", $text);
                 $text = '';
 				foreach($lines as $line) {
-                    if($line !== '')
+					if ($line !== '') 
                         $text .= $line . "\n";
                 }
 				if(self::startsWith($text, '||')) {
                     $offset = 0;
                     $text = $this->tableParser($text, $offset);
 				}
+				if(preg_match('/style=\"(.*)\"/', trim($match[0]), $_style)){
+					function addkey($length = 10)
+					{ // 무작위 키 생성
+						$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-                return '<div class="_renderP" '.$match[0].'>'.$this->formatParser($text).'</div>';
+						$charactersLength = strlen($characters);
+						$randomString = '';
+						for ($i = 0; $i < $length; $i++) {
+							$randomString .= $characters[rand(0, $charactersLength - 1)];
+						}
+						return $randomString;
+					}
+					echo trim($match[0]);
+					$h = addkey(6);
+					echo $h;
+					echo '<style>'.'.'.$h.'{ '.$_style[1].' }</style>';
+				}
+				
+                return '<div pressdo-doc-wikibracket class="_renderP" '.$match[0].'>'.$this->blockParser($text).'</div>';
             } elseif(self::startsWithi($text, '#!syntax') && preg_match('/#!syntax ([^\s]*)/', $text, $match)) {
 				// 구문
                 return '<syntaxhighlight lang="' . $match[1] . '" line="1">' . preg_replace('/#!syntax ([^\s]*)/', '', $text) . '</syntaxhighlight>';
@@ -1101,7 +1132,7 @@ class NamuMark {
 			case '~~':
 				// 취소선
                 if (!self::startsWith($text, 'item-') && !self::endsWith($text, 'UNIQ') && !self::startsWith($text, 'QINU') && !preg_match('/^.*?-.*-QINU/', $text) && !self::startsWith($text, 'h-')) {
-                    return '<s>'.$text.'</s>';
+                    return '<del>'.$text.'</del>';
                 } else {
                     return $type.$text.$type;
                 }
@@ -1126,7 +1157,7 @@ class NamuMark {
             case '{{|':
                 return '<poem style="border: 2px solid #d6d2c5; background-color: #f9f4e6; padding: 1em;">'.$text.'</poem>';
             case '<nowiki>':
-                return '<nowiki>'.$text.'</nowiki>';
+                return '<code>'.$text.'</code>';
 			case '{{{': 
 				// HTML
                 if (self::startsWith($text, '#!html')) {
@@ -1151,7 +1182,7 @@ class NamuMark {
                     $text = $this->tableParser($text, $offset);
 				}
 				
-                return '<div class="_renderP" '.$match[0].'>'.$this->formatParser($text).'</div>';
+                return '<div pressdo-doc-wikibracket class="_renderP" '.$match[0].'>'.$this->blockParser($text).'</div>';
 				}
 				elseif (preg_match('/^#(?:([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|([A-Za-z]+)) (.*)$/', $text, $color)) {
 					// {{{#글씨색}}}
@@ -1245,7 +1276,6 @@ class NamuMark {
 			$arr[0] = array('name' => $text, 'level' => $level, 'childNodes' => array());
 			return $path.'1';
 		}
-
 		$last = count($arr)-1;
 		$readableId = $last+1;
 		if($arr[0]['level'] >= $level) {
@@ -1288,7 +1318,6 @@ class NamuMark {
 			$result = ''
 				.'<div id="_toc">'
 					//.($this->wapRender!==false?'<h2>목차</h2>':'')
-					.'<h2 id="_toc-t">목차</h2>'
 					.$this->printToc($this->toc, 0)
 				.'</div>'
 				.'';
@@ -1299,10 +1328,12 @@ class NamuMark {
 		if(empty($arr[0]))
 			return '';
 
+		// + 목차에 앵커 들어가는거 수정
 		$result  = '<div class="_toc_ln">';
 		foreach($arr as $i => $item) {
 			$readableId = $i+1;
-			$result .= '<div><a href="#s-'.$path.$readableId.'">'.$path.$readableId.'</a>. '.$item['name'].'</div>'
+			$result .= '<span _toc-item><a href="#s-'.$path.$readableId.'">'.$path.$readableId.'</a>. '
+							.preg_replace('/\[anchor\((.*)\)\]/', '', $item['name']).'</span>'
 							.$this->printToc($item['childNodes'], $level+1, $path.$readableId.'.')
 							.'';
 		}
