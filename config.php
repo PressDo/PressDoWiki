@@ -5,13 +5,13 @@ require_once 'PressDoLib.php';
 // Automatically Generated.
 
 // 위키 이름
-$conf['Name'] = 'PressDo 테스트 위키';
+$conf['Name'] = '';
 
 // 위키 이름공간
-$conf['NameSpace'] = 'PressDoWiki';
+$conf['NameSpace'] = '';
 
 // 위키 도메인
-$conf['Domain'] = 'pressdo.prws.kr';
+$conf['Domain'] = '';
 
 // 스크립트 경로
 $conf['ScriptPath'] = '/';
@@ -43,12 +43,15 @@ $conf['PublicLevel'] = 0;
 $conf['AllowJoin'] = true; // 가입 허용
 
 // 스킨 설정
-$conf['Skin'] = 'default';
+// 로고 사진이랑 제목 텍스트를 동시에 적용하시면 둘이 겹쳐버리게 됩니다.(사진이 밑으로 감)
+$conf['Skin'] = 'default'; // 스킨이름
+$conf['TitleText'] = 'PressDoWiki'; // 제목 텍스트
+$conf['LogoWidth'] = '6.6rem'; // 로고 영역 너비
 
 // ACL 틀 자동화
 $conf['ACLAutoTemplate'] = true;
 
-// 메인페이지
+// 메인페이지 문서명
 $conf['Title'] = '대문';
 
 // 허용 메일 목록
@@ -64,6 +67,4 @@ $conf['MailWhitelist'] = array(
 $conf['Extension'] = array(
 'TestExtension'
 );
-
-$conf['DevMode'] = 1;
 ?>
