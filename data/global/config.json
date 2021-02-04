@@ -1,0 +1,38 @@
+{
+    "Name": "PressDo 위키",
+    "NameSpace": "PressDoWiki",
+    "Domain": "",
+    "ScriptPath": "/",
+    "ViewerUri": "/w/",
+    "CopyRight": "PRASEOD-",
+    "HelpMail": "<a href=\"admin@prws.kr\">Contact Us</a>",
+    "TermsOfUse": "",
+    "SecPolicy": "",
+    "DBType": "",
+    "DBHost": "",
+    "DBPort": "",
+    "DBName": "",
+    "DBUser": "",
+    "DBPass": "",
+    "Uploadable": true,
+    "AllowFileExt": ["PNG", "JPG", "JPEG", "GIF"],
+    "CompressFile": true,
+    "PublicLevel": 0,
+    "AllowJoin": true,
+    "Skin": "senkawa",
+    "TitleText": "PressDoWiki",
+    "LogoWidth": "6.6rem",
+    "ACLAutoTemplate": true,
+    "NameSpaceACL": "",
+    "Title": "대문",
+    "UseMailWhitelist": true,
+    "MailWhitelist": [
+        "gmail.com",
+        "naver.com",
+        "kakao.com",
+        "prws.kr"
+    ],
+    "Extension": [
+        "TestExtension"
+    ]
+}
