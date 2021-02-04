@@ -21,7 +21,7 @@
 
 ### 지원 스킨
 ### Supported Skins
-- senkawa (저작권 협의 문제로 보류 중)
+- senkawa (저작권 협의 불발로 취소됨)
 - liberty (예정)
 - vector (예정)
 - buma (예정)
