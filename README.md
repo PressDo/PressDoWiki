@@ -14,14 +14,12 @@
 - 오픈나무와 다르게 PHP로 만들어져 웹서버에서도 이용할 수 있습니다.
 - 미디어위키와 다르게 매우 빠릅니다.
 
-### 최소 사양
-### Requirements
+### 요구 사항 (Requirements)
 - PHP 7.4 이상
 - MySQL 10.3.25 이상
 
-### 지원 스킨
-### Supported Skins
-- senkawa (저작권 협의 불발로 취소됨)
+### 지원 스킨 (Supported Skins)
+- ~~senkawa~~ (저작권 협의 불발로 인해 배포 불가)
 - liberty (예정)
 - vector (예정)
 - buma (예정)
