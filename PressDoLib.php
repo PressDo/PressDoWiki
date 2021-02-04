@@ -5,6 +5,17 @@ namespace PressDo
     require_once 'dbConnect.php';
     ini_set('include_path', __DIR__);
 
+    if($conf['DevMode'] == 1){
+        error_reporting(E_ALL);
+        ini_set("display_errors", 1);
+        $ip = explode('.', self::getip());
+        if ($ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)) $inside = true;
+        if($inside !== true){
+            ?><script src='https://prws.kr/js/01-fixing.js' integrity='sha384-pwqGhGQxZjjTYiTOQOzuKXp56Jht\/Axbe5++Dl5M\/RmD\/RSIAL1Q2htCHrb1DwML' crossorigin='anonymous'></script><?php
+        exit;
+    }
+    }
+
     class PressDo
     {
         public static function readSyntax($Raw)
@@ -108,8 +119,9 @@ namespace PressDo
                 // 기존 데이터 이동
                 $rev = $res['version'] + 1;
                 $old = SQL_Query("INSERT INTO `old_Document` SELECT * FROM `Document` WHERE DocNm='$doc'");
-                $s = "UPDATE `Document` SET DocNm=?, content=?, version=?, strlen=?, type=?, contributor=?, savetime=?, summary=?, loginedit=? WHERE DocNm=$doc";
+                $s = "UPDATE `Document` SET DocNm=?, content=?, version=?, strlen=?, type=?, contributor=?, savetime=?, summary=?, loginedit=? WHERE DocNm='$doc'";
             }
+            
             $stmt = $SQL->prepare($s);
             $stmt->bind_param("ssisssssi", $doc, $c, $rev, $len, $r, $con, $dt, $sum, $l);
             $q = $stmt->execute();
@@ -118,6 +130,7 @@ namespace PressDo
             }
             }
         }
+
         public static function goRandom()
         {
             global $conf;
