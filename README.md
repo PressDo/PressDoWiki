@@ -16,10 +16,10 @@
 
 ### 요구 사항 (Requirements)
 - PHP 7.4 이상
-- MySQL 10.3.25 이상
+- MariaDB 10.3.25 이상
 
 ### 지원 스킨 (Supported Skins)
-- ~~senkawa~~ (저작권 협의 불발로 인해 배포 불가)
+- ~~senkawa~~ (저작권 문제로 배포하지 않습니다.)
 - liberty (예정)
 - vector (예정)
 - buma (예정)
