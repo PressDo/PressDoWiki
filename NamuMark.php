@@ -37,7 +37,7 @@
  * 취소선 태그 <s>에서 <del>로 변경
  * 본문 영역 문단별 <div> 적용
  * 접힌목차 기능 추가
- * 
+ * 볼드체 문법 추가(**)
  * 
  * :: Bugs ::
  * 맨 처음 여는 {{{#!wiki }}} 괄호에서 이중 따옴표로 인해 스타일이 적용되지 않음
@@ -145,6 +145,11 @@ class NamuMark {
 			array(
 				'open'	=> '\'\'',
 				'close' => '\'\'',
+				'multiline' => false,
+				'processor' => array($this,'textProcessor')),
+			array(
+				'open'	=> '**',
+				'close' => '**',
 				'multiline' => false,
 				'processor' => array($this,'textProcessor')),
 			array(
@@ -698,7 +703,7 @@ class NamuMark {
 		
 
 		// hr (수평선)
-		if($line == '----') {
+		if(preg_match('/^-{4,9}$/', $line)) {
 			$result .= '<hr>';
 			$line = '';
 		}
@@ -976,7 +981,7 @@ class NamuMark {
 			// [[파일:ㅁㅁ]]
 			array_push($this->links, array('target'=>$category[0], 'type'=>'file'));
 			if($this->imageAsLink)
-				return '<span class="alternative">[<a target="_blank" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
+				return '<span class="alternative">[<a target="_blank" title="'.$category[0].'" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
 			
 			$paramtxt = '';
 			$csstxt = '';
@@ -1013,7 +1018,7 @@ class NamuMark {
 				$c=1;
 			}
 			$targetUrl = $this->prefix.self::encodeURI($href[0]);
-			if($this->wapRender && !empty($href[1]))
+			//if($this->wapRender && !empty($href[1]))
 				$title = $href[0];
 			if(empty($c))
 				array_push($this->links, array('target'=>$href[0], 'type'=>'link'));
@@ -1137,15 +1142,16 @@ class NamuMark {
                 return '<strong>'.$text.'</strong>';
 			case '\'\'':
 				// 기울임꼴
-                return '<em>'.$text.'</em>';
+				return '<em>'.$text.'</em>';
+			case '**':
+				// + ** 문법 추가
+				return '<strong>'.$text.'</strong>';
             case '--':
 			case '~~':
 				// 취소선
 				// + 수평선 적용 안 되는 오류 수정
-                if (!self::startsWith($text, 'item-') && !self::endsWith($text, 'UNIQ') && !self::startsWith($text, 'QINU') && !preg_match('/^.*?-.*-QINU/', $text) && !self::startsWith($text, 'h-') && strlen($text) !== 0) {
-                    return '<del>'.$text.'</del>';
-                } elseif (strlen($text) == 0) {
-					return '<hr>';
+                if (!self::startsWith($text, 'item-') && !self::endsWith($text, 'UNIQ') && !self::startsWith($text, 'QINU') && !preg_match('/^.*?-.*-QINU/', $text) && !self::startsWith($text, 'h-')) {
+					return '<del>'.$text.'</del>';
 				} else{
                     return $type.$text.$type;
                 }
