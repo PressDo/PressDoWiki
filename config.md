@@ -1,4 +1,4 @@
-## URL SHORT SETTINGS
+## URL SHORT SETTINGS (수정 예정)
 ```nginx
 location ^~ /w/ {
     # CONNECT FROM /w/
@@ -35,6 +35,7 @@ location ^~ /w/ {
  * Domain: 위키 도메인
  * ScriptPath: 스크립트 경로
  * ViewerUri: 보기모드 경로
+ * Language: 언어 설정(/data/lang/ 하위의 .json 파일 이름)
  * Title: 메인페이지 문서 이름
  * 저작권 표시
   * CopyRight
@@ -57,7 +58,7 @@ location ^~ /w/ {
   * AllowJoin: 가입 허용 여부
  * 스킨 설정 - 로고 사진이랑 제목 텍스트를 동시에 적용하시면 둘이 겹쳐버리게 됩니다.(사진이 밑으로 감)
   * Skin: 스킨 이름
-  * TitleText: 제목 텍스트
+  * TitleText: 로고 텍스트
   * LogoWidth: 로고 너비(CSS 설정값)
  * ACL 설정
   * ACLAutoTemplate: ACL 틀 자동 부착 여부
