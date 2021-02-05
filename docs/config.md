@@ -1,4 +1,4 @@
-## URL SHORT SETTINGS (수정 예정)
+## URL SHORT SETTINGS - NGINX (수정 예정)
 ```nginx
 location ^~ /w/ {
     # CONNECT FROM /w/
