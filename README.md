@@ -23,3 +23,6 @@
 - liberty (예정)
 - vector (예정)
 - buma (예정)
+
+### 자세히 (Details)
+- /docs/ 폴더에 있는 설명서를 참고하시기 바랍니다. 
