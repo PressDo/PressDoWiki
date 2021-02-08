@@ -25,17 +25,22 @@ if($_POST['action'] == 'save'){
 
     Data::SaveDocument($Title, $_POST['content'], $_POST['summary']);
 }
+if(isset($_GET['rev'])){
+$Doc_content = Data::LoadOldDocument($Title, $_GET['rev']);
+}else{
 $Doc_content = Data::LoadLatestDocument($Title);
+}
 WikiSkin::FullPage($Title, $Doc_content[1], 'view');
 $array = $Doc_content[1];
 unset($Doc_content);
 $Doc = $Title;
 if (!$array['content']) {
     // 없는 문서?>
+    <div pressdo-content>
         <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a></h1>
-    <h2> 문서를 찾을 수 없음 </h2><br>
-    <p> 존재하지 않는 문서입니다. </p>
-    <a href="/edit/<?=$Doc?>">문서 만들기</a><?php
+    <span> 해당 문서를 찾을 수 없습니다. </span><br>
+    <p><a href="/edit/<?=$Doc?>">[새 문서 만들기]</a></p>
+</div><?php
 } else { ?>
     <br>
     <div pressdo-content>
@@ -62,6 +67,9 @@ if (!$array['content']) {
                 parent.insertBefore(f, parent.childNodes[0]);
             </script>
         </div>
+        <footer pressdo-con-footer>
+                <p><?=$conf['comments']?></p>
+            </footer>
     </div><?php
 
 }

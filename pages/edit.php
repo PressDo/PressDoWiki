@@ -42,19 +42,20 @@ $array = $Doc_content[1];
             $Con = $_POST['content'];
         }else{
             $Con = $array['content'];
-        }?><hr>
-    <form method="post" name="editForm" id="editForm">
+        }?>
+        <pressdo-anchor id="_pressdo-form-anchor">
+    <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
         <input type="hidden" name="title" value="<?=$Doc?>">
-        <textarea name="content" style="width:95%; height:30rem; font-size:10pt;"><?=$Con?></textarea>
-        <p>편집 요약</p>
-        <input type="text" name="summary" style="width:95%;">
-        <p><input type="checkbox" name="agree"> 문서 편집을 저장하면 당신은 기여한 내용을 CC-BY-NC-SA 2.0 KR으로 배포하고 기여한 문서에 대한 하이퍼링크나 URL을 이용하여 저작자 표시를 하는 것으로 충분하다는 데 동의하는 것입니다. 이 동의는 철회할 수 없습니다.</p><?php
+        <textarea pressdo-editor name="content"><?=$Con?></textarea>
+        <p>요약</p>
+        <input pressdo-edit-summary type="text" name="summary">
+        <p><input type="checkbox" name="agree" id="agree"> <label for="agree">문서 편집을 저장하면 당신은 기여한 내용을 CC-BY-NC-SA 2.0 KR으로 배포하고 기여한 문서에 대한 하이퍼링크나 URL을 이용하여 저작자 표시를 하는 것으로 충분하다는 데 동의하는 것입니다. 이 동의는 철회할 수 없습니다.</label></p><?php
         if (!$_SESSION['userid']) { ?>
             <b>로그인하지 않은 상태로 편집하고 있습니다. 저장 시 아이피(<?=PressDo::getip()?>)가 영구히 기록됩니다.</b><?php
         } ?>
-        <div align="right">
-            <button type="button" onclick="editorMenu('preview');">미리 보기</button>
-            <button type="button" onclick="editorMenu('save');">저장</button>
+        <div pressdo-buttonarea>
+            <button pressdo-button type="button" onclick="editorMenu('preview');">미리 보기</button>
+            <button pressdo-button-blue pressdo-button style="margin-top:0; margin-left:5px;" type="button" onclick="editorMenu('save');">저장</button>
             <script>
             // 버튼
             var f = document.getElementById('editForm');
@@ -65,8 +66,21 @@ $array = $Doc_content[1];
                 a.setAttribute('value', action);
                 f.appendChild(a);
                 document.body.appendChild(f);
-                if(action == 'edit') f.action = '/edit/<?=urlencode($Doc)?>';
-                if(action == 'save') f.action = '<?=$conf['ViewerUri'].urlencode($Doc)?>';
+                n = document.getElementById('_pressdo-form-anchor')
+                if(action == 'preview'){
+                    f.action = '/edit/<?=urlencode($Doc)?>';
+                    var parent = n.parentNode;
+                    parent.insertBefore(f, parent.childNodes[6]);
+                }
+                if(action == 'save'){
+                    if(!document.editForm.agree.checked){
+                        alert('수정하기 전에 먼저 문서 배포 규정에 동의해 주세요.');
+                        var parent = n.parentNode;
+                        parent.insertBefore(f, parent.childNodes[6]);
+                        return false;
+                    }
+                    f.action = '<?=$conf['ViewerUri'].urlencode($Doc)?>'; 
+                }
                 f.submit();
             }
             </script>
