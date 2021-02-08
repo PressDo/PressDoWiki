@@ -42,7 +42,7 @@ WikiSkin::page_frame();
             <label for="password">Password</label>
             <input pressdo-formdata type="password" id="password" name="password">
             <p id="errpwd" class="errmsg" style="display:none;"> 비밀번호를 입력해주세요. </p>
-            <div pressdo-buttonarea><a pressdo-submit-wrap href="register">계정 만들기</a> <button pressdo-login-blue pressdo-button onclick="">로그인</button></div>
+            <div pressdo-buttonarea><a pressdo-submit-wrap href="register">계정 만들기</a> <button pressdo-login-blue pressdo-button onclick="login()">로그인</button></div>
         </form>
     </div>
 </div>
