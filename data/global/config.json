@@ -1,9 +1,11 @@
 {
-    "Name": "PressDo 위키",
+    "Name": "PressDo 테스트 위키",
     "NameSpace": "PressDoWiki",
     "Domain": "",
     "ScriptPath": "/",
     "ViewerUri": "/w/",
+    "Language": "ko-kr",
+    "Title": "대문",
     "CopyRight": "PRASEOD-",
     "HelpMail": "<a href=\"admin@prws.kr\">Contact Us</a>",
     "TermsOfUse": "",
@@ -15,16 +17,15 @@
     "DBUser": "",
     "DBPass": "",
     "Uploadable": true,
-    "AllowFileExt": ["PNG", "JPG", "JPEG", "GIF"],
+    "AllowFileExt": ["PNG", "JPG", "JPEG", "GIF", "SVG"],
     "CompressFile": true,
     "PublicLevel": 0,
     "AllowJoin": true,
-    "Skin": "senkawa",
+    "Skin": "",
     "TitleText": "PressDoWiki",
     "LogoWidth": "6.6rem",
     "ACLAutoTemplate": true,
     "NameSpaceACL": "",
-    "Title": "대문",
     "UseMailWhitelist": true,
     "MailWhitelist": [
         "gmail.com",
@@ -34,5 +35,6 @@
     ],
     "Extension": [
         "TestExtension"
-    ]
+    ],
+    "comments": "본 위키는 PressDo 엔진 테스트를 목적으로 생성되었습니다.",
 }
