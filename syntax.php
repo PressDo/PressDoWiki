@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+$conf = json_decode(file_get_contents(__DIR__.'/data/global/config.json'), true);
 /*
 PressDo Wiki Syntax Processor
 */
@@ -11,7 +11,7 @@ function readSyntax($content, $noredirect = 0)
         if($noredirect !== 1)
             Header('Location: http://'.$conf['Domain'].$conf['ViewerUri'].$rd[2]);
         
-    
+    $content = preg_replace('/[^-]*-{4,9}[^-]*/', '[@@@PressDo-Replace-hr@@@]', $content);
 
     /* NamuMark PHP Library by koreapyj */
     // 라이브러리를 불러옵니다.
@@ -29,6 +29,8 @@ function readSyntax($content, $noredirect = 0)
     // toHtml을 호출하면 HTML 페이지가 생성됩니다.
     $content = $wEngine->toHtml(); 
     
+    // 수평줄
+    $content = str_replace('[@@@PressDo-Replace-hr@@@]', '<hr>', $content);
 
     // 각주 크기
     $content = preg_replace('/<a id=\"rfn-(.*?)<\/a>/s', '<sup>$0</sup>', $content);
