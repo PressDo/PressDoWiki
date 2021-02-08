@@ -5,7 +5,7 @@
 # 
 #
 session_start();
-include 'config.php';
+$conf = json_decode(file_get_contents(__DIR__.'/data/global/config.json'), true);
 if($conf['DBType'] == 'mysql'){
     $SQL = new mysqli($conf['DBHost'],$conf['DBUser'],$conf['DBPass'],$conf['DBName'],$conf['DBPort']);
     $SQL->set_charset("utf8");
@@ -31,7 +31,7 @@ if($conf['DBType'] == 'mysql'){
     {
         global $SQL;
         $q = pg_exec($SQL, $Command);
-        return array(pg_fetch_assoc($q), pg_num_rows($q));
+        return $q;
     }
 }
 ?>
