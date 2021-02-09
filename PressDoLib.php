@@ -54,7 +54,7 @@ namespace PressDo
             $d = urlencode($docnm);
             $s = "SELECT * from `old_Document` where BINARY DocNm='$d' AND version='$rev'";
             $q = SQL_Query($s);
-            $r = mysqli_fetch_assoc($q);
+            $r = SQL_Assoc($q);
             if($q->num_rows < 1){
                 return false;
             }else{
@@ -68,7 +68,7 @@ namespace PressDo
             $d = urlencode($docnm);
             $s = "SELECT * from `Document` where BINARY DocNm='$d';";
             $q = SQL_Query($s);
-            $r = mysqli_fetch_assoc($q);
+            $r = SQL_Assoc($q);
             if($q->num_rows < 1){
                 return false;
             }else{
@@ -93,7 +93,7 @@ namespace PressDo
             $doc = urlencode($docnm);
             $s = "SELECT * from `Document` where DocNm='$doc'";
             $q = SQL_Query($s);
-            $res = mysqli_fetch_assoc($q);
+            $res = SQL_Assoc($q);
             
 
             // 이전 버전과 차이 없으면 업데이트 안함
@@ -136,7 +136,7 @@ namespace PressDo
         public static function hidehistory($DocNm, $rev)
         {
             $doc = urlencode($DocNm);
-            $q = mysqli_fetch_assoc(SQL_Query("SELECT * from `Document` where DocNm='$doc'"));
+            $q = SQL_Assoc(SQL_Query("SELECT * from `Document` where DocNm='$doc'"));
             if($q['version'] == $rev){
                 // 최신 판본
                 $act = SQL_Query("INSERT INTO `hidden_history` SELECT * FROM `Document` WHERE DocNm='$doc'");
@@ -153,7 +153,7 @@ namespace PressDo
         {
             $s = SQL_Query("SELECT * FROM `old_Document` UNION ALL SELECT * FROM `Document` ORDER BY 'savetime' DESC LIMIT 30");
             $histories = array();
-            while ($row = mysqli_fetch_assoc($s)) {
+            while ($row = SQL_Assoc($s)) {
                 $h = array('DocNm' => $row['DocNm'], 
                     'content' => $row['content'], 
                     'version' => $row['version'],
@@ -176,7 +176,7 @@ namespace PressDo
         public static function goRandom($n = 1)
         {
             $rand = SQL_Query("SELECT * FROM `Document` ORDER BY RAND() LIMIT $n");
-            return mysqli_fetch_assoc($rand);
+            return SQL_Assoc($rand);
         }
 
         // 문서 ACL 가져오기
@@ -184,14 +184,14 @@ namespace PressDo
         {
             $DocNm = urlencode($DocNm);
             $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE DocNm='$DocNm' AND action='$action'");
-            return mysqli_fetch_assoc($get);
+            return SQL_Assoc($get);
         }
 
         // 선택한 작업의 이름공간 ACL 가져오기
         public static function getACL($action)
         {
             $get = SQL_Query("SELECT '$action' FROM `ACL_group_list` ORDER BY 'priority' ASC");
-            return mysqli_fetch_assoc($get);
+            return SQL_Assoc($get);
         }
 
         // 사용자의 ACL 그룹 가져오기
@@ -199,7 +199,7 @@ namespace PressDo
         {
             $User = urlencode($User);
             $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_group_list.priority FROM `ACL_user`,`ACL_group_list` WHERE ACL_user.username='$User' AND ACL_group_list.name=ACL_user.aclgroup ORDER BY ACL_group_list.priority ASC");
-            return mysqli_fetch_assoc($get);
+            return SQL_Assoc($get);
         }
 
         // 문서 ACL 제거
@@ -258,8 +258,6 @@ namespace PressDo
         {
             $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, read, edit, edit_request, move, delete, create_thread, write_thread_comment, manage_user, changeacl) VALUES('$aclgroup', '$desc', '$read', '$edit', '$edit_request', '$move', '$delete', '$create_thread', '$write_thread_comment', '$manage_user', '$changeacl')");
         }
-
-
 // 사용자 ACL 추가/제거
     }
 }
