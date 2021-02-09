@@ -61,6 +61,4 @@ case 'sqlite':
 break;
 default:
 }
-
-}
 ?>
