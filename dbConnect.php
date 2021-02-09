@@ -6,7 +6,8 @@
 #
 session_start();
 $conf = json_decode(file_get_contents(__DIR__.'/data/global/config.json'), true);
-if($conf['DBType'] == 'mysql'){
+switch($conf['DBType']){
+case 'mysql':
     $SQL = new mysqli($conf['DBHost'],$conf['DBUser'],$conf['DBPass'],$conf['DBName'],$conf['DBPort']);
     $SQL->set_charset("utf8");
     if(!$SQL){
@@ -22,7 +23,8 @@ if($conf['DBType'] == 'mysql'){
     {
         return mysqli_fetch_assoc($Query);
     }
-}elseif($conf['DBType'] == 'pgsql'){
+break;
+case 'pgsql':
     $DBHost = $conf['DBHost'];
     $DBUser = $conf['DBUser'];
     $DBPass = $conf['DBPass'];
@@ -41,8 +43,8 @@ if($conf['DBType'] == 'mysql'){
     {
         return pg_fetch_assoc($Query);
     }
-
-}elseif($conf['DBType'] == 'sqlite'){
+break;
+case 'sqlite':
     $SQL = new SQLite3($conf['DBName']);
     if(!$SQL){
         return false;
@@ -56,6 +58,8 @@ if($conf['DBType'] == 'mysql'){
     {
         return $Query->fetchArray(SQLITE3_ASSOC);
     }
+break;
+default:
 }
 
 }
