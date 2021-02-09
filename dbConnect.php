@@ -18,6 +18,10 @@ if($conf['DBType'] == 'mysql'){
         $q = $SQL->query($Command);
         return $q;
     }
+    function SQL_Assoc($Query)
+    {
+        return mysqli_fetch_assoc($Query);
+    }
 }elseif($conf['DBType'] == 'pgsql'){
     $DBHost = $conf['DBHost'];
     $DBUser = $conf['DBUser'];
@@ -33,5 +37,26 @@ if($conf['DBType'] == 'mysql'){
         $q = pg_exec($SQL, $Command);
         return $q;
     }
+    function SQL_Assoc($Query)
+    {
+        return pg_fetch_assoc($Query);
+    }
+
+}elseif($conf['DBType'] == 'sqlite'){
+    $SQL = new SQLite3($conf['DBName']);
+    if(!$SQL){
+        return false;
+    }
+    function SQL_Query($Command)
+    {
+        global $SQL;
+        return $SQL->query($Command);
+    }
+    function SQL_Assoc($Query)
+    {
+        return $Query->fetchArray(SQLITE3_ASSOC);
+    }
+}
+
 }
 ?>
