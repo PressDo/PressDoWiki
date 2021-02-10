@@ -19,10 +19,10 @@
 - MariaDB 10.3.25 이상
 
 ### 지원 스킨 (Supported Skins)
-- ~~senkawa~~ (저작권 문제로 배포하지 않습니다.)
+- ~~senkawa~~ (저작권 문제로 배포하지 않음)
 - liberty (예정)
 - vector (예정)
 - buma (예정)
 
 ### 자세히 (Details)
-- 를 참고하시기 바랍니다. 
+- [Wiki](https://github.com/aaei924/PressDoWiki/wiki)
