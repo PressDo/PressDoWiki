@@ -25,12 +25,12 @@ if($_POST['action'] == 'save'){
 
     Data::SaveDocument($Title, $_POST['content'], $_POST['summary']);
 }
-if(isset($_GET['rev'])){
-$Doc_content = Data::LoadOldDocument($Title, $_GET['rev']);
-}else{
+
 $Doc_content = Data::LoadLatestDocument($Title);
+WikiSkin::FullPage($Title, 'view');
+if(isset($_GET['rev']) && $_GET['rev'] !== $Doc_content[1]['version']){
+$Doc_content = Data::LoadOldDocument($Title, $_GET['rev']);
 }
-WikiSkin::FullPage($Title, $Doc_content[1], 'view');
 $array = $Doc_content[1];
 unset($Doc_content);
 $Doc = $Title;

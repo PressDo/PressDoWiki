@@ -18,7 +18,7 @@ if(isset($_POST['title'])){
     $Title = $_GET['title'];
 }
 $Doc_content = Data::LoadLatestDocument($Title);
-WikiSkin::FullPage($Title, $Doc_content[1], 'edit');
+WikiSkin::FullPage($Title, 'edit');
 $Doc = $Title;
 $array = $Doc_content[1];
 ?>

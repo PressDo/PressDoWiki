@@ -6,7 +6,7 @@ require_once '../PressDoLib.php';
 require_once '../skin/'.$conf['Skin'].'/skin.php';
 
 $Title = '최근 변경내역';
-WikiSkin::FullPage($Title, $Doc_content[1], 'history');
+WikiSkin::FullPage($Title, 'history');
 $Doc = $Title;
 ?>
 <div pressdo-content>
@@ -32,7 +32,14 @@ $Doc = $Title;
             </thead>
             <tbody>
                     <?php
-$h = Data::LoadWholeHistory();
+$lo = $_GET['logtype'];
+$lt = array(
+'create' => "WHERE `logtype`='create'",
+'revert' => "WHERE `logtype`='revert'",
+'move' => "WHERE `logtype`='move'",
+'delete' => "WHERE `logtype`='delete'"
+);
+$h = Data::LoadWholeHistory($lt[$lo]);
 $sortArr = array();	
 foreach($h as $res) 
   $sortArr [] = $res['savetime']; 

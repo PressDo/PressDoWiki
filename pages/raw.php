@@ -21,7 +21,7 @@ $Doc_content = Data::LoadLatestDocument($Title);
 if(isset($_GET['rev']) && $_GET['rev'] !== $Doc_content[1]['version']){
 $Doc_content = Data::LoadOldDocument($Title, $_GET['rev']);
 }
-WikiSkin::FullPage($Title, $Doc_content[1], 'view');
+WikiSkin::FullPage($Title, 'view');
 $array = $Doc_content[1];
 unset($Doc_content);
 $Doc = $Title;
@@ -48,9 +48,7 @@ if (!$array['content']) {
             <small pressdo-doc-action>(r<?=$_GET['rev']?> RAW)</small>
         </h1>
         <div id="cont_ent" pressdo-doc-content>
-            <textarea readonly="readonly" pressdo-editor>
-            <?=str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), $array['content'])?>
-            </textarea>
+            <textarea readonly="readonly" pressdo-editor><?=str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), $array['content'])?></textarea>
         </div>
     </div><?php
 

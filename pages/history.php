@@ -5,6 +5,16 @@ use PressDo\Data;
 require_once '../PressDoLib.php';
 require_once '../skin/'.$conf['Skin'].'/skin.php';
 
+if(isset($_SESSION['username'])){
+$user = array(
+'typename' => $_SESSION['usertype'].':'.$_SESSION['username']
+);
+}else{
+$user = array(
+'typename' => 'ip:'.PressDo::getip()
+);
+}
+
 if(isset($_POST['title'])){
     $Title = $_POST['title'];
 }elseif(!$_GET['title']){
@@ -14,7 +24,7 @@ if(isset($_POST['title'])){
     $Title = $_GET['title'];
 }
 $Doc_content = Data::LoadLatestDocument($Title);
-WikiSkin::FullPage($Title, $Doc_content[1], 'history');
+WikiSkin::FullPage($Title, 'history');
 $array = $Doc_content[1];
 $Doc = $Title;
 $PrevData = Data::LoadOldDocument($Doc, $array['version'] - 1);
@@ -62,7 +72,12 @@ $isLogin = $array['loginedit'];
                         <a href="/raw/<?=$Doc.'?rev='.$array['version']?>">RAW</a> | 
                         <a href="/blame/<?=$Doc.'?rev='.$array['version']?>">Blame</a> | 
                         <a href="/revert/<?=$Doc.'?rev='.$array['version']?>">이 리비전으로 되돌리기</a> | 
-                        <a href="/diff/<?=$Doc.'?rev='.$array['version']?>">비교</a>)
+                        <a href="/diff/<?=$Doc.'?rev='.$array['version']?>">비교</a><?php
+if(Data::checkACL($user['typename'], 'admin')){
+?> | 
+        <a href="/hide/<?=$Doc.'?rev='.$OldData[1]['version']?>">숨기기</a><?php
+}
+?>)
                     </span>
                     <input type="radio" name="oldrev" value="<?=$array['version']?>" style="visibility: visible;">
                     <input type="radio" name="rev" value="<?=$array['version']?>" style="visibility: visible;">
@@ -99,7 +114,12 @@ for ($x = 1; $x < $minx; ++$x) {
         <a href="/raw/<?=$Doc.'?rev='.$OldData[1]['version']?>">RAW</a> | 
         <a href="/blame/<?=$Doc.'?rev='.$OldData[1]['version']?>">Blame</a> | 
         <a href="/revert/<?=$Doc.'?rev='.$OldData[1]['version']?>">이 리비전으로 되돌리기</a> | 
-        <a href="/diff/<?=$Doc.'?rev='.$OldData[1]['version']?>">비교</a>)
+        <a href="/diff/<?=$Doc.'?rev='.$OldData[1]['version']?>">비교</a><?php
+if(Data::checkACL($user['typename'], 'admin')){
+?> | 
+        <a href="/hide/<?=$Doc.'?rev='.$OldData[1]['version']?>">숨기기</a><?php
+}
+?>)
     </span>
         <input type="radio" name="oldrev" value="<?=$OldData[1]['version']?>" style="visibility: visible;">
         <input type="radio" name="rev" value="<?=$OldData[1]['version']?>" style="visibility: visible;">
