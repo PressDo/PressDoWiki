@@ -1,5 +1,4 @@
 <?php
-//include 'config.php';
 // 745행 인근 https://attachment.namu.wiki/ 수정필요
 /**
  * namumark.php - Namu Mark Renderer
@@ -317,12 +316,13 @@ class NamuMark {
 				break;
 			}
 			$i+=4;
+                      
 			$line = $this->formatParser(substr($text, $i, $eol-$i));
-			$line = preg_replace('/^(&gt;)+/', '', $line);
+			preg_match('/^(&gt;)+/', $line, $m);
 			if($this->wapRender)
 				$innerhtml .= $line.'<br/>';
 			else
-				$innerhtml .= '<div pressdo-wikitext>'.$line.'</div>';
+				$innerhtml .= str_repeat('<blockquote pressdo-doc-blockquote>',mb_strlen($m[0]) / 4).'<div pressdo-wikitext>'.preg_replace('/^(&gt;)+/', '', $line).'</div>'.str_repeat('</blockquote>',mb_strlen($m[0]) / 4);
 		}
 		if(empty($innerhtml))
 			return false;
@@ -530,7 +530,7 @@ class NamuMark {
 						$trAttrStr .= ' '.$propName.'="'.str_replace('"', '\\"', $propValue).'"';
 					}
 				}
-				$trInnerStr .= '<td'.$tdAttrStr.'>'.$this->blockParser($innerstr).'</td>';
+				$trInnerStr .= '<td'.$tdAttrStr.'><div class="wiki-paragraph">'.$this->blockParser($innerstr).'</div></td>';
 			}
 			$tableInnerStr .= !empty($trInnerStr)?'<tr'.$trAttrStr.'>'.$trInnerStr.'</tr>':'';
 			unset($trAttrStri);
@@ -660,7 +660,6 @@ class NamuMark {
 	private function lineParser($line) {
 		$result = '';
 		$line_len = strlen($line);
-
 		// == Title == (문단)
 		// + 공백 있어서 안 되는 오류 수정
 		if(self::startsWith($line, '=') && preg_match('/^(=+)(.*?)(=+) *$/', trim($line), $match) && $match[1]===$match[3]) {	
@@ -699,14 +698,7 @@ class NamuMark {
 		if(self::startsWith($line, '##')) {
 			$line = '';
 		}
-
-		
-
-		// hr (수평선)
-		if(preg_match('/^-{4,9}$/', $line)) {
-			$result .= '<hr>';
-			$line = '';
-		}
+              $line = preg_replace('/[^-]*(-{4,9})[^-]*/', '<hr>', $line);
 
 		$line = $this->blockParser($line);
 
@@ -977,6 +969,9 @@ class NamuMark {
 			if(!$this->included)
 				array_push($this->category, $category[1]);
 			return ' ';
+		}elseif(preg_match('/^#(.+)$/', $href[0], $category)) {
+			// [[#anchor]]
+			$targetUrl = $href[0];
 		}elseif(preg_match('/^파일:(.+)$/', $href[0], $category)) {
 			// [[파일:ㅁㅁ]]
 			array_push($this->links, array('target'=>$category[0], 'type'=>'file'));
@@ -1026,6 +1021,7 @@ class NamuMark {
 		return '<a href="'.$targetUrl.'"'.(!empty($title)?' title="'.$title.'"':'').(!empty($class)?' class="'.$class.'"':'').(!empty($target)?' target="'.$target.'"':'').'>'.(!empty($href[1])?$this->formatParser($href[1]):$href[0]).'</a>';
 	}
 
+	// 대괄호 문법
 	private function macroProcessor($text, $type) {
 		$macroName = strtolower($text);
 		if(!empty($this->macro_processors[$macroName]))
@@ -1118,6 +1114,12 @@ class NamuMark {
 					}
 					return '<iframe width="'.(!empty($var['width'])?$var['width']:'640').'" height="'.(!empty($var['height'])?$var['height']:'360').'" src="'.$include[0].'" frameborder="0" allowfullscreen></iframe>';
 				}
+				elseif(self::startsWith($text, 'age') && preg_match('/^age\((.+)\)$/', $text, $include)) {
+					// + 나이 계산(수정중)
+					$include[0];
+					
+					return $age;
+				}
 				elseif(self::startsWith($text, '*') && preg_match('/^\*([^ ]*)([ ].+)?$/', $text, $note)) {
 					// 각주
 					$notetext = !empty($note[2])?$this->blockParser($note[2]):'';
@@ -1126,6 +1128,10 @@ class NamuMark {
 					$preview = strip_tags($preview);
 					$preview = str_replace('"', '\\"', $preview);
 					return '<a id="rfn-'.htmlspecialchars($id).'" class="wiki-fn" href="#fn-'.rawurlencode($id).'" title="'.$preview.'">['.($note[1]?$note[1]:$id).']</a>';
+				}elseif(self::startsWith($text, 'anchor') && preg_match('/^anchor\((.+)\)$/', $text, $anchor)) {
+					// 각주
+
+					//return '<a pressdo-anchor id="'.$anchor[1].'"></a>';
 				}
 		}
 		return '['.$text.']';

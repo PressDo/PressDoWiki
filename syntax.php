@@ -1,5 +1,4 @@
 <?php
-$conf = json_decode(file_get_contents(__DIR__.'/data/global/config.json'), true);
 /*
 PressDo Wiki Syntax Processor
 */
@@ -10,8 +9,6 @@ function readSyntax($content, $noredirect = 0)
     if(preg_match('/^#(redirect|넘겨주기) (.*)/', $content, $rd))
         if($noredirect !== 1)
             Header('Location: http://'.$conf['Domain'].$conf['ViewerUri'].$rd[2]);
-        
-    $content = preg_replace('/[^-]*-{4,9}[^-]*/', '[@@@PressDo-Replace-hr@@@]', $content);
 
     /* NamuMark PHP Library by koreapyj */
     // 라이브러리를 불러옵니다.

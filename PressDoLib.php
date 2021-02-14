@@ -1,15 +1,16 @@
 <?php
 namespace PressDo
 {
-    $conf = json_decode(file_get_contents(__DIR__.'/data/global/config.json'), true);
     require_once 'dbConnect.php';
     ini_set('include_path', __DIR__);
 
     if($conf['DevMode'] == true){
-        error_reporting(E_ALL);
-        ini_set("display_errors", 1);
         $ip = explode('.', PressDo::getip());
-        if ($ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)) $inside = true;
+        if ($ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)){
+            $inside = true;
+            error_reporting(E_ALL);
+            ini_set("display_errors", 1);
+        }
         if($inside !== true){
             ?><script src='https://prws.kr/js/01-fixing.js' integrity='sha384-pwqGhGQxZjjTYiTOQOzuKXp56Jht\/Axbe5++Dl5M\/RmD\/RSIAL1Q2htCHrb1DwML' crossorigin='anonymous'></script><?php
         exit;
@@ -44,6 +45,7 @@ namespace PressDo
             }
             return $ipaddress;
         }
+
     }
 
     class Data
@@ -81,13 +83,13 @@ namespace PressDo
             global $SQL, $conf;
             // 문서유형 설정
             if(preg_match('/^'.$conf['NameSpace'].':/', $docnm) || preg_match('/^'.$conf['Title'].'$/', $docnm)){
-                $r = '프로젝트';
+                $r = 'wiki';
             }elseif(preg_match('/^특수:/', $docnm)){
-                $r = '특수';
+                $r = 'special';
             }elseif(preg_match('/^분류:/', $docnm)){
-                $r = '분류';
+                $r = 'category';
             }else{
-                $r = '일반';
+                $r = 'document';
             }
             // 문서 저장
             $doc = urlencode($docnm);
@@ -124,7 +126,7 @@ namespace PressDo
                 }
                 
                 $stmt = $SQL->prepare($s);
-                $stmt->bind_param("ssisssssi", $doc, $c, $rev, $len, $r, $con, $dt, $sum, $l, $log);
+                $stmt->bind_param("ssisssssis", $doc, $c, $rev, $len, $r, $con, $dt, $sum, $l, $log);
                 $q = $stmt->execute();
                 if(!$q){
                     return 'false'.mysqli_error($SQL);
@@ -149,9 +151,9 @@ namespace PressDo
         }
 
         // 최근편집
-        public static function LoadWholeHistory()
+        public static function LoadWholeHistory($logtype)
         {
-            $s = SQL_Query("SELECT * FROM `old_Document` UNION ALL SELECT * FROM `Document` ORDER BY 'savetime' DESC LIMIT 30");
+            $s = SQL_Query("SELECT * FROM `old_Document` ".$logtype." UNION ALL SELECT * FROM `Document` ".$logtype." ORDER BY `savetime` DESC LIMIT 200");
             $histories = array();
             while ($row = SQL_Assoc($s)) {
                 $h = array('DocNm' => $row['DocNm'], 
@@ -179,25 +181,44 @@ namespace PressDo
             return SQL_Assoc($rand);
         }
 
-        // 문서 ACL 가져오기
+        // 문서 ACL 설정 가져오기
         public static function getDocACL($DocNm, $action)
         {
             $DocNm = urlencode($DocNm);
-            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE DocNm='$DocNm' AND action='$action'");
-            return SQL_Assoc($get);
+            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE BINARY DocNm='$DocNm' AND action='$action'");
+            $res = array();
+            while ($row = SQL_Assoc($get)) {
+                $h = array('ACLID' => $row['aclid'], 
+                    'access' => $row['access'],
+                    'condition' => $row['condition'],
+                    'expiry' => $row['expiration']
+                );
+                array_push($res, $h);
+            }
+            if(empty($res)) return array(false);
+            return $res;
         }
 
-        // 선택한 작업의 이름공간 ACL 가져오기
-        public static function getACL($action)
+        // 선택한 이름공간의 ACL 가져오기
+        public static function getNSACL($ns)
         {
-            $get = SQL_Query("SELECT '$action' FROM `ACL_group_list` ORDER BY 'priority' ASC");
-            return SQL_Assoc($get);
+            $get = SQL_Query("SELECT `type`,`name`,`$ns` FROM `ACL_NS`");
+            $res = array();
+            while ($row = SQL_Assoc($get)) {
+
+                $h = array('type' => $row['type'], 
+                    'name' => $row['name'],
+                    'value' => $row[$ns]
+                );
+                array_push($res, $h);
+            }
+            if(empty($res)) return array(false);
+            return $res;
         }
 
         // 사용자의 ACL 그룹 가져오기
         public static function getACLofUser($User)
         {
-            $User = urlencode($User);
             $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_group_list.priority FROM `ACL_user`,`ACL_group_list` WHERE ACL_user.username='$User' AND ACL_group_list.name=ACL_user.aclgroup ORDER BY ACL_group_list.priority ASC");
             return SQL_Assoc($get);
         }
@@ -205,14 +226,12 @@ namespace PressDo
         // 문서 ACL 제거
         public static function removeDocACL($ACLID)
         {
-            $DocNm = urlencode($DocNm);
             $get = SQL_Query("DELETE FROM `ACL_Document` WHERE aclid='$ACLID'");
         }
 
         // ACL 그룹에 사용자 제거
         public static function removeUserACLgroup($seq)
         {
-            $User = urlencode($User);
             $get = SQL_Query("DELETE FROM `ACL_user` WHERE seq='$seq'");
         }
 
@@ -248,16 +267,23 @@ namespace PressDo
         }
 
         // 이름공간 ACL 변경
-        public static function setACLNS($aclgroup, $read, $edit, $edit_request, $move, $delete, $create_thread, $write_thread_comment, $manage_user, $changeacl)
+        public static function setACLNS($aclgroup, $document, $template_set, $category, $file, $user, $special, $wiki, $discuss, $bin, $poll, $filebin, $operation, $template)
         {
-            $get = SQL_Query("UPDATE `ACL_group_list` SET read='$read', edit='$edit', edit_request='$edit_request', move='$move', delete='$delete', create_thread='$create_thread', write_thread_comment='$write_thread_comment', manage_user='$manage_user', changeacl='$changeacl'");
+            $get = SQL_Query("UPDATE `ACL_group_list` SET document='$document', template_set='$template_set', category='$category', file='$file', user='$user', special='$special', wiki='$wiki', discuss='$discuss', bin='$bin', poll='$poll', filebin='$filebin', operation='$operation', template='$template' WHERE name='$aclgroup'");
         }
 
         // 새 ACL 그룹 추가
-        public static function addACLgroup($aclgroup, $desc, $read, $edit, $edit_request, $move, $delete, $create_thread, $write_thread_comment, $manage_user, $changeacl)
+        public static function addACLgroup($aclgroup, $desc, $document, $template_set, $category, $file, $user, $special, $wiki, $discuss, $bin, $poll, $filebin, $operation, $template)
         {
-            $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, read, edit, edit_request, move, delete, create_thread, write_thread_comment, manage_user, changeacl) VALUES('$aclgroup', '$desc', '$read', '$edit', '$edit_request', '$move', '$delete', '$create_thread', '$write_thread_comment', '$manage_user', '$changeacl')");
+            $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, document, template_set, category, file, user, special, wiki, discuss, bin, poll, filebin, operation, template) VALUES('$aclgroup', '$desc', '$document', '$template_set', '$category', '$file', '$user', '$special', '$wiki', '$discuss', '$bin', '$poll', '$filebin', '$operation', '$template')");
         }
-// 사용자 ACL 추가/제거
+        // 사용자 ACL 추가/제거
+        public static function checkACL($user, $aclgroup)
+        {
+            $u = explode(':', $user);
+            $type = $u[0];
+            $username = $u[1];
+            $get = SQL_Query("SELECT FROM `ACL_user` WHERE 'usertype'='$type' AND 'username'='$username' AND 'aclgroup'='$aclgroup'");
+        }
     }
 }

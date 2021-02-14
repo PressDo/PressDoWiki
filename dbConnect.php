@@ -5,7 +5,8 @@
 # 
 #
 session_start();
-$conf = json_decode(file_get_contents(__DIR__.'/data/global/config.json'), true);
+define('PressDo_Config', true);
+include 'data/global/config.php';
 switch($conf['DBType']){
 case 'mysql':
     $SQL = new mysqli($conf['DBHost'],$conf['DBUser'],$conf['DBPass'],$conf['DBName'],$conf['DBPort']);
