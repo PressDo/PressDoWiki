@@ -31,3 +31,4 @@
 
 ### 자세히 (Details)
 - [Wiki](https://github.com/aaei924/PressDoWiki/wiki)
+- 추후 테스트 위키에 가이드가 수록될 예정입니다.
