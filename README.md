@@ -16,8 +16,8 @@
 
 -------------------------
 ### 요구 사항 (Requirements)
-![](https://img.shields.io/badge/PHP-%3E%3D7.4-4F5D95?style=for-the-badge&logo=php)
-![](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
+![![PHP](https://img.shields.io/badge/PHP-%3E%3D7.4-4F5D95?style=for-the-badge&logo=php)
+![![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
 -------------------------
 
 - PHP 7.4 이상
