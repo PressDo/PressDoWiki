@@ -6,9 +6,9 @@
 [![License](https://img.shields.io/github/license/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
 
 -------------------------
-#### 개발 중단.
-### ~~이 위키는 현재 제작 중입니다.
-### Currently in development.~~
+## 개발 중단.
+### ~~이 위키는 현재 제작 중입니다.~~
+### ~~Currently in development.~~
 -------------------------
 
 - 나무위키의 문법인 나무마크를 이용할 수 있는 PHP를 이용한 위키입니다.
