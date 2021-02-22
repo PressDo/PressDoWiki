@@ -6,8 +6,9 @@
 [![License](https://img.shields.io/github/license/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
 
 -------------------------
-### 이 위키는 현재 제작 중입니다.
-### Currently in development.
+#### 개발 중단.
+### ~~이 위키는 현재 제작 중입니다.
+### Currently in development.~~
 -------------------------
 
 - 나무위키의 문법인 나무마크를 이용할 수 있는 PHP를 이용한 위키입니다.
@@ -16,8 +17,8 @@
 
 -------------------------
 ### 요구 사항 (Requirements)
-![![PHP](https://img.shields.io/badge/PHP-%3E%3D7.4-4F5D95?style=for-the-badge&logo=php)
-![![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
+![PHP](https://img.shields.io/badge/PHP-%3E%3D7.4-4F5D95?style=for-the-badge&logo=php)
+![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
 -------------------------
 
 - PHP 7.4 이상
