@@ -1,4 +1,5 @@
 <?php
+session_start();
 namespace PressDo
 {
     require_once 'dbConnect.php';
@@ -45,7 +46,12 @@ namespace PressDo
             }
             return $ipaddress;
         }
-
+        public static function ConstUser($session)
+        {
+            if(!$session['username']) $session['username'] = PressDo::getip();
+            $u = $session['usertype'].':'.$session['username'];
+            return array('username' => $u, 'group' => Data::getACLofUser($u));
+        }
     }
 
     class Data
@@ -277,7 +283,7 @@ namespace PressDo
         {
             $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, document, template_set, category, file, user, special, wiki, discuss, bin, poll, filebin, operation, template) VALUES('$aclgroup', '$desc', '$document', '$template_set', '$category', '$file', '$user', '$special', '$wiki', '$discuss', '$bin', '$poll', '$filebin', '$operation', '$template')");
         }
-        // 사용자 ACL 추가/제거
+        // 사용자 ACL 확인
         public static function checkACL($user, $aclgroup)
         {
             $u = explode(':', $user);
