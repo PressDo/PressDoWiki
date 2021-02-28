@@ -6,7 +6,7 @@ namespace PressDo
 
     if($conf['DevMode'] == true){
         $ip = explode('.', PressDo::getip());
-        if ($ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)){
+        if (PressDo::getip() == '127.0.0.1' || $ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)){
             $inside = true;
             error_reporting(E_ALL);
             ini_set("display_errors", 1);
