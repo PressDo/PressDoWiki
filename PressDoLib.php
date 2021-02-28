@@ -283,13 +283,18 @@ namespace PressDo
         {
             $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, document, template_set, category, file, user, special, wiki, discuss, bin, poll, filebin, operation, template) VALUES('$aclgroup', '$desc', '$document', '$template_set', '$category', '$file', '$user', '$special', '$wiki', '$discuss', '$bin', '$poll', '$filebin', '$operation', '$template')");
         }
-        // 사용자 ACL 확인
-        public static function checkACL($user, $aclgroup)
+        // 사용자 ACL 그룹 확인
+        public static function checkACLofUser($user, $aclgroup)
         {
             $u = explode(':', $user);
             $type = $u[0];
             $username = $u[1];
             $get = SQL_Query("SELECT FROM `ACL_user` WHERE 'usertype'='$type' AND 'username'='$username' AND 'aclgroup'='$aclgroup'");
+        }
+        public static function checkACL($user, $action, $DocNm)
+        {
+            $DocACL = getDocACL($DocNm, $action);
+            $user['username']
         }
     }
 }
