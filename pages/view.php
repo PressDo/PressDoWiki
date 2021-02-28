@@ -19,12 +19,9 @@ if(isset($_POST['title'])){
 }elseif(isset($_GET['title'])){
     $Title = $_GET['title'];
 }
-if(!$_SESSION['username']){
-$un = PressDo::getip();
-}else{
-$un = $_SESSION['username'];
-}
-$acl = CheckACL($un, 'view', $Title);
+
+$User = PressDo::ConstUser($_SESSION);
+$acl = CheckACL($User, 'view', $Title);
 
 if($_POST['action'] == 'save'){
     // 편집 저장
