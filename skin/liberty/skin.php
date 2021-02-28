@@ -149,10 +149,9 @@ namespace PressDo {
             <?php
         }
 
-        public static function main($Doc, $array, $action = 'view')
+        public static function main($Doc, $action = 'view')
         {
             // 내용 영역
-            $DocContent = $array['content'];
             global $conf;
             self::page_frame();
             
@@ -185,10 +184,10 @@ namespace PressDo {
         </div><?php
         }
 
-        public static function FullPage($DocNm, $DocContent, $action = 'view')
+        public static function FullPage($DocNm, $action = 'view')
         {
             WikiSkin::header($DocNm);
-            WikiSkin::main($DocNm, $DocContent, $action);
+            WikiSkin::main($DocNm, $action);
         }
     }
 }
