@@ -19,6 +19,12 @@ if(isset($_POST['title'])){
 }elseif(isset($_GET['title'])){
     $Title = $_GET['title'];
 }
+if(!$_SESSION['username']){
+$un = PressDo::getip();
+}else{
+$un = $_SESSION['username'];
+}
+$acl = CheckACL($un, 'view', $Title);
 
 if($_POST['action'] == 'save'){
     // 편집 저장
@@ -34,7 +40,13 @@ $Doc_content = Data::LoadOldDocument($Title, $_GET['rev']);
 $array = $Doc_content[1];
 unset($Doc_content);
 $Doc = $Title;
-if (!$array['content']) {
+if ($acl['ok'] == false) {
+ // ACL 부족 ?>
+    <div pressdo-content>
+        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a></h1>
+    <span> 읽기 권한이 부족합니다. <?=acl['allowed']?>(이)여야 합니다. 해당 문서의 <p><a href="/acl/<?=$Doc?>">ACL 탭</a></p>을 확인하시기 바랍니다. </span><br>
+</div><?php
+} elseif (!$array['content']) {
     // 없는 문서?>
     <div pressdo-content>
         <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a></h1>
