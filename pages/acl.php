@@ -129,7 +129,7 @@ foreach($aq as $e){
     if($e['expiry'] == 'none') $e['expiry'] = '영구';
     echo '<tr pressdo-acl-part><td pressdo-acl-part>'.
         $e['ACLID'].'</td><td pressdo-acl-part>'.
-        $e['condition'].'</td><td pressdo-acl-part>'.
+        $e['type'].':'.$e['condition'].'</td><td pressdo-acl-part>'.
         $ac[$e['access']].'</td><td pressdo-acl-part>'.
         $e['expiry'].'</td></tr>';
 }
