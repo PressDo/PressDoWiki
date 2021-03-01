@@ -50,7 +50,8 @@ namespace PressDo
         {
             if(!$session['username']) $session['username'] = PressDo::getip();
             $u = $session['usertype'].':'.$session['username'];
-            return array('username' => $u, 'group' => Data::getACLofUser($u));
+            $perm = array($session['usertype'], $session['dateFromRegister']);
+            return array('username' => $u, 'group' => Data::getACLofUser($u), 'perm' => $perm);
         }
         public static function splitACL($acls, $action)
         {
@@ -257,17 +258,17 @@ namespace PressDo
         }
 
         // 문서 ACL 설정
-        public static function setDocACL($DocNm, $action, $access, $target, $expiry = null)
+        public static function setDocACL($DocNm, $action, $access, $type, $target, $expiry = null)
         {
             global $SQL;
             $DocNm = urlencode($DocNm);
-            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE DocNm='$DocNm' AND action='$action' AND condition='$target'");
+            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE DocNm='$DocNm' AND action='$action' AND type='$type', condition='$target'");
             if($get->num_rows < 1){
                 // 새 설정
-                $in = SQL_Query("INSERT INTO `ACL_Document` (DocNm, action, access, condition, expiration) VALUES($DocNm, $action, $access, $target, $expiry)");
+                $in = SQL_Query("INSERT INTO `ACL_Document` (DocNm, action, access, type, condition, expiration) VALUES($DocNm, $action, $access, $type, $target, $expiry)");
             }else{
                 // 기존 설정 업데이트
-                $in = SQL_Query("UPDATE `ACL_Document` SET DocNm='$DocNm', action='$action', access='$access', condition='$target', expiration='$expiry'");
+                $in = SQL_Query("UPDATE `ACL_Document` SET DocNm='$DocNm', action='$action', access='$access', type='$type', condition='$target', expiration='$expiry'");
             }
             if(!$in){
                 return 'false'.mysqli_error($SQL);
@@ -292,19 +293,21 @@ namespace PressDo
         {
             $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, document, template_set, category, file, user, special, wiki, discuss, bin, poll, filebin, operation, template) VALUES('$aclgroup', '$desc', '$document', '$template_set', '$category', '$file', '$user', '$special', '$wiki', '$discuss', '$bin', '$poll', '$filebin', '$operation', '$template')");
         }
-        // 사용자 ACL 그룹 추가/삭제(제작중)
-        public static function checkACLgroup($user, $aclgroup)
+        // 사용자가 ACL 그룹에 속해있는지 확인
+        public static function inACLgroup($user, $aclgroup)
         {
             $u = explode(':', $user);
             $type = $u[0];
             $username = $u[1];
-            $get = SQL_Query("SELECT FROM `ACL_user` WHERE 'usertype'='$type' AND 'username'='$username' AND 'aclgroup'='$aclgroup'");
+            $get = SQL_Query("SELECT seq FROM `ACL_user` WHERE 'usertype'='$type' AND 'username'='$username' AND 'aclgroup'='$aclgroup'");
+            $ass = SQL_Assoc($get);
+            if(!$ass['seq']){ return false;}else{return true;}
         }
         public static function checkACL($user, $action, $DocNm, $DocNS)
         {
             $DocACL = Data::getDocACL($DocNm, $action);
             $NSACL = Data::splitACL(getNSACL($DocNS), $action);
-            $UserAG = Data::getACLofUser($user['username']);
+            
             return $acceptance;
         }
     }
