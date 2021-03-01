@@ -307,7 +307,7 @@ namespace PressDo
         {
             $DocACL = Data::getDocACL($DocNm, $action);
             $NSACL = Data::splitACL(getNSACL($DocNS), $action);
-            
+            $user['perm']
             return $acceptance;
         }
     }
