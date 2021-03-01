@@ -52,6 +52,12 @@ namespace PressDo
             $u = $session['usertype'].':'.$session['username'];
             return array('username' => $u, 'group' => Data::getACLofUser($u));
         }
+        public static function splitACL($acls, $action)
+        {
+            $acts = array('view', 'edit', 'move', 'delete', 'create_thread', 'write_thread_comment', 'edit_request', 'acl');
+            $a_k = array_search($acts, $action);
+            return substr($acls, $a_k, 1);
+        }
     }
 
     class Data
@@ -225,7 +231,10 @@ namespace PressDo
         // 사용자의 ACL 그룹 가져오기
         public static function getACLofUser($User)
         {
-            $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_group_list.priority FROM `ACL_user`,`ACL_group_list` WHERE ACL_user.username='$User' AND ACL_group_list.name=ACL_user.aclgroup ORDER BY ACL_group_list.priority ASC");
+            $u = explode(':', $User);
+            $un = $u[0];
+            $ut = $u[1];
+            $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_group_list.priority FROM `ACL_user`,`ACL_group_list` WHERE ACL_user.username='$un' AND ACL_user.usertype='$ut' AND ACL_group_list.name=ACL_user.aclgroup ORDER BY ACL_group_list.priority ASC");
             return SQL_Assoc($get);
         }
 
@@ -283,18 +292,20 @@ namespace PressDo
         {
             $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, document, template_set, category, file, user, special, wiki, discuss, bin, poll, filebin, operation, template) VALUES('$aclgroup', '$desc', '$document', '$template_set', '$category', '$file', '$user', '$special', '$wiki', '$discuss', '$bin', '$poll', '$filebin', '$operation', '$template')");
         }
-        // 사용자 ACL 그룹 확인
-        public static function checkACLofUser($user, $aclgroup)
+        // 사용자 ACL 그룹 추가/삭제(제작중)
+        public static function checkACLgroup($user, $aclgroup)
         {
             $u = explode(':', $user);
             $type = $u[0];
             $username = $u[1];
             $get = SQL_Query("SELECT FROM `ACL_user` WHERE 'usertype'='$type' AND 'username'='$username' AND 'aclgroup'='$aclgroup'");
         }
-        public static function checkACL($user, $action, $DocNm)
+        public static function checkACL($user, $action, $DocNm, $DocNS)
         {
-            $DocACL = getDocACL($DocNm, $action);
-            $user['username']
+            $DocACL = Data::getDocACL($DocNm, $action);
+            $NSACL = Data::splitACL(getNSACL($DocNS), $action);
+            $UserAG = Data::getACLofUser($user['username']);
+            return $acceptance;
         }
     }
 }
