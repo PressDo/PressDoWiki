@@ -48,7 +48,7 @@ namespace PressDo {
         <div pressdo-cover>
             <div nav-cover>
                 <nav>
-                    <a href="/" pressdo-logo></a>
+                    <a href="/" pressdo-logo><?=$conf['TitleText']?></a>
                     <ul nav-container>
                         <li pressdo-navitem-nonlist>
                             <a href="/RecentChanges" pressdo-navitem-nonlist title="최근 변경">
