@@ -1,4 +1,3 @@
-
 <?php
 /* PressDo Skin 제작 요령
  * namespace를 PressDo로 설정

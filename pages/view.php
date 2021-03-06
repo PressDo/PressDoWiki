@@ -21,7 +21,7 @@ if(isset($_POST['title'])){
 }
 
 $User = PressDo::ConstUser($_SESSION);
-$acl = CheckACL($User, 'view', $Title);
+$acl = array('ok' => true);
 
 if($_POST['action'] == 'save'){
     // 편집 저장

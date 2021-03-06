@@ -37,7 +37,8 @@ $lt = array(
 'create' => "WHERE `logtype`='create'",
 'revert' => "WHERE `logtype`='revert'",
 'move' => "WHERE `logtype`='move'",
-'delete' => "WHERE `logtype`='delete'"
+'delete' => "WHERE `logtype`='delete'",
+'' => ''
 );
 $h = Data::LoadWholeHistory($lt[$lo]);
 $sortArr = array();	
