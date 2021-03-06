@@ -73,7 +73,7 @@ $isLogin = $array['loginedit'];
                         <a href="/blame/<?=$Doc.'?rev='.$array['version']?>">Blame</a> | 
                         <a href="/revert/<?=$Doc.'?rev='.$array['version']?>">이 리비전으로 되돌리기</a> | 
                         <a href="/diff/<?=$Doc.'?rev='.$array['version']?>">비교</a><?php
-if(Data::checkACL($user['typename'], 'admin')){
+if(Data::inACLgroup($user['typename'], 'admin')){
 ?> | 
         <a href="/hide/<?=$Doc.'?rev='.$OldData[1]['version']?>">숨기기</a><?php
 }
@@ -115,7 +115,7 @@ for ($x = 1; $x < $minx; ++$x) {
         <a href="/blame/<?=$Doc.'?rev='.$OldData[1]['version']?>">Blame</a> | 
         <a href="/revert/<?=$Doc.'?rev='.$OldData[1]['version']?>">이 리비전으로 되돌리기</a> | 
         <a href="/diff/<?=$Doc.'?rev='.$OldData[1]['version']?>">비교</a><?php
-if(Data::checkACL($user['typename'], 'admin')){
+if(Data::inAcLgroup($user['typename'], 'admin')){
 ?> | 
         <a href="/hide/<?=$Doc.'?rev='.$OldData[1]['version']?>">숨기기</a><?php
 }
