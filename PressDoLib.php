@@ -1,10 +1,9 @@
 <?php
-session_start();
 namespace PressDo
 {
     require_once 'dbConnect.php';
     ini_set('include_path', __DIR__);
-
+    session_start();
     if($conf['DevMode'] == true){
         $ip = explode('.', PressDo::getip());
         if (PressDo::getip() == '127.0.0.1' || $ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)){
@@ -12,10 +11,7 @@ namespace PressDo
             error_reporting(E_ALL);
             ini_set("display_errors", 1);
         }
-        if($inside !== true){
-            ?><script src='https://prws.kr/js/01-fixing.js' integrity='sha384-pwqGhGQxZjjTYiTOQOzuKXp56Jht\/Axbe5++Dl5M\/RmD\/RSIAL1Q2htCHrb1DwML' crossorigin='anonymous'></script><?php
-        exit;
-    }
+       // if($inside !== true){}
     }
 
     class PressDo
@@ -307,7 +303,7 @@ namespace PressDo
         {
             $DocACL = Data::getDocACL($DocNm, $action);
             $NSACL = Data::splitACL(getNSACL($DocNS), $action);
-            $user['perm']
+
             return $acceptance;
         }
     }

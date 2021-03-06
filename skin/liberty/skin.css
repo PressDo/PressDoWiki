@@ -1,8 +1,9 @@
 /* Load Icon Font */
 
+/*@import url('../../src/fonts.css');*/
 @font-face {
     font-family: 'Ionicons';
-    src: url('/skin/default/font/ionicons.woff') format('woff')
+    src: url('/src/fonts/ionicons.woff') format('woff')
 }
 
 @media screen and (max-width: 1020px) {
