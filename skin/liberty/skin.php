@@ -41,7 +41,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 ol,p,ul{margin:0; padding:0;}
 dl,ol,ul{margin-top:0;}
 address, dl, ol, ul{margin-bottom:1rem;}
-ul{list-style-image: url(data:image/svg+xml;charaet=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyDozWlnaHQ9JzEzJz48Y2lyY2xlIGN4PScyLjUnIGN5PSc5LjUnIHI9JzIuNScgZmlsbD0nIzMJM2EzYycvPjwvc3ZnPg==);
+ul{list-style-image: url(data:image/svg+xml;charaet=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyDozWlnaHQ9JzEzJz48Y2lyY2xlIGN4PScyLjUnIGN5PSc5LjUnIHI9JzIuNScgZmlsbD0nIzMJM2EzYycvPjwvc3ZnPg==);}
 
 a{color:#0275d8; text-decoration:none; background-color:transparent;}
 body, div[pressdo-cover]{ background-color:#f5f5f5;}
