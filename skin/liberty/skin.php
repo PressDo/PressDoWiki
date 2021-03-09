@@ -21,30 +21,81 @@ namespace PressDo {
         public static function page_frame(){
             // 공통 UI
             ?><style>
-            aside{
-                position:relative;
-                margin: 1rem 1rem 1rem 0;
-                order:1;
-                width:17rem;
-                display:block;
-            }
-            article{
-                width:60%;
-                border-left: 1px solid #ccc;
-                border-right: 1px solid #ccc;
-                padding:1.5rem;
-            }
-            article>h1{
-                margin: 0 0 2rem;
-                font-size:2.2rem;
-            }
-            section{
-                display:flex;
-                width:100%;
-                margin: 0 auto;
-                max-width:1300px;
-            }
-                        </style>
+@media screen and (max-width:798px) {
+a[pressdo-navitem-nonlist] span[ionicon], a[pressdo-navitem-listdown] span[ionicon]{text-align:center; margin:0 .25rem;}
+span[nav-text]{display:none;}
+}
+@media screen and (max-width: 1023px) {
+nav {padding:0 .5rem; }
+}
+@media screen and (min-width: 544px) {
+div[nav-cover] {border-radius:0;}
+nav {border-radius:.25rem;}
+}
+* {outline:none;}
+*, ::after, ::before {box-sizing:inherit; }
+ body { font-size:.95rem; line-height: 1.5; color:#373a3c; }
+body, h1, h2, h3, h4, h5, h6 { font-family: 'Nanum Gothic', 'KoPubDotum', 'Noto Sans Korean', 'Noto Sans', 'Malgun Gothic', '맑은 고딕', 'sans-serif'; margin: 0; }
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {display:block;}
+[role="button"], a, area, button, input, label, select, summary, textarea{touch-action:manipulation;}
+ol,p,ul{margin:0; padding:0;}
+dl,ol,ul{margin-top:0;}
+address, dl, ol, ul{margin-bottom:1rem;}
+ul{list-style-image: url(data:image/svg+xml;charaet=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyDozWlnaHQ9JzEzJz48Y2lyY2xlIGN4PScyLjUnIGN5PSc5LjUnIHI9JzIuNScgZmlsbD0nIzMJM2EzYycvPjwvc3ZnPg==);
+
+a{color:#0275d8; text-decoration:none; background-color:transparent;}
+body, div[pressdo-cover]{ background-color:#f5f5f5;}
+div[nav-cover] { min-height: 2.8rem; background-color:#4188f1; z-index:1001; box-shadow:0 2px 4px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+position:absolute; top:0; right:0; left:0;}
+nav { padding:0 1rem; border:0; border-radius:0; position:relative; }
+div[pressdo-content], nav {max-width:1200px, margin:0 auto;}
+a[pressdo-logo]{height:2.8rem; width:6.6rem; padding:0; margin:0; float:left; font-size:1.25rem;}
+a[pressdo-logo], a[pressdo-logo]:focus, a[pressdo-logo]:hover{color:#fff}
+ul[nav-container]{padding-left:0; margin-bottom:0; list-style:none!important;}
+li[pressdo-navitem-nonlist], li[pressdo-navitem-listdown]{margin:0; float:left;}
+li[pressdo-navitem-listdown]{position:relative;}
+a[pressdo-navitem-listdown]::after{margin-right:0; margin-left:.35rem; display:inline-block; width:0; height:0; vertical-align:middle; content:""; border-top: .3em solid; border-right: .3em solid transparent; border-left: .3em solid transparent;}
+a[pressdo-navitem-nonlist], a[pressdo-navitem-listdown]{color:#fff; font-size:1rem; padding: .7rem .8rem; line-height:1.4rem; display:block;}
+a[pressdo-navitem-nonlist] span[ionicon], a[pressdo-navitem-listdown] span[ionicon]{font-size:1rem; margin-right:.5rem;}
+span[ionicon]{display:inline-block; font: normal normal normal 14px/1 'Ionicons'; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+div[pressdo-navfunc]{position:absolute; top:100%; left:0; z-index:1000; display:none; float:left; min-width:160px; padding: 5px 0; margin: 2px 0 0; color:#373a3c; text-align:left; list-style:none; background-color:#fff; -webkit-background-clip: padding-box; background-clip:padding-box; border:1px solid rgba(0,0,0,.15); border-radius:.25rem; margin-top:0; border-top-left-radius:0; border-top-right-radius:0; font-size:.95rem; box-shadow:0 6px 12px rgba(0,0,0,.175); border-color:#ele8ed;}
+div[pressdo-navfunc] a[pressdo-navfunc-item]{ display:block; width:100%; padding:3px 20px; clear:both; font-weight:400; line-height:1.5; color:#373a3c; text-align:inherit; white-space: nowrap; background: 0,0; border:0;}
+*[ion-compass]:before {
+    content: "\f37c";
+}
+
+*[ion-discuss]:before {
+    content: "\f2d4";
+}
+
+*[ion-func]:before {
+    content: "\f318";
+}
+
+*[ion-dropdown]:before {
+    content: "\f35f";
+}
+
+*[ion-rand]:before {
+    content: "\f4a8";
+}
+
+*[ion-search]:before {
+    content: "\f2f5";
+    min-width: 15px;
+    display: block;
+}
+
+*[ion-move]:before {
+    content: "\f3d6";
+    min-width: 15px;
+    display: block;
+}
+
+*[ion-unlogined]:before {
+    content: "\f47e";
+}
+              </style>
         <div pressdo-cover>
             <div nav-cover>
                 <nav>
@@ -68,7 +119,7 @@ namespace PressDo {
                                 <span nav-text>특수 기능</span>
                                 <span ionicon ion-dropdown></span>
                             </a>
-                            <div pressdo-navfunc>
+                            <div pressdo-navfunc role="menu">
                                 <a href="//board.namu.wiki/" title="게시판" data-v-193fc2b2="" data-v-b986d46e="" data-v-3e5e2b49="">
                                     <span class="i ion-ios-clipboard" data-v-193fc2b2=""></span> 
                                     <span class="t" data-v-193fc2b2="">게시판</span>
