@@ -21,12 +21,18 @@ namespace PressDo {
         public static function page_frame(){
             // 공통 UI
             ?><style>
+@media screen and (max-width:520px) {
+form[pressdo-search-form]{width:100%;}
+}
 @media screen and (max-width:798px) {
 a[pressdo-navitem-nonlist] span[ionicon], a[pressdo-navitem-listdown] span[ionicon]{text-align:center; margin:0 .25rem;}
 span[nav-text]{display:none;}
 }
 @media screen and (max-width: 1023px) {
 nav {padding:0 .5rem; }
+form[pressdo-search-form]{float:left; padding:.25rem 0 .5rem;}
+div[pressdo-search-form]{display:table;width:100%;}
+input[pressdo-search]{width:100%;}
 }
 @media screen and (min-width: 544px) {
 div[nav-cover] {border-radius:0;}
@@ -35,12 +41,14 @@ nav {border-radius:.25rem;}
 * {outline:none;}
 *, ::after, ::before {box-sizing:inherit; }
  body { font-size:.95rem; line-height: 1.5; color:#373a3c; }
-body, h1, h2, h3, h4, h5, h6 { font-family: 'Nanum Gothic', 'KoPubDotum', 'Noto Sans Korean', 'Noto Sans', 'Malgun Gothic', '맑은 고딕', 'sans-serif'; margin: 0; }
+body, h1, h2, h3, h4, h5, h6 { font-family: 'Nanum Gothic', 'KoPubDotum M', 'Noto Sans Korean', 'Noto Sans', 'Malgun Gothic', '맑은 고딕', 'sans-serif'; margin: 0; }
 article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {display:block;}
 [role="button"], a, area, button, input, label, select, summary, textarea{touch-action:manipulation;}
 ol,p,ul{margin:0; padding:0;}
 dl,ol,ul{margin-top:0;}
 address, dl, ol, ul{margin-bottom:1rem;}
+button, input, select, textarea{margin:0; line-height:inherit; border-radius:0;}
+button, input, optgroup, select, textarea { font:inherit; color:inherit;}
 ul{list-style-image: url(data:image/svg+xml;charaet=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyDozWlnaHQ9JzEzJz48Y2lyY2xlIGN4PScyLjUnIGN5PSc5LjUnIHI9JzIuNScgZmlsbD0nIzMJM2EzYycvPjwvc3ZnPg==);}
 
 a{color:#0275d8; text-decoration:none; background-color:transparent;}
@@ -58,8 +66,13 @@ a[pressdo-navitem-listdown]::after{margin-right:0; margin-left:.35rem; display:i
 a[pressdo-navitem-nonlist], a[pressdo-navitem-listdown]{color:#fff; font-size:1rem; padding: .7rem .8rem; line-height:1.4rem; display:block;}
 a[pressdo-navitem-nonlist] span[ionicon], a[pressdo-navitem-listdown] span[ionicon]{font-size:1rem; margin-right:.5rem;}
 span[ionicon]{display:inline-block; font: normal normal normal 14px/1 'Ionicons'; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-div[pressdo-navfunc]{position:absolute; top:100%; left:0; z-index:1000; display:none; float:left; min-width:160px; padding: 5px 0; margin: 2px 0 0; color:#373a3c; text-align:left; list-style:none; background-color:#fff; -webkit-background-clip: padding-box; background-clip:padding-box; border:1px solid rgba(0,0,0,.15); border-radius:.25rem; margin-top:0; border-top-left-radius:0; border-top-right-radius:0; font-size:.95rem; box-shadow:0 6px 12px rgba(0,0,0,.175); border-color:#ele8ed;}
+div[pressdo-navfunc]{position:absolute; top:100%; left:0; z-index:1000; display:none; float:left; min-width:160px; padding: 5px 0; margin: 2px 0 0; color:#373a3c; text-align:left; list-style:none; background-color:#fff; -webkit-background-clip: padding-box; background-clip:padding-box; border:1px solid rgba(0,0,0,.15); border-radius:.25rem; margin-top:0; border-top-left-radius:0; border-top-right-radius:0; font-size:.95rem; box-shadow:0 6px 12px rgba(0,0,0,.175); border-color:#e1e8ed;}
 div[pressdo-navfunc] a[pressdo-navfunc-item]{ display:block; width:100%; padding:3px 20px; clear:both; font-weight:400; line-height:1.5; color:#373a3c; text-align:inherit; white-space: nowrap; background: 0,0; border:0;}
+div[pressdo-usermenu]{float:right; padding-left:.8rem;}
+form[pressdo-search-form]{padding:.4rem 0; float:right;}
+div[pressdo-search-form]{position:relative; display:table; border-collapse:separate;}
+input[pressdo-search]{font-size:.8rem; height:2rem; width:10.0rem; padding:.2rem .4rem; border-color:#e1e8ed; border-radius:0; border-top-left-radius:.35rem; border-bottom-left-radius:.35rem; display:table-cell; position:relative; z-index:2; float:left; margin:bottom:0; line-height:1.5; color:#55595c; background-color:#fff; background-image:none; }
+input[type="search"]{-webkit-appearance:none; box-sizing:inherit;}
 *[ion-compass]:before {
     content: "\f37c";
 }
@@ -138,43 +151,19 @@ div[pressdo-navfunc] a[pressdo-navfunc-item]{ display:block; width:100%; padding
                             </a>
                         </li>
                     </ul>
-                    <ul pressdo-usermenu>
-                        <li pressdo-usermenu pressdo-usermenu-unlogined>
+                    <div pressdo-usermenu>
                 <?php if(isset($_SESSION['userid'])){ ?>
                     <a href="#" title="Profile" pressdo-usermenu>
                         <img pressdo-usermenu src=<?=$_SESSION['pfpic']?> alt=<?=$_SESSION['userid']?>>
                     </a><?php
                 }else{ ?>
-                    <a href="#" title="Profile" pressdo-usermenu>
+                    <a href="/member/login" title="Login" pressdo-usermenu>
                         <span ionicon ion-unlogined pressdo-usermenu-unlogined></span>
                     </a><?php
                 } ?>
-                <div pressdo-usermenu-down>
-                    <div pressdo-usermenu-down-lv1>
-                        <div pressdo-umd1><?=$_SESSION['userid']?></div> 
-                        <div pressdo-umd1><?=$_SESSION['usergroup']?></div>
-                    </div> 
-                    <div pressdo-crossline></div> 
-                    <a href="#" title="설정" pressdo-umd2>설정</a> <!----> 
-                    <div pressdo-crossline></div> 
-                <?php if(isset($_SESSION['userid'])){ ?>
-                    <a href="/member/mypage" title="내 정보" pressdo-umd2>내 정보</a> 
-                    <a href="/w/사용자:<?=$_SESSION['userid']?>" title="내 사용자 문서" pressdo-umd2>내 사용자 문서</a> 
-                    <a href="/member/starred_documents" title="내 문서함" pressdo-umd2>내 문서함</a> 
-                    <div pressdo-crossline></div> 
-                <?php } ?>
-                    <a href="/contribution/author/<?=$_SESSION['userid']?>/document" title="내 문서 기여 목록" pressdo-umd3>내 문서 기여 목록</a> 
-                    <a href="/contribution/author/<?=$_SESSION['userid']?>/discuss" title="내 토론 기여 목록" pressdo-umd3>내 토론 기여 목록</a> 
-                    <div pressdo-crossline></div> 
-                    <?php if(isset($_SESSION['userid'])){ ?>
-                    <a href="/member/logout?redirect=" title="로그아웃" pressdo-umd3>로그아웃</a>
-                <?php }else{ ?>
-                    <a href="/member/login=" title="로그인" pressdo-umd3>로그인</a>
-                <?php } ?>
-                </div>
-                    </li>
-                    </ul>
-                    <form>
+                    
+                    </div>
+                    <form pressdo-search-form>
                         <div pressdo-search-form>
                             <span pressdo-sb><a href="/random" pressdo-sb><span ionicon ion-rand></span></a></span>
                             <div sb-wrap><input type="search" name="keyword" placeholder="Search" tabindex="1" pressdo-search autocomplete="off"></div>
