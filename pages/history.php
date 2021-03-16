@@ -45,15 +45,17 @@ $isLogin = $array['loginedit'];
     }
 ?>
 <div pressdo-content>
-    <div pressdo-toolbar>
-        <div pressdo-toolbar-menu>
-            <a pressdo-toolbar-link href="/edit/<?=$Doc?>">편집</a>
-            <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
+    <div pressdo-content-header>
+        <div pressdo-toolbar>
+            <div pressdo-toolbar-menu>
+                <a pressdo-toolbar-link href="/edit/<?=$Doc?>">편집</a>
+                <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
+            </div>
         </div>
+        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
+            <small pressdo-doc-action>(문서 역사)</small>
+        </h1>
     </div>
-    <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
-        <small pressdo-doc-action>(문서 역사)</small>
-    </h1>
     <div pressdo-history-content>
         <form action="/diff/<?=$Doc?>">
             <p><button pressdo-history-compare type="submit">선택 리비전 비교</button></p>
