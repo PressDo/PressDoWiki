@@ -38,7 +38,7 @@ nav>div[pressdo-search-form]{display:table;width:100%;}
 div[pressdo-search-form]>input[pressdo-search]{width:100%;}
 span[pressdo-sb]{width:1%;}
 section{margin-top:5.89rem!important;}
-section>div[pressdo-content]{margin-right:auto; padding-bottom:.5rem;}
+section div[pressdo-content]{margin-right:auto; padding-bottom:.5rem;}
 div[pressdo-toolbar]{float:none; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
 aside{display:none;}
 }
