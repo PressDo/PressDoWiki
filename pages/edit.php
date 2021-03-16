@@ -23,16 +23,18 @@ $Doc = $Title;
 $array = $Doc_content[1];
 ?>
 <div pressdo-content>
-    <div pressdo-toolbar>
-        <div pressdo-toolbar-menu>
-            <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
-            <a pressdo-toolbar-link pressdo-toolbar-d rel="nofollow" href="/delete/<?=$Doc?>">삭제</a>
-            <a pressdo-toolbar-link pressdo-toolbar-last rel="nofollow" href="/move/<?=$Doc?>">이동</a>
+    <div pressdo-content-header>
+        <div pressdo-toolbar>
+            <div pressdo-toolbar-menu>
+                <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
+                <a pressdo-toolbar-link pressdo-toolbar-d rel="nofollow" href="/delete/<?=$Doc?>">삭제</a>
+                <a pressdo-toolbar-link pressdo-toolbar-last rel="nofollow" href="/move/<?=$Doc?>">이동</a>
+            </div>
         </div>
+        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a> 
+            <small pressdo-doc-action><?php  if(!$array['version']) {echo '(새 문서 생성)';}else{echo "(r".$array['version'] ." 편집)";} ?></small>
+        </h1>
     </div>
-    <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a> 
-        <small pressdo-doc-action><?php  if(!$array['version']) {echo '(새 문서 생성)';}else{echo "(r".$array['version'] ." 편집)";} ?></small>
-    </h1>
     <?php if (!$array['content']) { ?>
         <p> 새 문서를 생성합니다. </p>
     <?php } else { ?>
