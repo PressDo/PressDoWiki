@@ -95,9 +95,11 @@ th[pressdo-acl-part]{
 </style>
     <br>
     <div pressdo-content>
-        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
-            <small pressdo-doc-action>(ACL)</small>
-        </h1>
+        <div pressdo-content-header>
+            <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
+                <small pressdo-doc-action>(ACL)</small>
+            </h1>
+        </div>
         <div pressdo-doc-content>
 <h2 pressdo-acl-title>문서 ACL</h2>
 <div pressdo-acl-partarea>
