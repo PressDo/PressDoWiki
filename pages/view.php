@@ -40,9 +40,11 @@ $Doc = $Title;
 if ($acl['ok'] == false) {
  // ACL 부족 ?>
     <div pressdo-content>
-        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a></h1>
-    <span> 읽기 권한이 부족합니다. <?=acl['allowed']?>(이)여야 합니다. 해당 문서의 <p><a href="/acl/<?=$Doc?>">ACL 탭</a></p>을 확인하시기 바랍니다. </span><br>
-</div><?php
+        <div pressdo-content-header>
+            <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a></h1>
+            <span> 읽기 권한이 부족합니다. <?=acl['allowed']?>(이)여야 합니다. 해당 문서의 <p><a href="/acl/<?=$Doc?>">ACL 탭</a></p>을 확인하시기 바랍니다. </span><br>
+        >/div>
+    </div><?php
 } elseif (!$array['content']) {
     // 없는 문서?>
     <div pressdo-content>
@@ -53,19 +55,21 @@ if ($acl['ok'] == false) {
 } else { ?>
     <br>
     <div pressdo-content>
-        <div pressdo-toolbar>
-            <div pressdo-toolbar-menu>
-                <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
-                <a pressdo-toolbar-link href="/discuss/<?=$Doc?>">토론</a>
-                <a pressdo-toolbar-link href="/edit/<?=$Doc?>">편집</a>
-                <a pressdo-toolbar-link href="/history/<?=$Doc?>">역사</a>
-                <a pressdo-toolbar-link pressdo-toolbar-last href="/acl/<?=$Doc?>">ACL</a>
+        <div pressdo-content-header>
+            <div pressdo-toolbar>
+                <div pressdo-toolbar-menu>
+                    <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
+                    <a pressdo-toolbar-link href="/discuss/<?=$Doc?>">토론</a>
+                    <a pressdo-toolbar-link href="/edit/<?=$Doc?>">편집</a>
+                    <a pressdo-toolbar-link href="/history/<?=$Doc?>">역사</a>
+                    <a pressdo-toolbar-link pressdo-toolbar-last href="/acl/<?=$Doc?>">ACL</a>
+                </div>
             </div>
+            <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
+                <?php if(isset($_GET['rev'])){ ?><small pressdo-doc-action>(r<?=$_GET['rev']?> 판)</small><?php } ?>
+            </h1>
+            <p pressdo-doc-changed>최근 수정 시각: <?=$array['savetime']?></p>
         </div>
-        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
-            <?php if(isset($_GET['rev'])){ ?><small pressdo-doc-action>(r<?=$_GET['rev']?> 판)</small><?php } ?>
-        </h1>
-        <p pressdo-doc-changed>최근 수정 시각: <?=$array['savetime']?></p>
         <div id="cont_ent" pressdo-doc-content>
             <div id="categoryspace_top"></div>
             <?=str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), PressDo::readSyntax($array['content']));?>
