@@ -10,7 +10,9 @@ WikiSkin::FullPage($Title, 'history');
 $Doc = $Title;
 ?>
 <div pressdo-content>
+    <div pressdo-content-header>
     <h1 pressdo-doc-title><?=$Doc?></h1>
+    </div>
     <div pressdo-history-container>
         <ol pressdo-history>
             <li pressdo-doc-category><a href="/RecentChanges?logtype=all">[전체]</a></li>
