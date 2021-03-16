@@ -21,6 +21,7 @@ namespace PressDo {
         public static function page_frame(){
             // 공통 UI
             ?><style>
+@font-face {font-family: 'Ionicons'; src: url('/src/fonts/ionicons.woff') format('woff')}
 @media screen and (max-width:520px) {
 form[pressdo-search-form]{width:100%;}
 }
@@ -30,9 +31,13 @@ span[nav-text]{display:none;}
 }
 @media screen and (max-width: 1023px) {
 nav {padding:0 .5rem; }
-form[pressdo-search-form]{float:left; padding:.25rem 0 .5rem;}
-div[pressdo-search-form]{display:table;width:100%;}
-input[pressdo-search]{width:100%;}
+nav>form[pressdo-search-form]{float:left; padding:.25rem 0 .5rem;}
+nav>div[pressdo-search-form]{display:table;width:100%;}
+div[pressdo-search-form]>input[pressdo-search]{width:100%;}
+span[pressdo-sb]{width:1%;}
+section{margin-top:5.89rem!important;}
+section>div[pressdo-content]{margin-right:auto; padding-bottom:.5rem;}
+div[pressdo-toolbar]{float:none; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
 }
 @media screen and (min-width: 544px) {
 div[nav-cover] {border-radius:0;}
@@ -49,20 +54,21 @@ dl,ol,ul{margin-top:0;}
 address, dl, ol, ul{margin-bottom:1rem;}
 button, input, select, textarea{margin:0; line-height:inherit; border-radius:0;}
 button, input, optgroup, select, textarea { font:inherit; color:inherit;}
+button, select{text-transform:none;}
+button{overflow:visible;}
 ul{list-style-image: url(data:image/svg+xml;charaet=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyDozWlnaHQ9JzEzJz48Y2lyY2xlIGN4PScyLjUnIGN5PSc5LjUnIHI9JzIuNScgZmlsbD0nIzMJM2EzYycvPjwvc3ZnPg==);}
-
 a{color:#0275d8; text-decoration:none; background-color:transparent;}
 body, div[pressdo-cover]{ background-color:#f5f5f5;}
 div[nav-cover] { min-height: 2.8rem; background-color:#4188f1; z-index:1001; box-shadow:0 2px 4px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
 position:absolute; top:0; right:0; left:0;}
 nav { padding:0 1rem; border:0; border-radius:0; position:relative; }
-div[pressdo-content], nav {max-width:1200px, margin:0 auto;}
+div[pressdo-content], nav {max-width:1200px; margin:0 auto;}
 a[pressdo-logo]{height:2.8rem; width:6.6rem; padding:0; margin:0; float:left; font-size:1.25rem;}
 a[pressdo-logo], a[pressdo-logo]:focus, a[pressdo-logo]:hover{color:#fff}
 ul[nav-container]{padding-left:0; margin-bottom:0; list-style:none!important;}
 li[pressdo-navitem-nonlist], li[pressdo-navitem-listdown]{margin:0; float:left;}
 li[pressdo-navitem-listdown]{position:relative;}
-a[pressdo-navitem-listdown]::after{margin-right:0; margin-left:.35rem; display:inline-block; width:0; height:0; vertical-align:middle; content:""; border-top: .3em solid; border-right: .3em solid transparent; border-left: .3em solid transparent;}
+a[pressdo-navitem-listdown]::after{margin-right:0; margin-left:.35rem; display:inline-block; width:0; height:0; vertical-align:middle; border-top: .3em solid; border-right: .3em solid transparent; border-left: .3em solid transparent;}
 a[pressdo-navitem-nonlist], a[pressdo-navitem-listdown]{color:#fff; font-size:1rem; padding: .7rem .8rem; line-height:1.4rem; display:block;}
 a[pressdo-navitem-nonlist] span[ionicon], a[pressdo-navitem-listdown] span[ionicon]{font-size:1rem; margin-right:.5rem;}
 span[ionicon]{display:inline-block; font: normal normal normal 14px/1 'Ionicons'; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
@@ -70,44 +76,31 @@ div[pressdo-navfunc]{position:absolute; top:100%; left:0; z-index:1000; display:
 div[pressdo-navfunc] a[pressdo-navfunc-item]{ display:block; width:100%; padding:3px 20px; clear:both; font-weight:400; line-height:1.5; color:#373a3c; text-align:inherit; white-space: nowrap; background: 0,0; border:0;}
 div[pressdo-usermenu]{float:right; padding-left:.8rem;}
 form[pressdo-search-form]{padding:.4rem 0; float:right;}
-div[pressdo-search-form]{position:relative; display:table; border-collapse:separate;}
-input[pressdo-search]{font-size:.8rem; height:2rem; width:10.0rem; padding:.2rem .4rem; border-color:#e1e8ed; border-radius:0; border-top-left-radius:.35rem; border-bottom-left-radius:.35rem; display:table-cell; position:relative; z-index:2; float:left; margin:bottom:0; line-height:1.5; color:#55595c; background-color:#fff; background-image:none; }
+div[pressdo-search-form]{position:relative; display:table; border-collapse:separate; width:100%;}
+input[pressdo-search]{font-size:.8rem; height:2rem; width:10.0rem; padding:.2rem .4rem; border-color:#e1e8ed; border-radius:0; border-top-left-radius:.35rem; border-bottom-left-radius:.35rem; display:table-cell; position:relative; z-index:2; float:left; margin-bottom:0; line-height:1.5; color:#55595c; background-color:#fff; background-image:none; }
 input[type="search"]{-webkit-appearance:none; box-sizing:inherit;}
-*[ion-compass]:before {
-    content: "\f37c";
-}
+span[pressdo-sb], span[pressdo-sb]>button[pressdo-sb]{position:relative;}
+span[pressdo-sb]{font-size:0; white-space:nowrap; vertical-align:middle; display:table-cell;}
+button[pressdo-sb]{color:#4f5b63; padding:.2rem .4rem; line-height:22px; z-index:3;  margin-left:1px; position:relative; box-shadow:none; background-color:#fff; border-color:#ccc; display:inline-block; font-size:1rem; font-weight:400; text-align:center; white-space:nowrap; vertical-align:middle; cursor:pointer; user-select: none; border:1px solid transparent; }
+section{max-width:1200px; margin:0 auto; margin-top:3.33rem;}
+div[pressdo-content]{padding: 0 0 1rem; margin-left:auto; margin-right:auto;}
+div[pressdo-toolbar], h1[pressdo-doc-title]{border: 1px solid #e1e8ed; border-radius: .35rem .35rem 0 0; background-color:#f5f8fa;}
+a[pressdo-toolbar-link]{font-size:.9rem; padding:.4rem .8rem;}
+a[pressdo-toolbar-link]:not(:last-of-type){border-top-right-radius:0; border-bottom-right-radius:0;}
+a[pressdo-toolbar-link]:not(:first-of-type){border-top-left-radius:0; border-bottom-left-radius:0;}
+a[pressdo-toolbar-link]:first-of-type{margin-left:0;}
+a[pressdo-toolbar-link]{position:relative; float:left; box-shadow:none; border-radius:.35rem; color:#373a3c; background-color:#fff; border-color:#ccc!important;font-weight: 400;line-height: 1.5;text-align: center;white-space: nowrap;cursor: pointer;user-select: none;border: 1px solid transparent;}
+div[pressdo-toolbar-menu]{position:relative; display:inline-block; vertical-align:middle;}
 
-*[ion-discuss]:before {
-    content: "\f2d4";
-}
 
-*[ion-func]:before {
-    content: "\f318";
-}
-
-*[ion-dropdown]:before {
-    content: "\f35f";
-}
-
-*[ion-rand]:before {
-    content: "\f4a8";
-}
-
-*[ion-search]:before {
-    content: "\f2f5";
-    min-width: 15px;
-    display: block;
-}
-
-*[ion-move]:before {
-    content: "\f3d6";
-    min-width: 15px;
-    display: block;
-}
-
-*[ion-unlogined]:before {
-    content: "\f47e";
-}
+*[ion-compass]:before {content: "\f37c";}
+*[ion-discuss]:before {content: "\f2d4";}
+*[ion-func]:before {content: "\f318";}
+*[ion-dropdown]:before { content: "\f35f";}
+*[ion-rand]:before {content: "\f4a8";}
+*[ion-search]:before {content: "\f2f5";min-width: 15px;display: block;}
+*[ion-move]:before {content: "\f133";min-width: 15px;display: block;}
+*[ion-unlogined]:before {content: "\f29e";}
               </style>
         <div pressdo-cover>
             <div nav-cover>
