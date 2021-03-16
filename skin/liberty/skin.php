@@ -46,7 +46,7 @@ section aside{display:none;}
 div[nav-cover] {border-radius:0;}
 nav {border-radius:.25rem;}
 }
-html{box-sizing: border-box;}
+html{box-sizing: border-box; -webkit-text-size-adjust:100%;}
 * {outline:none;}
 *, :after, :before {box-sizing:inherit; }
 body { font-size:.95rem; line-height: 1.5; color:#373a3c; }
