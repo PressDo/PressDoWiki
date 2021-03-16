@@ -93,7 +93,6 @@ button[pressdo-sb]:hover{background-color: #4188f1;border-color: #5997f3;color: 
 button[pressdo-sb]:last-of-type{border-top-right-radius: .35rem; border-bottom-right-radius: .35rem;}
 section{max-width:1200px; margin:0 auto; margin-top:3.33rem;}
 div[pressdo-content]{padding: 0 0 1rem; margin-left:auto; margin-right:auto;}
-div[pressdo-toolbar], h1[pressdo-doc-title]{border: 1px solid #e1e8ed; border-radius: .35rem .35rem 0 0; background-color:#f5f8fa;}
 a[pressdo-toolbar-link]{font-size:.9rem; padding:.4rem .8rem;}
 a[pressdo-toolbar-link]:not(:last-of-type){border-top-right-radius:0; border-bottom-right-radius:0;}
 a[pressdo-toolbar-link]:not(:first-of-type){border-top-left-radius:0; border-bottom-left-radius:0;}
