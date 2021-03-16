@@ -67,10 +67,9 @@ body, div[pressdo-cover]{ background-color:#f5f5f5;}
 div[nav-cover] { min-height: 2.8rem; background-color:#4188f1; z-index:1001; box-shadow:0 2px 4px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
 position:absolute; top:0; right:0; left:0;}
 nav { padding:0 1rem; border:0; border-radius:0; position:relative; }
-div[pressdo-content]{padding-right: .9375rem;padding-left: .9375rem; margin-right: auto;margin-left: auto;}
+div[pressdo-content]{padding-right: .9375rem;padding-left: .9375rem; margin-right: 16rem;margin-left: auto;}
 div[pressdo-content-header]{border: 1px solid #e1e8ed;border-radius: .35rem .35rem 0 0;background-color: #f5f8fa;}
 div[pressdo-content], nav {max-width:1200px; margin:0 auto;}
-section>div[pressdo-content]{margin-right: 16rem;padding: 0 0 1rem;}
 a[pressdo-logo]{height:2.8rem; width:6.6rem; padding:.4rem 0 0 0; margin:0; float:left; font-size:1.25rem;}
 a[pressdo-logo], a[pressdo-logo]:focus, a[pressdo-logo]:hover{color:#fff}
 ul[nav-container]{padding-left:0; margin-bottom:0; list-style:none!important;}
