@@ -171,8 +171,7 @@ aside{float: right;width: 15rem;position: relative;}
                     </div>
                     <form pressdo-search-form>
                         <div pressdo-search-form>
-                            <span pressdo-sb><a href="/random" pressdo-sb><span ionicon ion-rand></span></a></span>
-                            <div sb-wrap><input type="search" name="keyword" placeholder="Search" tabindex="1" pressdo-search autocomplete="off"></div>
+                            <input type="search" name="keyword" placeholder="Search" tabindex="1" pressdo-search autocomplete="off">
                             <span pressdo-sb>
                                 <button type="button" onclick="search();" pressdo-sb>
                                     <span ionicon ion-search></span>
