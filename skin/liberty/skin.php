@@ -40,7 +40,7 @@ span[pressdo-sb]{width:1%;}
 section{margin-top:5.89rem!important;}
 section div[pressdo-content]{margin-right:auto; padding-bottom:.5rem;}
 div[pressdo-toolbar]{float:none; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
-aside{display:none;}
+section aside{display:none;}
 }
 @media screen and (min-width: 544px) {
 div[nav-cover] {border-radius:0;}
@@ -70,7 +70,7 @@ nav { padding:0 1rem; border:0; border-radius:0; position:relative; }
 div[pressdo-content]{padding-right: .9375rem;padding-left: .9375rem; margin-right: auto;margin-left: auto;}
 div[pressdo-content-header]{border: 1px solid #e1e8ed;border-radius: .35rem .35rem 0 0;background-color: #f5f8fa;}
 div[pressdo-content], nav {max-width:1200px; margin:0 auto;}
-section div[pressdo-content]{margin-right: 16rem;padding: 0 0 1rem;}
+section>div[pressdo-content]{margin-right: 16rem;padding: 0 0 1rem;}
 a[pressdo-logo]{height:2.8rem; width:6.6rem; padding:.4rem 0 0 0; margin:0; float:left; font-size:1.25rem;}
 a[pressdo-logo], a[pressdo-logo]:focus, a[pressdo-logo]:hover{color:#fff}
 ul[nav-container]{padding-left:0; margin-bottom:0; list-style:none!important;}
