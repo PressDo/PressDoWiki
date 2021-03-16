@@ -53,7 +53,6 @@ if ($acl['ok'] == false) {
     <p><a href="/edit/<?=$Doc?>">[새 문서 만들기]</a></p>
 </div><?php
 } else { ?>
-    <br>
     <div pressdo-content>
         <div pressdo-content-header>
             <div pressdo-toolbar>
