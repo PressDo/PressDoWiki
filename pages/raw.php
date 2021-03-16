@@ -37,16 +37,18 @@ if (!$array['content']) {
     <style>
     </style>
     <div pressdo-content>
-        <div pressdo-toolbar>
-            <div pressdo-toolbar-menu>
-                <a pressdo-toolbar-link href="/history/<?=$Doc?>">역사</a>
-                <a pressdo-toolbar-link href="/edit/<?=$Doc?>">편집</a>
-                <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
+        <div pressdo-content-header>
+            <div pressdo-toolbar>
+                <div pressdo-toolbar-menu>
+                    <a pressdo-toolbar-link href="/history/<?=$Doc?>">역사</a>
+                    <a pressdo-toolbar-link href="/edit/<?=$Doc?>">편집</a>
+                    <a pressdo-toolbar-link href="/backlink/<?=$Doc?>">역링크</a>
+                </div>
             </div>
+            <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
+                <small pressdo-doc-action>(r<?=$_GET['rev']?> RAW)</small>
+            </h1>
         </div>
-        <h1 pressdo-doc-title><a href="<?=$conf['ViewerUri'].$Doc?>"><?=$Doc?></a>
-            <small pressdo-doc-action>(r<?=$_GET['rev']?> RAW)</small>
-        </h1>
         <div id="cont_ent" pressdo-doc-content>
             <textarea readonly="readonly" pressdo-editor><?=str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), $array['content'])?></textarea>
         </div>
