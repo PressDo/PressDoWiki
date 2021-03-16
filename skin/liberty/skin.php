@@ -48,7 +48,8 @@ nav {border-radius:.25rem;}
 html{box-sizing: border-box;}
 * {outline:none;}
 *, :after, :before {box-sizing:inherit; }
- body { font-size:.95rem; line-height: 1.5; color:#373a3c; }
+body { font-size:.95rem; line-height: 1.5; color:#373a3c; }
+h1[pressdo-doc-title] {padding: 1rem; font-weight:700;}
 body, h1, h2, h3, h4, h5, h6 { font-family: 'Nanum Gothic', 'KoPubDotum M', 'Noto Sans Korean', 'Noto Sans', 'Malgun Gothic', '맑은 고딕', 'sans-serif'; margin: 0; }
 article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {display:block;}
 [role="button"], a, area, button, input, label, select, summary, textarea{touch-action:manipulation;}
@@ -93,19 +94,43 @@ button[pressdo-sb]:hover{background-color: #4188f1;border-color: #5997f3;color: 
 button[pressdo-sb]:last-of-type{border-top-right-radius: .35rem; border-bottom-right-radius: .35rem;}
 section{max-width:1200px; margin:0 auto; margin-top:3.33rem;}
 div[pressdo-content]{padding: 0 0 1rem; margin-left:auto; margin-right:auto;}
+div[pressdo-toolbar]{float: right;padding-right: 1rem;padding-top: 1rem;}
 a[pressdo-toolbar-link]{font-size:.9rem; padding:.4rem .8rem;}
 a[pressdo-toolbar-link]:not(:last-of-type){border-top-right-radius:0; border-bottom-right-radius:0;}
-a[pressdo-toolbar-link]:not(:first-of-type){border-top-left-radius:0; border-bottom-left-radius:0;}
+a[pressdo-toolbar-link]:not(:first-of-type){border-top-left-radius:0; border-bottom-left-radius:0; margin-left:-1px;}
 a[pressdo-toolbar-link]:first-of-type{margin-left:0;}
 a[pressdo-toolbar-link]{position:relative; float:left; box-shadow:none; border-radius:.35rem; color:#373a3c; background-color:#fff; border-color:#ccc!important;font-weight: 400;line-height: 1.5;text-align: center;white-space: nowrap;cursor: pointer;user-select: none;border: 1px solid transparent;}
 div[pressdo-toolbar-menu]{position:relative; display:inline-block; vertical-align:middle;}
-    
+h1[pressdo-doc-title]>a:hover {text-decoration: underline;}
+h1[pressdo-doc-title]>a {color: #000;}
 aside{float: right;width: 15rem;position: relative;}
+p[pressdo-doc-changed] {display: none;}
 
+div[pressdo-doc-content] { border-left: 1px solid #e1e8ed;border-right: 1px solid #e1e8ed;background-color: #fff;padding: 1rem;overflow: hidden;line-height: 1.6rem;}
+div[pressdo-doc-category] { border: 1px solid #ccc;padding: 3px 3px 3px 5px;margin-bottom: 1em;border-radius: 4px;font-size: .9rem;}
+div[pressdo-doc-category]>h2 {display: inline-block;border: 0;padding: 0;margin: 0;font-weight: 400;font-size: inherit;}
+div[pressdo-doc-category]>h2:after {content: ":";}   
+div[pressdo-doc-category]>ul {margin-bottom: 0;padding-left: 0;margin-top: 0;display: inline-block;}
+li[pressdo-doc-category]::marker{content: "";}
+li[pressdo-doc-category] {display: inline;}
+li[pressdo-doc-category]:not(:last-of-type):after {content: "|";padding-left: 5px;padding-right: 5px;}
+div[pressdo-doc-paragraph]{overflow:hidden; margin-bottom:1rem;}
+div#_toc {border: 1px solid #ccc;display: inline-block;padding: 12px 20px 18px 0;margin-left: 5px;}
+div#_toc>div._toc_ln:first-of-type {margin-top: 12px;}
+div._toc_ln {padding-left: 20px;}    
+span[_toc-item] {display: block;}    
+ 
+    
+    
+/* Viewer Primary Settings */
+h1{font-size: 2rem;}
+h2{font-size: 1.8rem;}
+h3{font-size: 1.6rem;}
+h4{font-size: 1.5rem;}
+h5{font-size: 1.3rem;}
+h6{font-size: 1.1rem;}
 
-
-
-
+/* Ionicons Font Settings */
 *[ion-compass]:before {content: "\f37c";}
 *[ion-discuss]:before {content: "\f2d4";}
 *[ion-func]:before {content: "\f318";}
