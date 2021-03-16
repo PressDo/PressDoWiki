@@ -39,7 +39,7 @@ div[pressdo-search-form]>input[pressdo-search]{width:100%;}
 span[pressdo-sb]{width:1%;}
 section{margin-top:5.89rem!important;}
 section div[pressdo-content]{margin-right:auto; padding-bottom:.5rem;}
-div[pressdo-toolbar]{float:none; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
+div[pressdo-toolbar]{float:none!important; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
 section aside{display:none;}
 }
 @media screen and (min-width: 544px) {
