@@ -129,7 +129,10 @@ iframe{display: block;max-width: 100%;}
 [pressdo-toc]{cursor:pointer;}
 [pressdo-toc]:before {float: left;font-family: Ionicons;font-weight: 400;font-size: .8em;text-align: center;margin: 0 .5rem 0 .2rem;width: .9em;color: #666;content: "\f3d0";}
 span[pressdo-edit-section] {float: right;font-size: .8rem;}    
-    
+[pressdo-toc][pressdo-toc-fold=hide]{opacity:.5;}
+div[pressdo-doc-paragraph][pressdo-toc-fold=hide]{display:none;}
+
+
 /* Viewer Primary Settings */
 h1{font-size: 2rem;}
 h2{font-size: 1.8rem;}
