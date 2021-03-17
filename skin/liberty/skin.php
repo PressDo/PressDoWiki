@@ -155,6 +155,20 @@ h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-t
 *[ion-move]:before {content: "\f133";min-width: 15px;display: block;}
 *[ion-unlogined]:before {content: "\f29e";}
               </style>
+<script>
+        function hiddencontents(a){
+        b = document.getElementById(a);
+        c = document.getElementById('content-'+a);
+        if(b.getAttribute('pressdo-toc-fold') == 'hide'){
+            b.setAttribute('pressdo-toc-fold', 'show');
+            c.setAttribute('pressdo-toc-fold', 'show');
+        }
+    }else{
+        b.setAttribute('pressdo-toc-fold', 'hide');
+            c.setAttribute('pressdo-toc-fold', 'hide');
+    }
+    }
+</script>
         <div pressdo-cover>
             <div nav-cover>
                 <nav>
