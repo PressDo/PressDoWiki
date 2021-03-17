@@ -39,8 +39,10 @@ div[pressdo-search-form]>input[pressdo-search]{width:100%;}
 span[pressdo-sb]{width:1%;}
 section{margin-top:5.89rem!important;}
 section div[pressdo-content]{margin-right:auto; padding-bottom:.5rem;}
-div[pressdo-toolbar]{float:none!important; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
+div>div[pressdo-toolbar]{float:none!important; text-align:right; border-bottom:1px solid #e1e8ed; padding: .5rem;}
+div>h1[pressdo-doc-title]{padding:.5rem;}
 section aside{display:none;}
+iframe[pressdo-video-embed]{width: 80%;height: 30rem;}
 }
 @media screen and (min-width: 544px) {
 div[nav-cover] {border-radius:0;}
@@ -106,6 +108,7 @@ h1[pressdo-doc-title]>a {color: #000;}
 aside{float: right;width: 15rem;position: relative;}
 p[pressdo-doc-changed] {display: none;}
 
+/* Content */
 div[pressdo-doc-content] { border-left: 1px solid #e1e8ed;border-right: 1px solid #e1e8ed;background-color: #fff;padding: 1rem;overflow: hidden;line-height: 1.6rem;}
 div[pressdo-doc-category] { border: 1px solid #ccc;padding: 3px 3px 3px 5px;margin-bottom: 1em;border-radius: 4px;font-size: .9rem;}
 div[pressdo-doc-category]>h2 {display: inline-block;border: 0;padding: 0;margin: 0;font-weight: 400;font-size: inherit;}
@@ -116,11 +119,14 @@ li[pressdo-doc-category] {display: inline;}
 li[pressdo-doc-category]:not(:last-of-type):after {content: "|";padding-left: 5px;padding-right: 5px;}
 div[pressdo-doc-paragraph]{overflow:hidden; margin-bottom:1rem;}
 div#_toc {border: 1px solid #ccc;display: inline-block;padding: 12px 20px 18px 0;margin-left: 5px;}
+div#_toc:before {content: "목차";font-size: 1.25em;margin-left: 14px;}
 div#_toc>div._toc_ln:first-of-type {margin-top: 12px;}
 div._toc_ln {padding-left: 20px;}    
 span[_toc-item] {display: block;}    
- 
-    
+iframe{display: block;max-width: 100%;}
+[pressdo-toc]{cursor:pointer;}
+[pressdo-toc]:before {float: left;font-family: Ionicons;font-weight: 400;font-size: .8em;text-align: center;margin: 0 .5rem 0 .2rem;width: .9em;color: #666;content: "\f3d0";}
+span[pressdo-edit-section] {float: right;font-size: .8rem;}    
     
 /* Viewer Primary Settings */
 h1{font-size: 2rem;}
@@ -129,6 +135,13 @@ h3{font-size: 1.6rem;}
 h4{font-size: 1.5rem;}
 h5{font-size: 1.3rem;}
 h6{font-size: 1.1rem;}
+h1[pressdo-toc]{font-size: 2em;}
+h2[pressdo-toc]{font-size: 1.8em;}
+h3[pressdo-toc]{font-size: 1.6em;}
+h4[pressdo-toc]{font-size: 1.5em;}
+h5[pressdo-toc]{font-size: 1.3em;}
+h6[pressdo-toc]{font-size: 1.1em;}
+h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-toc], h6[pressdo-toc] {margin: 1.2em 0 .8em;border-bottom: 1px solid #ccc;padding-bottom: 5px;}
 
 /* Ionicons Font Settings */
 *[ion-compass]:before {content: "\f37c";}
