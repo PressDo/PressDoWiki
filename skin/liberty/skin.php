@@ -162,11 +162,10 @@ h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-t
         if(b.getAttribute('pressdo-toc-fold') == 'hide'){
             b.setAttribute('pressdo-toc-fold', 'show');
             c.setAttribute('pressdo-toc-fold', 'show');
-        }
-    }else{
+        }else{
         b.setAttribute('pressdo-toc-fold', 'hide');
             c.setAttribute('pressdo-toc-fold', 'hide');
-    }
+        }
     }
 </script>
         <div pressdo-cover>
