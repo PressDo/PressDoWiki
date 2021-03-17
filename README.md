@@ -13,8 +13,8 @@
 -------------------------
 
 - 나무위키의 문법인 나무마크를 이용할 수 있는 PHP를 이용한 위키입니다.
-- 오픈나무와 다르게 PHP로 만들어져 호스팅 서버에서도 이용할 수 있습니다.
-- 미디어위키와 다르게 매우 빠릅니다.
+- 오픈나무와 다르게 PHP로 만들어져 웹 호스팅 서버에서도 이용할 수 있습니다.
+- 미디어위키와 다르게 가볍고 빠릅니다.
 
 -------------------------
 ### 요구 사항 (Requirements)
@@ -24,6 +24,15 @@
 
 - PHP 7.4 이상
 - MariaDB 10.3.25 이상
+
+-------------------------
+### 개발 환경 (Development Environment)
+![PHP](https://img.shields.io/badge/PHP-%3E%3D8.0F5D95?style=for-the-badge&logo=php)
+![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
+-------------------------
+
+- PHP 8.0 
+- MariaDB 10.3.25
 
 ### 지원 스킨 (Supported Skins)
 - ~~senkawa~~ (저작권 문제로 배포하지 않음)
