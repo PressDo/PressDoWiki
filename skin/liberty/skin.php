@@ -68,6 +68,7 @@ div[nav-cover] { min-height: 2.8rem; background-color:#4188f1; z-index:1001; box
 position:absolute; top:0; right:0; left:0;}
 nav { padding:0 1rem; border:0; border-radius:0; position:relative; }
 div[pressdo-content]{padding-right: .9375rem;padding-left: .9375rem; margin-right: 16rem;margin-left: auto;}
+div[pressdo-content]{padding:0 0 1rem;}
 div[pressdo-content-header]{border: 1px solid #e1e8ed;border-radius: .35rem .35rem 0 0;background-color: #f5f8fa;}
 div[pressdo-content], nav {max-width:1200px; margin:0 auto;}
 a[pressdo-logo]{height:2.8rem; width:6.6rem; padding:.4rem 0 0 0; margin:0; float:left; font-size:1.25rem;}
@@ -93,7 +94,6 @@ button[pressdo-sb]{color:#4f5b63; padding:.2rem .4rem; line-height:22px; z-index
 button[pressdo-sb]:hover{background-color: #4188f1;border-color: #5997f3;color: #fff;outline: 0;-webkit-transition: .3s;transition: .3s;}
 button[pressdo-sb]:last-of-type{border-top-right-radius: .35rem; border-bottom-right-radius: .35rem;}
 section{max-width:1200px; margin:0 auto; margin-top:3.33rem;}
-div[pressdo-content]{padding: 0 0 1rem; margin-left:auto; margin-right:auto;}
 div[pressdo-toolbar]{float: right;padding-right: 1rem;padding-top: 1rem;}
 a[pressdo-toolbar-link]{font-size:.9rem; padding:.4rem .8rem;}
 a[pressdo-toolbar-link]:not(:last-of-type){border-top-right-radius:0; border-bottom-right-radius:0;}
