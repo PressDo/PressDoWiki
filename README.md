@@ -27,7 +27,7 @@
 
 -------------------------
 ### 개발 환경 (Development Environment)
-![PHP](https://img.shields.io/badge/PHP-%3E%3D8.0F5D95?style=for-the-badge&logo=php)
+![PHP](https://img.shields.io/badge/PHP-8.0-4F5D95?style=for-the-badge&logo=php)
 ![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
 -------------------------
 
