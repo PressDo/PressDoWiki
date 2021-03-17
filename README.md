@@ -1,5 +1,3 @@
-## Check the Stable branch
-
 # PressDoWiki - Fast & Light PHP Wiki Engine
 
 [![Issues](https://img.shields.io/github/issues/aaei924/PressDoWiki?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
