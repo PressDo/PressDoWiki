@@ -63,7 +63,9 @@ button, input, select, textarea{margin:0; line-height:inherit; border-radius:0;}
 button, input, optgroup, select, textarea { font:inherit; color:inherit;}
 button, select{text-transform:none;}
 button{overflow:visible;}
-ul{list-style-image: url(data:image/svg+xml;charaet=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyDozWlnaHQ9JzEzJz48Y2lyY2xlIGN4PScyLjUnIGN5PSc5LjUnIHI9JzIuNScgZmlsbD0nIzMJM2EzYycvPjwvc3ZnPg==);}
+ul{list-style-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' width='5' height='13'><circle cx='2.5' cy='9.5' r='2.5' fill='%23373a3c'/></svg>");}
+ul[pressdo-ul]{margin: .4em 0 .4em 1.5em;}
+ul[pressdo-ul], ol[pressdo-ol] {padding-left: .5rem;margin: .4em 0 .4em 1.5em;}
 a{color:#0275d8; text-decoration:none; background-color:transparent;}
 body, div[pressdo-cover]{ background-color:#f5f5f5;}
 div[nav-cover] { min-height: 2.8rem; background-color:#4188f1; z-index:1001; box-shadow:0 2px 4px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
