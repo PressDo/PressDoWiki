@@ -16,11 +16,11 @@
 
 -------------------------
 ### 요구 사항 (Requirements)
-![PHP](https://img.shields.io/badge/PHP-%3E%3D7.4-4F5D95?style=for-the-badge&logo=php)
+![PHP](https://img.shields.io/badge/PHP-%3E%3D8.0-4F5D95?style=for-the-badge&logo=php)
 ![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
 -------------------------
 
-- PHP 7.4 이상
+- PHP 8.0 이상
 - MariaDB 10.3.25 이상
 
 -------------------------
