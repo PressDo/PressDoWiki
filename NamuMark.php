@@ -87,12 +87,12 @@ class NamuMark {
 	function __construct($wtext) {
 		// 문법 데이터 생성
 		$this->list_tag = array(
-			array('*', 'ul'),
-			array('1.', 'ol class="decimal"'),
-			array('A.', 'ol class="upper-alpha"'),
-			array('a.', 'ol class="lower-alpha"'),
-			array('I.', 'ol class="upper-roman"'),
-			array('i.', 'ol class="lower-roman"')
+			array('*', 'ul pressdo-ul'),
+			array('1.', 'ol pressdo-ol pressdo-ol-numeric'),
+			array('A.', 'ol pressdo-ol pressdo-ol-capitalised'),
+			array('a.', 'ol pressdo-ol pressdo-ol-alphabetical'),
+			array('I.', 'ol pressdo-ol pressdo-ol-caproman'),
+			array('i.', 'ol pressdo-ol pressdo-ol-lowroman')
 			);
 
 		$this->h_tag = array(
@@ -698,7 +698,7 @@ class NamuMark {
 		if(self::startsWith($line, '##')) {
 			$line = '';
 		}
-              $line = preg_replace('/[^-]*(-{4,9})[^-]*/', '<hr>', $line);
+              $line = preg_replace('/^[^-]*(-{4,9})[^-]*$/', '<hr>', $line);
 
 		$line = $this->blockParser($line);
 
@@ -706,7 +706,7 @@ class NamuMark {
 			if($this->wapRender)
 				$result .= $line.'<br/><br/>';
 			else
-				$result .= '<div pressdo-wikitext>'.$line.'</div>';
+				$result .= $line;
 		}
 
 		return $result;
@@ -878,7 +878,7 @@ class NamuMark {
             if(self::startsWithi($text, '#!html')) {
 				// HTML
                 return '<html>' . preg_replace('/UNIQ--.*?--QINU/', '', substr($text, 7)) . '</html>';
-            } elseif(self::startsWithi($text, '#!wiki') && preg_match('/^([^=]+)=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
+            } elseif(self::startsWithi($text, '#!wiki') && preg_match('/^style=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
 				
 				$text = str_replace($match[0], '', substr($text,7));
 				$lines = explode("\n", $text);
@@ -891,25 +891,10 @@ class NamuMark {
                     $offset = 0;
                     $text = $this->tableParser($text, $offset);
 				}
-				if(preg_match('/style=\"(.*)\"/', trim($match[0]), $_style)){
-					function addkey($length = 10)
-					{ // 무작위 키 생성
-						$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+					$h = Addkey(6);
 
-						$charactersLength = strlen($characters);
-						$randomString = '';
-						for ($i = 0; $i < $length; $i++) {
-							$randomString .= $characters[rand(0, $charactersLength - 1)];
-						}
-						return $randomString;
-					}
-					echo trim($match[0]);
-					$h = addkey(6);
-					echo $h;
-					echo '<style>'.'.'.$h.'{ '.$_style[1].' }</style>';
-				}
-				
-                return '<div pressdo-doc-wikibracket class="_renderP" '.$match[0].'>'.$this->blockParser($text).'</div>';
+				echo "<style> div[pressdo-wikistyle-$h]{".preg_replace('/^([^:]*)(:)[ ]*/', '$1$2',$match[1])."} </style>";
+                return '<div pressdo-doc-wikibracket class="_renderP" pressdo-wikistyle-'.$h.'>'.$this->blockParser($text).'</div>';
             } elseif(self::startsWithi($text, '#!syntax') && preg_match('/#!syntax ([^\s]*)/', $text, $match)) {
 				// 구문
                 return '<syntaxhighlight lang="' . $match[1] . '" line="1">' . preg_replace('/#!syntax ([^\s]*)/', '', $text) . '</syntaxhighlight>';
@@ -963,6 +948,7 @@ class NamuMark {
 			$targetUrl = $href[0];
 			$class = '_extlink';
 			$target = '_blank';
+			$datanm = 'pressdo-link-external';
 		}elseif(preg_match('/^분류:(.+)$/', $href[0], $category)) {
 			// [[분류:분류]]
 			array_push($this->links, array('target'=>$category[0], 'type'=>'category'));
@@ -972,11 +958,12 @@ class NamuMark {
 		}elseif(preg_match('/^#(.+)$/', $href[0], $category)) {
 			// [[#anchor]]
 			$targetUrl = $href[0];
+			return ' ';
 		}elseif(preg_match('/^파일:(.+)$/', $href[0], $category)) {
 			// [[파일:ㅁㅁ]]
 			array_push($this->links, array('target'=>$category[0], 'type'=>'file'));
 			if($this->imageAsLink)
-				return '<span class="alternative">[<a target="_blank" title="'.$category[0].'" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
+				return '<span pressdo-link-file class="alternative">[<a pressdo-link-file target="_blank" title="'.$category[0].'" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
 			
 			$paramtxt = '';
 			$csstxt = '';
@@ -1006,7 +993,7 @@ class NamuMark {
 				}
 			}
 			$paramtxt .= ($csstxt!=''?' style="'.$csstxt.'"':'');
-			return '<a href="'.$this->prefix.'/'.self::encodeURI($category[0]).'" title="'.htmlspecialchars($category[0]).'"><img src="https://namu.wiki/file/'.self::encodeURI($category[0]).'"'.$paramtxt.'></a>';
+			return '<a pressdo-link-files href="'.$this->prefix.'/'.self::encodeURI($category[0]).'" title="'.htmlspecialchars($category[0]).'"><img src="https://namu.wiki/file/'.self::encodeURI($category[0]).'"'.$paramtxt.'></a>';
 		}else {
 			if(self::startsWith($href[0], ':')) {
 				$href[0] = substr($href[0], 1);
@@ -1018,7 +1005,7 @@ class NamuMark {
 			if(empty($c))
 				array_push($this->links, array('target'=>$href[0], 'type'=>'link'));
 		}
-		return '<a href="'.$targetUrl.'"'.(!empty($title)?' title="'.$title.'"':'').(!empty($class)?' class="'.$class.'"':'').(!empty($target)?' target="'.$target.'"':'').'>'.(!empty($href[1])?$this->formatParser($href[1]):$href[0]).'</a>';
+		return '<a pressdo-link href="'.$targetUrl.'"'.(!empty($datanm)?" $datanm ":'').(!empty($title)?' title="'.$title.'"':'').(!empty($class)?' class="'.$class.'"':'').(!empty($target)?' target="'.$target.'"':'').'>'.(!empty($href[1])?$this->formatParser($href[1]):$href[0]).'</a>';
 	}
 
 	// 대괄호 문법
@@ -1193,7 +1180,7 @@ class NamuMark {
 				elseif (self::startsWithi($text, '#!syntax') && preg_match('/#!syntax ([^\s]*)/', $text, $match)) {
                     return '<syntaxhighlight lang="'.$match[1].'" line="1">'.preg_replace('/#!syntax ([^\s]*)/', '', $text).'</syntaxhighlight>';
 				} 
-				elseif(self::startsWithi($text, '#!wiki') && preg_match('/^([^=]+)=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
+				elseif(self::startsWithi($text, '#!wiki') && preg_match('/^style=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
 				// + 심화문법
 				$text = str_replace($match[0], '', substr($text,7));
 				$lines = explode("\n", $text);
@@ -1206,8 +1193,10 @@ class NamuMark {
                     $offset = 0;
                     $text = $this->tableParser($text, $offset);
 				}
+				$h = Addkey(6);
+				echo "<style>div[pressdo-wikistyle-$h]{".$match[1]."}</style>";
 				
-                return '<div pressdo-doc-wikibracket class="_renderP" '.$match[0].'>'.$this->blockParser($text).'</div>';
+                return '<div pressdo-doc-wikibracket class="_renderP" pressdo-wikistyle-'.$h.'>'.$this->blockParser($text).'</div>';
 				}
 				elseif (preg_match('/^#(?:([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|([A-Za-z]+)) (.*)$/', $text, $color)) {
 					// {{{#글씨색}}}
@@ -1238,7 +1227,7 @@ class NamuMark {
                     return $small_before.$this->formatParser($size[2]).$small_after;
                 } else {
 					// 문법 이스케이프
-                    return '<nowiki>' . $text . '</nowiki>';
+                    return '<code pressdo-nowiki>' . $text . '</code>';
                 }
                 // no break
             default:
