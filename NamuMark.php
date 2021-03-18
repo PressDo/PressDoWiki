@@ -816,6 +816,27 @@ class NamuMark {
 				$j+=strlen($innerstr)-1;
 				continue;
 			} else {
+				// from TheWiki Parser
+				if(substr($line, 4, 6)=='#!wiki'){
+					return '<div '.htmlspecialchars_decode(substr($line, 11)).'>_(#!WIKIMARK)_';
+				}
+				if(preg_match('/^{{{#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}) (.*)$/', $line, $match)) {
+					if(count(explode("}}}", $match[0]))<=1){
+						$this->color_temp_line[] = $line;
+						$this->color = $match[1];
+						$this->finded_color_line = true;
+						return;
+					}
+				}
+				if(count(explode("}}}", $line))>1&&count($this->color_temp_line)>0&&$this->finded_color_line) {
+					$line = implode("}}}{{{#!html <br>}}}{{{#".$this->color." ", $this->color_temp_line)." }}}{{{#!html <br>}}}{{{#".$this->color." ".$line;
+					unset($this->color_temp_line);
+					$this->finded_color_line = false;
+				}
+				if($this->finded_color_line){
+					$this->color_temp_line[] = $line;
+					return;
+				}
 				foreach($this->single_bracket as $bracket) {
 					$nj=$j;
 					if(self::startsWith($line, $bracket['open'], $j) && $innerstr = $this->bracketParser($line, $nj, $bracket)) {
@@ -830,97 +851,31 @@ class NamuMark {
 		return $line;
 	}
 
-	protected function renderProcessor($text, $type) {
-        if($type == '{{|') {
-            if(preg_match('/\|-/', $text))
-                return $type.$text.$type;
-            else
-                return '<poem style="border: 2px solid #d6d2c5; background-color: #f9f4e6; padding: 1em;">'.$text.'</poem>';
-        } else {
-			$lines = explode("\n", $text);
-			// 라인 단위로 끊어 읽기
-            $text = '';
-            foreach($lines as $key => $line) {
-                if( (!$key && !$lines[$key]) || ($key == count($lines) - 1 && !$lines[$key]) )
-                    continue;
-                if (preg_match('/^(:+)/', $line, $match)) {
-                    $line = substr($line, strlen($match[1]));
-                    $add = '';
-                    for ($i = 1; $i <= strlen($match[1]); $i++)
-                        $add .= ' ';
-                    $line = $add . $line;
-                    $text .= $line . "\n";
-                } else {
-                    $text .= $line . "\n";
-                }
-            }
+	// TheWiki Parser 코드 적용
+	private function renderProcessor($text, $type) {
+       		if(self::startsWithi($text, '#!html')) {
+			$html = substr($text, 6);
+			$html = ltrim($html);
+			$html = htmlspecialchars_decode($html);
+			$html = self::inlineHtml($html);
+			return $html;
+		}
+		if(self::startsWithi($text, '#!wiki') && preg_match('/([^\n]*)\n(((((.*)(\n)?)+)))/', substr($text, 7), $match)) {
+			$wPage2 = new PlainWikiPage($match[2]);
+			$child = new NamuMark($wPage2);
+			$child->prefix = $this->prefix;
+			$child->imageAsLink = $this->imageAsLink;
+			$child->wapRender = $this->wapRender;
+			$child->included = true;
+			$twPrint = $child->toHtml();
 			
-			// {{{ }}} 처리
-			// 코드블럭
-            if(self::startsWithi($text, '#!html')) {
-				// HTML
-                return '<html>' . preg_replace('/UNIQ--.*?--QINU/', '', substr($text, 7)) . '</html>';
-            } elseif(self::startsWithi($text, '#!wiki') && preg_match('/^style=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
-				
-				$text = str_replace($match[0], '', substr($text,7));
-				$lines = explode("\n", $text);
-                $text = '';
-				foreach($lines as $line) {
-					if ($line !== '') 
-                        $text .= $line . "\n";
-                }
-				if(self::startsWith($text, '||')) {
-                    $offset = 0;
-                    $text = $this->tableParser($text, $offset);
-				}
-					$h = Addkey(6);
-
-				echo "<style> div[pressdo-wikistyle-$h]{".preg_replace('/^([^:]*)(:)[ ]*/', '$1$2',$match[1])."} </style>";
-                return '<div pressdo-doc-wikibracket class="_renderP" pressdo-wikistyle-'.$h.'>'.$this->blockParser($text).'</div>';
-            } elseif(self::startsWithi($text, '#!syntax') && preg_match('/#!syntax ([^\s]*)/', $text, $match)) {
-				// 구문
-                return '<syntaxhighlight lang="' . $match[1] . '" line="1">' . preg_replace('/#!syntax ([^\s]*)/', '', $text) . '</syntaxhighlight>';
-            } elseif(preg_match('/^\+([1-5])(.*)$/sm', $text, $size)) {
-				// {{{+큰글씨}}}
-
-                $lines = explode("\n", $size[2]);
-                $size[2] = '';
-                foreach($lines as $line) {
-                    if($line !== '')
-                        $size[2] .= $line . "\n";
-                }
-
-                if(self::startsWith($size[2], '||')) {
-                    $offset = 0;
-                    $size[2] = $this->tableParser($size[2], $offset);
-                }
-
-                return '<span class="_text-size-up-'.$size[1].'">'.$this->formatParser($size[2]).'</span>';
-            } elseif(preg_match('/^\-([1-5])(.*)$/sm', $text, $size)) {
-				// {{{-작은글씨}}}
-
-                $lines = explode("\n", $size[2]);
-                $size[2] = '';
-                foreach($lines as $line) {
-                    if($line !== '')
-                        $size[2] .= $line . "\n";
-                }
-
-                if(self::startsWith($size[2], '||')) {
-                    $offset = 0;
-                    $size[2] = $this->tableParser($size[2], $offset);
-                }
-
-                return '<span class="_text-size-dn-'.$size[1].'">' . $this->formatParser($size[2]) . '</span>';
-            } else {
-				return '<pre class="_nowiki">' . $text . '</pre>';
-				// 문법 이스케이프
-            }
-        }
+			return '<div pressdo-wikistyle '.htmlspecialchars_decode($match[1]).'>'.htmlspecialchars_decode($twPrint).'</div>';
+		}
+		return '<pre><code>'.substr($text, 1).'</code></pre>';
 	}
 
 	private function closureProcessor($text, $type) {
-		return '<div class="wiki-closure">'.$this->formatParser($text).'</div>';
+		return '<div pressdo-wiki-closure>'.$this->formatParser($text).'</div>';
 	}
 
 	private function linkProcessor($text, $type) {
@@ -975,14 +930,76 @@ class NamuMark {
 				}
 			}
 			$paramtxt .= ($csstxt!=''?' style="'.$csstxt.'"':'');
-			return '<a pressdo-link-files href="'.$this->prefix.'/'.self::encodeURI($category[0]).'" title="'.htmlspecialchars($category[0]).'"><img src="https://namu.wiki/file/'.self::encodeURI($category[0]).'"'.$paramtxt.'></a>';
-		}else {
+			$xd = md5($category[0].rand(1,50));
+			$ext = strtolower(end(explode(".", $category[0])));
+			$hash = sha1($category[0], FALSE);
+			
+			if(is_file("../files/".$hash.".".$ext)){
+				$google_photos_check = fopen("../files/".$hash.".".$ext, "r");
+				$google_photos = fread($google_photos_check, 158);
+				fclose($google_photos_check);
+				if(substr($google_photos, 0, 4)=="http"){
+					return '<img src="'.$google_photos.'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
+				} else {
+					return '<img src="/files/'.$hash.'.'.$ext.'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
+				}
+			}
+			
+			$img = "SELECT * FROM file WHERE name = binary('$category[0]') LIMIT 1";
+			$imgres = mysqli_query($config_db, $img);
+			$imgarr = mysqli_fetch_array($imgres);
+			mysqli_close($conn);
+			if($imgarr['google']!=""){
+				return '<img src="'.$imgarr['google'].'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
+			} else if($imgarr['dir']!=""){
+				//return '[ No.'.$imgarr['no'].' ] 이미지 작업 대기중';
+				return '<img src="//images.thewiki.ga/'.$imgarr['dir'].'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
+			} else {
+				return '<script type="text/javascript"> $(document).ready(function(){ $.post("//thewiki.ga/API.php", {w:"'.$category[0].'", p:"'.str_replace('"', '\"', $paramtxt).'"}, function(data){ $("#ajax_file_'.$xd.'").html(data); $("#ajax_file_'.$xd.'").prepend("<input type=\'hidden\' id=\'enableajax_'.$xd.'\' value=\'false\'>"); $("#ajax_file_'.$xd.' > img").unwrap(); }, "html"); }); </script><div id="ajax_file_'.$xd.'" style="z-index:-1;"><table class="wiki-table" style=""><tbody><tr><td style="background-color:#93C572; text-align:center;"><p><span class="wiki-size size-1"><font color="006400">'.$category[0].' 이미지 표시중</font></span></p></td></tr></tbody></table></div>';
+			}
+		}
+		elseif(preg_match('/^이미지:(.+)$/', $href[0], $category)) {
+			array_push($this->links, array('target'=>$category[0], 'type'=>'file'));
+			if($this->imageAsLink)
+				return '<span pressdo-img-alternative class="alternative">[<a target="_blank" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
+			
+			$paramtxt = '';
+			$csstxt = '';
+			if(!empty($href[1])) {
+				preg_match_all('/[&?]?([^=]+)=([^\&]+)/', htmlspecialchars_decode($href[1]), $param, PREG_SET_ORDER);
+				foreach($param as $pr) {
+					switch($pr[1]) {
+						case 'width':
+							if(preg_match('/^[0-9]+$/', $pr[2]))
+								$csstxt .= 'width: '.$pr[2].'px; ';
+							else
+								$csstxt .= 'width: '.$pr[2].'; ';
+							break;
+						case 'height':
+							if(preg_match('/^[0-9]+$/', $pr[2]))
+								$csstxt .= 'height: '.$pr[2].'px; ';
+							else
+								$csstxt .= 'height: '.$pr[2].'; ';
+							break;
+						case 'align':
+							if($pr[2]!='center')
+								$csstxt .= 'float: '.$pr[2].'; ';
+							break;
+						default:
+							$paramtxt.=' '.$pr[1].'="'.$pr[2].'"';
+					}
+				}
+			}
+			$paramtxt .= ($csstxt!=''?' style="'.$csstxt.'"':'');
+			return '<img pressdo-img-custom src="/customupload/'.mb_substr($category[0], 4, strlen($category[0]), "UTF-8").'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
+		}
+		else {
 			if(self::startsWith($href[0], ':')) {
 				$href[0] = substr($href[0], 1);
 				$c=1;
 			}
-			$targetUrl = $this->prefix.self::encodeURI($href[0]);
-			//if($this->wapRender && !empty($href[1]))
+			$targetUrl = $this->prefix.'/'.self::encodeURI($href[0]);
+			if($this->wapRender && !empty($href[1]))
 				$title = $href[0];
 			if(empty($c))
 				array_push($this->links, array('target'=>$href[0], 'type'=>'link'));
@@ -1002,6 +1019,8 @@ class NamuMark {
 			case 'date':
 				// [date]
 				return date('Y-m-d H:i:s');
+			case 'datetime':
+				return date('Y-m-d H:i:s');
 			case '목차':
 			case 'tableofcontents':
 				// 목차
@@ -1011,31 +1030,150 @@ class NamuMark {
 				// 각주모음
 				return $this->printFootnote();
 			default:
-				if(self::startsWithi($text, 'include') && preg_match('/^include\((.+)\)$/i', $text, $include) && $include = $include[1]) {
-					// include 문법
+				if(self::startsWithi(strtolower($text), 'include') && preg_match('/^include\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					if($this->included)
 						return ' ';
-
 					$include = explode(',', $include);
 					array_push($this->links, array('target'=>$include[0], 'type'=>'include'));
-					if(($page = $this->WikiPage->getPage($include[0])) && !empty($page->text)) {
+					
+					$w = $include[0];
+					if(count(explode(":", $w))>1){
+						$tp = explode(":", $w);
+						switch($tp[0]){
+							case '틀':
+								$namespace = '1';
+								break;
+							case '분류':
+								$namespace = '2';
+								break;
+							case '파일':
+								$namespace = '3';
+								break;
+							case '사용자':
+								$namespace = '4';
+								break;
+							case '나무위키':
+								$namespace = '6';
+								break;
+							case '휴지통':
+								$namespace = '8';
+								break;
+							case 'TheWiki':
+								$namespace = '10';
+								break;
+							case '이미지':
+								$namespace = '11';
+								break;
+							default:
+								$namespace = '0';
+						
+						}
+						if($namespace>0){
+							$w = str_replace($tp[0].":", "", implode(":", $tp));
+						}
+					}
+					$_POST = array('namespace'=>$namespace, 'title'=>$w, 'ip'=>$_SERVER['REMOTE_ADDR'], 'option'=>'original');
+					include $_SERVER['DOCUMENT_ROOT'].'/API.php';
+					
+					if($api_result->status!='success'||$api_result->type=='refresh'){
+						return ' ';
+					} else {
+						$arr['text'] = $api_result->data;
+						unset($api_result);
+					}
+					
+					if(defined("isdeleted")){
+						return ' ';
+					}
+					
+					// themark 통합
+					$arr['text'] = simplemark($arr['text']);
+					
+					// #!folding 문법 #!end}}} 치환
+					$foldingstart = explode('{{{#!folding ', $arr['text']);
+					for($z=1;$z<count($foldingstart);$z++){
+						$foldingcheck = true;
+						$find = '';
+						$match = '';
+						$temp_explode = '';
+						
+						if(count(explode("}}}", $foldingstart[$z]))>1){
+							$temp_explode = explode("}}}", $foldingstart[$z]);
+							
+							$end_loop = 0;
+							while(count($temp_explode)>$end_loop){
+								if(count(explode('{{{', $temp_explode[$end_loop]))>1){
+									$end_loop++;
+								} else {
+									for($x=0;$end_loop>$x;$x++){
+										$match .= $temp_explode[$x].'}}}';
+									}
+									$find = $match.$temp_explode[$end_loop].'}}}';
+									$match .= $temp_explode[$end_loop].'#!end}}}';
+									$end_loop = count($temp_explode)+1;
+								}
+							}
+							
+							$arr['text'] = str_replace('{{{#!folding '.$find, '{{{#!folding '.$match, $arr['text']);
+						}
+					}
+					// #!folding 문법 우선 적용
+					$foldingstart = explode('{{{#!folding ', $arr['text']);
+					for($z=1;$z<count($foldingstart);$z++){
+						$foldingcheck = true;
+						$foldopentemp = reset(explode("\n", $foldingstart[$z]));
+						if(count(explode("#!end}}}", $foldingstart[$z]))>1){
+							$foldingtemp = str_replace("#!end}}}", "_(FOLDINGEND)_", $foldingstart[$z]);
+							$foldingdatatemp = next(explode($foldopentemp, reset(explode("_(FOLDINGEND)_", $foldingtemp))));
+							$md5 = md5(rand(1,10).$foldingdatatemp);
+							$foldopen[$md5] = $foldopentemp;
+							$foldingdata[$md5] = $foldingdatatemp;
+							$arr['text'] = str_replace("{{{#!folding ".$foldopentemp.$foldingdatatemp."#!end}}}", "_(FOLDINGSTART)_".$md5."_(FOLDINGSTART2)_ _(FOLDINGDATA)_".$md5."_(FOLDINGDATA2)_ _(FOLDINGEND)_", $arr['text']);
+						}
+					}
+					
+					if($arr['text']!="") {
 						foreach($include as $var) {
 							$var = explode('=', ltrim($var));
 							if(empty($var[1]))
 								$var[1]='';
-							$page->text = str_replace('@'.$var[0].'@', $var[1], $page->text);
-							// 틀 변수
+							$arr['text'] = str_replace('@'.$var[0].'@', $var[1], $arr['text']);
 						}
-						$child = new NamuMark($page);
+						
+						$wPage2 = new PlainWikiPage($arr['text']);
+						$child = new NamuMark($wPage2);
 						$child->prefix = $this->prefix;
 						$child->imageAsLink = $this->imageAsLink;
 						$child->wapRender = $this->wapRender;
 						$child->included = true;
-						return $child->toHtml();
+						$twPrint = $child->toHtml();
+						
+						// #!folding
+						if($foldingcheck){
+							$twPrint = str_replace('_(FOLDINGEND)_', '</div></dd></dl>', $twPrint);
+							
+							$getmd5 = explode("_(FOLDINGDATA)_", $twPrint);
+							for($xz=1;$xz<count($getmd5);$xz++){
+								$mymd5 = reset(explode("_(FOLDINGDATA2)_", $getmd5[$xz]));
+								$twPrint = str_replace('_(FOLDINGSTART)_'.$mymd5.'_(FOLDINGSTART2)_', '<dl class="wiki-folding"><dt><center>'.$foldopen[$mymd5].'</center></dt><dd style="display: none;"><div class="wiki-table-wrap">', $twPrint);
+								
+								$fPage = new PlainWikiPage($foldingdata[$mymd5]);
+								$child = new NamuMark($fPage);
+								$child->prefix = $this->prefix;
+								$child->imageAsLink = $this->imageAsLink;
+								$child->wapRender = $this->wapRender;
+								$child->included = true;
+								$fwPrint = $child->toHtml();
+								
+								$twPrint = str_replace('<div class="wiki-table-wrap"> _(FOLDINGDATA)_'.$mymd5.'_(FOLDINGDATA2)_ </div>', '<div class="wiki-table-wrap"> '.$fwPrint.' </div>', $twPrint);
+							}
+						}
+						
+						return $twPrint;
 					}
 					return ' ';
 				}
-				elseif(self::startsWith($text, 'youtube') && preg_match('/^youtube\((.+)\)$/', $text, $include) && $include = $include[1]) {
+				elseif(self::startsWith(strtolower($text), 'youtube') && preg_match('/^youtube\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					// 유튜브 동영상
 					$include = explode(',', $include);
 					$var = array();
@@ -1047,7 +1185,7 @@ class NamuMark {
 					}
 					return '<iframe width="'.(!empty($var['width'])?$var['width']:'640').'" height="'.(!empty($var['height'])?$var['height']:'360').'" src="//www.youtube.com/embed/'.$include[0].'" frameborder="0" allowfullscreen></iframe>';
 				}
-				elseif(self::startsWith($text, 'nicovideo') && preg_match('/^nicovideo\((.+)\)$/', $text, $include) && $include = $include[1]) {
+				elseif(self::startsWith(strtolower($text), 'nicovideo') && preg_match('/^nicovideo\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					// 니코 동영상
 					$include = explode(',', $include);
 					$var = array();
@@ -1059,7 +1197,7 @@ class NamuMark {
 					}
 					return '<iframe width="'.(!empty($var['width'])?$var['width']:'640').'" height="'.(!empty($var['height'])?$var['height']:'360').'" src="http://ext.nicovideo.jp/thumb_watch/'.$include[0].'?w='.(!empty($var['width'])?$var['width']:'640').'&h='.(!empty($var['height'])?$var['height']:'360').'" frameborder="0" allowfullscreen></iframe>';
 				}
-				elseif(self::startsWith($text, 'kakaotv') && preg_match('/^kakaotv\((.+)\)$/', $text, $include) && $include = $include[1]) {
+				elseif(self::startsWith(strtolower($text), 'kakaotv') && preg_match('/^kakaotv\((.+)\)$/', $text, $include) && $include = $include[1]) {
 					// 카카오 동영상
 					$include = explode(',', $include);
 					$var = array();
@@ -1083,138 +1221,98 @@ class NamuMark {
 					}
 					return '<iframe width="'.(!empty($var['width'])?$var['width']:'640').'" height="'.(!empty($var['height'])?$var['height']:'360').'" src="'.$include[0].'" frameborder="0" allowfullscreen></iframe>';
 				}
-				elseif(self::startsWith($text, 'age') && preg_match('/^age\((.+)\)$/', $text, $include)) {
-					// + 나이 계산(수정중)
-					$include[0];
-					
+				elseif(self::startsWithi(strtolower($text), 'age') && preg_match('/^age\((.+)\)$/i', $text, $include) && $include = $include[1]) {
+					// 연령
+					$include = explode('-', $include);
+					$age = (date("md", date("U", mktime(0, 0, 0, $include[1], $include[2], $include[0]))) > date("md")
+						? ((date("Y") - $include[0]) - 1)
+						: (date("Y") - $include[0]));
 					return $age;
+					
+				}
+				elseif(self::startsWithi(strtolower($text), 'anchor') && preg_match('/^anchor\((.+)\)$/i', $text, $include) && $include = $include[1]) {
+					// 앵커
+					return '<a name="'.$include.'"></a>';
+				}
+				elseif(self::startsWithi(strtolower($text), 'dday') && preg_match('/^dday\((.+)\)$/i', $text, $include) && $include = $include[1]) {
+					// D-DAY
+					$nDate = date("Y-m-d", time());
+					if(strtotime($nDate)==strtotime($include)){
+						return " 0";
+					}
+					return intval((strtotime($nDate)-strtotime($include)) / 86400);
 				}
 				elseif(self::startsWith($text, '*') && preg_match('/^\*([^ ]*)([ ].+)?$/', $text, $note)) {
 					// 각주
 					$notetext = !empty($note[2])?$this->blockParser($note[2]):'';
 					$id = $this->fnInsert($this->fn, $notetext, $note[1]);
 					$preview = $notetext;
+					$preview2 = strip_tags($preview, '<img>');
 					$preview = strip_tags($preview);
 					$preview = str_replace('"', '\\"', $preview);
 					return '<a id="rfn-'.htmlspecialchars($id).'" class="wiki-fn" href="#fn-'.rawurlencode($id).'" title="'.$preview.'">['.($note[1]?$note[1]:$id).']</a>';
-				}elseif(self::startsWith($text, 'anchor') && preg_match('/^anchor\((.+)\)$/', $text, $anchor)) {
-					// 각주
-
-					//return '<a pressdo-anchor id="'.$anchor[1].'"></a>';
 				}
 		}
 		return '['.$text.']';
 	}
 
+	// TheWiki Parser 일부 
 	private function textProcessor($otext, $type) {
-		if($type != '{{{' && $type != '<nowiki>')
+		if($type != '{{{')
 			$text = $this->formatParser($otext);
 		else
 			$text = $otext;
-        switch ($type) {
+        	switch ($type) {
 			case '\'\'\'':
 				// 볼드체
-                return '<strong>'.$text.'</strong>';
+                		return '<strong>'.$text.'</strong>';
 			case '\'\'':
 				// 기울임꼴
 				return '<em>'.$text.'</em>';
 			case '**':
 				// + ** 문법 추가
 				return '<strong>'.$text.'</strong>';
-            case '--':
+            		case '--':
 			case '~~':
 				// 취소선
 				// + 수평선 적용 안 되는 오류 수정
-                if (!self::startsWith($text, 'item-') && !self::endsWith($text, 'UNIQ') && !self::startsWith($text, 'QINU') && !preg_match('/^.*?-.*-QINU/', $text) && !self::startsWith($text, 'h-')) {
-					return '<del>'.$text.'</del>';
-				} else{
-                    return $type.$text.$type;
-                }
+               			if($this->strikeLine){
+					$text = '';
+				}
+				return '<del>'.$text.'</del>';
                     // no break
 			case '__':
 				// 목차 / 밑줄
-                if (preg_match('/TOC/', $text) || preg_match('/^.*?(\.jpeg|\.jpg|\.png|\.gif)/', $text)) {
-                    return $type.$text.$type;
-                } else {
-                    return '<u>'.$text.'</u>';
-                }
+                		return '<u>'.$text.'</u>';
                     // no break
 			case '^^':
 				// 위첨자
-                return '<sup>'.$text.'</sup>';
+               		 	return '<sup>'.$text.'</sup>';
 			case ',,':
 				// 아래첨자
-                return '<sub>'.$text.'</sub>';
-			case '<!--':
-				// 주석
-                return '<!--'.$text.'-->';
-            case '{{|':
-                return '<poem style="border: 2px solid #d6d2c5; background-color: #f9f4e6; padding: 1em;">'.$text.'</poem>';
-            case '<nowiki>':
-                return '<code>'.$text.'</code>';
+                		return '<sub>'.$text.'</sub>';
 			case '{{{': 
 				// HTML
-                if (self::startsWith($text, '#!html')) {
-                    $html = substr($text, 6);
-                    $html = htmlspecialchars_decode($html);
-                    return '<html>'.$html.'</html>';
-				} 
-				elseif (self::startsWithi($text, '#!syntax') && preg_match('/#!syntax ([^\s]*)/', $text, $match)) {
-                    return '<syntaxhighlight lang="'.$match[1].'" line="1">'.preg_replace('/#!syntax ([^\s]*)/', '', $text).'</syntaxhighlight>';
-				} 
-				elseif(self::startsWithi($text, '#!wiki') && preg_match('/^style=(?|"(.*?)"|\'(.*)\'|(.*))/', substr($text, 7), $match)) {
-				// + 심화문법
-				$text = str_replace($match[0], '', substr($text,7));
-				$lines = explode("\n", $text);
-                $text = '';
-				foreach($lines as $line) {
-                    if($line !== '')
-                        $text .= $line . "\n";
-                }
-				if(self::startsWith($text, '||') || strpos($text, '||') !== false) {
-                    $offset = 0;
-                    $text = $this->tableParser($text, $offset);
+				if(self::startsWith($text, '#!html')) {
+					$html = substr($text, 6);
+					$html = ltrim($html);
+					$html = htmlspecialchars_decode($html);
+					$html = self::inlineHtml($html);
+#					echo $html;
+					return $html;
 				}
-				$h = Addkey(6);
-				echo "<style>div[pressdo-wikistyle-$h]{".$match[1]."}</style>";
-				
-                return '<div pressdo-doc-wikibracket class="_renderP" pressdo-wikistyle-'.$h.'>'.$this->blockParser($text).'</div>';
+				if(preg_match('/^#(?:([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|([A-Za-z]+)) (.*)$/', $text, $color)) {
+					if(empty($color[1]) && empty($color[2]))
+						return $text;
+					return '<span style="color: '.(empty($color[1])?$color[2]:'#'.$color[1]).'">'.$this->formatParser($color[3]).'</span>';
 				}
-				elseif (preg_match('/^#(?:([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|([A-Za-z]+)) (.*)$/', $text, $color)) {
-					// {{{#글씨색}}}
-                    if (empty($color[1]) && empty($color[2])) {
-                        return $text;
-                    }
-                    return '<span style="color: '.(empty($color[1])?$color[2]:'#'.$color[1]).'">'.$this->formatParser($color[3]).'</span>';
-                } elseif (preg_match('/^\+([1-5]) (.*)$/', $text, $size)) {
-					// 큰글씨
-                    if (isset($big_before) && isset($big_after)) {
-                        $big_before .='<span class="_text-size-up-'.$size[1].'">';
-                        $big_after .='</span>';
-                    }else{
-						$big_before ='<span class="_text-size-up-'.$size[1].'">';
-                        $big_after ='</span>';
-					}
-
-                    return $big_before.$this->formatParser($size[2]).$big_after;
-                } elseif (preg_match('/^\-([1-5]) (.*)$/', $text, $size)) {
-					// 작은글씨
-                    if (isset($small_before) && isset($small_after)) {
-                        $small_before .= '<span class="_text-size-dn-'.$size[1].'">';
-                        $small_after .= '</span>';
-                    }else{
-						$small_before = '<span class="_text-size-dn-'.$size[1].'">';
-                        $small_after = '</span>';
-					}
-                    return $small_before.$this->formatParser($size[2]).$small_after;
-                } else {
+				if(preg_match('/^\+([1-5]) (.*)$/', $text, $size)) {
+					return '<span class="wiki-size size-'.$size[1].'">'.$this->formatParser($size[2]).'</span>';
+				}
 					// 문법 이스케이프
-                    return '<code pressdo-nowiki>' . $text . '</code>';
+                    		return '<code pressdo-nowiki>' . $text . '</code>';
                 }
-                // no break
-            default:
                 return $type.$text.$type;
-            }
 	}
 
 	// 각주 삽입
@@ -1289,11 +1387,8 @@ class NamuMark {
 		foreach($lines as $line) {
 			$matched = false;
 			foreach($this->h_tag as $tag_ar) {
-				// 목차 생성을 위한 문단 추출
-                if (is_array($tag_ar)) {
-                    $tag = $tag_ar[0];
-                    $level = $tag_ar[1];
-                }
+				$tag = $tag_ar[0];
+				$level = $tag_ar[1];
 				if(!empty($tag) && preg_match($tag, $line, $match)) {
 					$this->tocInsert($this->toc, $this->blockParser($match[1]), $level);
 					$matched = true;
@@ -1394,11 +1489,6 @@ class NamuMark {
 		if(($offset+$len)>strlen($haystack))
 			return false;
 		return strtolower($needle) == strtolower(substr($haystack, $offset, $len));
-	}
-
-	protected static function endsWith($haystack, $needle) {
-		// search forward starting from end minus needle length characters
-		return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
 	}
 
 	private static function seekEndOfLine($text, $offset=0) {
