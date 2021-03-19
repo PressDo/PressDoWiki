@@ -43,6 +43,11 @@
  * 맨 처음 여는 {{{#!wiki }}} 괄호에서 이중 따옴표로 인해 스타일이 적용되지 않음
  * 텍스트 + 표를 하나의 {{{#!wiki }}}로 감쌀 경우 표 문법이 적용되지 않음
  * 표 td에 적용된 {{{#!wiki }}} 내부에서 개행 시 표 문법에 영향을 줌
+ *
+ * 함수 적용 순서
+ * toHtml() -> htmlScan() -> 
+ *
+ *
  */
 
 class PlainWikiPage {
@@ -228,7 +233,7 @@ class NamuMark {
 				return '#redirect '.$target[1];
 			}
 			
-			if(str_replace("http://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))||str_replace("https://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))){
+			if(str_replace("http://pressdo.prws.kr/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))||str_replace("https://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))){
 				return '흐음, 잠시만요. <b>같은 문서끼리 리다이렉트 되고 있는 것 같습니다!</b><br>다음 문서중 하나를 수정하여 문제를 해결할 수 있습니다.<hr><a href="/history/'.self::encodeURI($target[1]).'" target="_blank">'.$target[1].'</a><br><a href="/history/'.str_replace("+", "%20", urlencode($_GET['w'])).'" target="_blank">'.$_GET['w'].'</a><hr>문서를 수정했는데 같은 문제가 계속 발생하나요? <a href="'.self::encodeURI($target[1]).'"><b>여기</b></a>를 확인해보세요!';
 			} else {
 				return 'Redirection...'.$target[1].'<script> top.location.href = "/w/'.self::encodeURI($target[1]).'"; </script>';
@@ -1018,7 +1023,7 @@ class NamuMark {
 				$href[0] = substr($href[0], 1);
 				$c=1;
 			}
-			$targetUrl = $this->prefix.'/'.self::encodeURI($href[0]);
+			$targetUrl = $this->prefix.self::encodeURI($href[0]);
 			if($this->wapRender && !empty($href[1]))
 				$title = $href[0];
 			if(empty($c))
@@ -1049,6 +1054,8 @@ class NamuMark {
 			case 'footnote':
 				// 각주모음
 				return $this->printFootnote();
+			case 'clearfix':
+				return '<div style="clear:both"></div>';
 			default:
 				if(self::startsWithi(strtolower($text), 'include') && preg_match('/^include\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					if($this->included)
@@ -1271,6 +1278,10 @@ class NamuMark {
 					$preview = strip_tags($preview);
 					$preview = str_replace('"', '\\"', $preview);
 					return '<a id="rfn-'.htmlspecialchars($id).'" class="wiki-fn" href="#fn-'.rawurlencode($id).'" title="'.$preview.'">['.($note[1]?$note[1]:$id).']</a>';
+				}
+				elseif(self::startsWithi(strtolower($text), 'pagecount') && preg_match('/^pagecount\((.+)\)$/i', $text, $include) && $include = $include[1]) {
+					// 앵커
+					return '[@@@PRESSDO-PAGECOUNT-'.$include.'@@@]';
 				}
 		}
 		return '['.$text.']';
