@@ -19,6 +19,7 @@
  * 
  * :::::::::::: ORIGINAL CODE: koreapyj, 김동동(1st edited) ::::::::::::
  * :::::::::::::::::::::: 2nd Edited by PRASEOD- ::::::::::::::::::::::
+ * TheWiki 코드 일부 사용됨
  * 코드 설명 주석 추가: PRASEOD-
  * 설명 주석이 +로 시작하는 경우 PRASEOD-의 2차 수정 과정에서 추가된 코드입니다.
  * 
@@ -329,7 +330,7 @@ class NamuMark {
 		return '<blockquote pressdo-blockquote class="wiki-quote">'.$innerhtml.'</blockquote>';
 	}
 
-	// 표 from TheWiki Parser
+	// 표
 	protected function tableParser($text, &$offset) {
 		$len = strlen($text);
 
