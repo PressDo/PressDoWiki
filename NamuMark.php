@@ -240,7 +240,7 @@ class NamuMark {
 			}
 		}
 		
-		// 문법 처리순서: 리스트 > 표 > 인용문 > 괄호 > 개행
+		// 문법 처리순서: 리스트 > 표 > 인용문 > 괄호(멀티브라켓) > 개행
 		for($i=0;$i<$len && $i>=0;self::nextChar($text,$i)) {
 			$now = self::getChar($text,$i);
 			if($line == '' && $now == ' ' && $list = $this->listParser($text, $i)) {
@@ -294,6 +294,7 @@ class NamuMark {
 		if($line != '')
 			$result .= $this->lineParser($line);
 
+                // 최하단 각주 출력
 		$result .= $this->printFootnote();
 
 		// 분류 모음
