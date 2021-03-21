@@ -235,7 +235,7 @@ class NamuMark {
 			}
 		}
 
-		// 리스트
+		// 문법 처리 순서: 리스트 > 인용문 > 삼중괄호 > 표 >
 		for($i=0;$i<$len && $i>=0;self::nextChar($text,$i)) {
 			$now = self::getChar($text,$i);
 			if($line == '' && $now == ' ' && $list = $this->listParser($text, $i)) {
@@ -679,7 +679,7 @@ class NamuMark {
 
 			// + 접힌문단 기능 추가
 			    if (preg_match('/^# (.*) #$/', $innertext, $ftoc)) {
-						$folded = 'pressdo-toc-fold="fold"';
+						$folded = 'pressdo-toc-fold="hide"';
 						$innertext = $ftoc[1];
 			    }else{
 				$folded = 'pressdo-toc-fold="show"';
