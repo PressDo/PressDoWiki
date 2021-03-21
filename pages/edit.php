@@ -70,7 +70,7 @@ $array = $Doc_content[1];
                 document.body.appendChild(f);
                 n = document.getElementById('_pressdo-form-anchor')
                 if(action == 'preview'){
-                    f.action = '/edit/<?=urlencode($Doc)?>';
+                    f.action = '/edit/<?=rawurlencode($Doc)?>';
                     var parent = n.parentNode;
                     parent.insertBefore(f, parent.childNodes[6]);
                 }
