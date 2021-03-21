@@ -62,7 +62,7 @@ namespace PressDo
         public static function LoadOldDocument($docnm, $rev)
         {
             // 문서 로드(구)
-            $d = urlencode($docnm);
+            $d = rawurlencode($docnm);
             $s = "SELECT * from `old_Document` where BINARY DocNm='$d' AND version='$rev'";
             $q = SQL_Query($s);
             $r = SQL_Assoc($q);
@@ -76,7 +76,7 @@ namespace PressDo
         public static function LoadLatestDocument($docnm)
         {
             // 문서 로드(최신)
-            $d = urlencode($docnm);
+            $d = rawurlencode($docnm);
             $s = "SELECT * from `Document` where BINARY DocNm='$d';";
             $q = SQL_Query($s);
             $r = SQL_Assoc($q);
@@ -101,7 +101,7 @@ namespace PressDo
                 $r = 'document';
             }
             // 문서 저장
-            $doc = urlencode($docnm);
+            $doc = rawurlencode($docnm);
             $s = "SELECT * from `Document` where DocNm='$doc'";
             $q = SQL_Query($s);
             $res = SQL_Assoc($q);
@@ -146,7 +146,7 @@ namespace PressDo
         // 판본 숨기기
         public static function hidehistory($DocNm, $rev)
         {
-            $doc = urlencode($DocNm);
+            $doc = rawurlencode($DocNm);
             $q = SQL_Assoc(SQL_Query("SELECT * from `Document` where DocNm='$doc'"));
             if($q['version'] == $rev){
                 // 최신 판본
@@ -193,7 +193,7 @@ namespace PressDo
         // 문서 ACL 설정 가져오기
         public static function getDocACL($DocNm, $action)
         {
-            $DocNm = urlencode($DocNm);
+            $DocNm = rawurlencode($DocNm);
             $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE BINARY DocNm='$DocNm' AND action='$action'");
             $res = array();
             while ($row = SQL_Assoc($get)) {
@@ -257,7 +257,7 @@ namespace PressDo
         public static function setDocACL($DocNm, $action, $access, $type, $target, $expiry = null)
         {
             global $SQL;
-            $DocNm = urlencode($DocNm);
+            $DocNm = rawurlencode($DocNm);
             $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE DocNm='$DocNm' AND action='$action' AND type='$type', condition='$target'");
             if($get->num_rows < 1){
                 // 새 설정
@@ -274,7 +274,7 @@ namespace PressDo
         // ACL 그룹에 사용자 추가
         public static function addUserACLgroup($User, $aclgroup)
         {
-            $User = urlencode($User);
+            $User = rawurlencode($User);
             $get = SQL_Query("INSERT INTO `ACL_user` (username, aclgroup) VALUES('$User', '$aclgroup')");
         }
 
