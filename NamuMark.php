@@ -233,7 +233,7 @@ class NamuMark {
 				return '#redirect '.$target[1];
 			}
 			
-			if(str_replace("http://pressdo.prws.kr/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))||str_replace("https://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))){
+			if(str_replace("http://pressdo.prws.kr/w/", "", $_SERVER['HTTP_REFERER'])==rawurlencode($target[1])||str_replace("https://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])== rawurlencode($target[1])){
 				return '흐음, 잠시만요. <b>같은 문서끼리 리다이렉트 되고 있는 것 같습니다!</b><br>다음 문서중 하나를 수정하여 문제를 해결할 수 있습니다.<hr><a href="/history/'.self::encodeURI($target[1]).'" target="_blank">'.$target[1].'</a><br><a href="/history/'.str_replace("+", "%20", urlencode($_GET['w'])).'" target="_blank">'.$_GET['w'].'</a><hr>문서를 수정했는데 같은 문제가 계속 발생하나요? <a href="'.self::encodeURI($target[1]).'"><b>여기</b></a>를 확인해보세요!';
 			} else {
 				return 'Redirection...'.$target[1].'<script> top.location.href = "/w/'.self::encodeURI($target[1]).'"; </script>';
