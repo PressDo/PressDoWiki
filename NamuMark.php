@@ -3,7 +3,7 @@
 /**
  * namumark.php - Namu Mark Renderer
  * Copyright (C) 2015 koreapyj koreapyj0@gmail.com
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,16 +13,15 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * :::::::::::: ORIGINAL CODE: koreapyj, 김동동(1st edited) ::::::::::::
  * :::::::::::::::::::::: 2nd Edited by PRASEOD- ::::::::::::::::::::::
- * TheWiki 코드 일부 사용됨
  * 코드 설명 주석 추가: PRASEOD-
  * 설명 주석이 +로 시작하는 경우 PRASEOD-의 2차 수정 과정에서 추가된 코드입니다.
- * 
+ *
  * ::::::::: 변경 사항 ::::::::::
  * 카카오TV 영상 문법 추가 [나무위키]
  * 커스텀 영상 문법 추가 [video(url)]
@@ -38,16 +37,11 @@
  * 본문 영역 문단별 <div> 적용
  * 접힌목차 기능 추가
  * 볼드체 문법 추가(**)
- * 
+ *
  * :: Bugs ::
  * 맨 처음 여는 {{{#!wiki }}} 괄호에서 이중 따옴표로 인해 스타일이 적용되지 않음
  * 텍스트 + 표를 하나의 {{{#!wiki }}}로 감쌀 경우 표 문법이 적용되지 않음
  * 표 td에 적용된 {{{#!wiki }}} 내부에서 개행 시 표 문법에 영향을 줌
- *
- * 함수 적용 순서
- * toHtml() -> htmlScan() -> 
- *
- *
  */
 
 class PlainWikiPage {
@@ -181,10 +175,11 @@ class NamuMark {
 				'open'	=> ',,',
 				'close' => ',,',
 				'multiline' => false,
-				'processor' => array($this,'textProcessor'));
+				'processor' => array($this,'textProcessor'))
+			);
 
 		$this->macro_processors = array();
-		
+
 		$this->WikiPage = $wtext;
 		$this->imageAsLink = false;
 		$this->wapRender = false;
@@ -224,7 +219,7 @@ class NamuMark {
 		$len = strlen($text);
 		$now = '';
 		$line = '';
-		
+
 		// 리다이렉트 from TheWiki Parser
 		if(self::startsWith($text, '#') && preg_match('/^#(?:redirect|넘겨주기) (.+)$/im', $text, $target)) {
 			array_push($this->links, array('target'=>$target[1], 'type'=>'redirect'));
@@ -232,15 +227,15 @@ class NamuMark {
 			if(defined('noredirect')){
 				return '#redirect '.$target[1];
 			}
-			
-			if(str_replace("http://pressdo.prws.kr/w/", "", $_SERVER['HTTP_REFERER'])==rawurlencode($target[1])||str_replace("https://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])== rawurlencode($target[1])){
+
+			if(str_replace("http://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))||str_replace("https://thewiki.ga/w/", "", $_SERVER['HTTP_REFERER'])==str_replace("+", "%20", urlencode($target[1]))){
 				return '흐음, 잠시만요. <b>같은 문서끼리 리다이렉트 되고 있는 것 같습니다!</b><br>다음 문서중 하나를 수정하여 문제를 해결할 수 있습니다.<hr><a href="/history/'.self::encodeURI($target[1]).'" target="_blank">'.$target[1].'</a><br><a href="/history/'.str_replace("+", "%20", urlencode($_GET['w'])).'" target="_blank">'.$_GET['w'].'</a><hr>문서를 수정했는데 같은 문제가 계속 발생하나요? <a href="'.self::encodeURI($target[1]).'"><b>여기</b></a>를 확인해보세요!';
 			} else {
 				return 'Redirection...'.$target[1].'<script> top.location.href = "/w/'.self::encodeURI($target[1]).'"; </script>';
 			}
 		}
-		
-		// 문법 처리순서: 리스트 > 표 > 인용문 > 괄호(멀티브라켓) > 개행
+
+		// 리스트
 		for($i=0;$i<$len && $i>=0;self::nextChar($text,$i)) {
 			$now = self::getChar($text,$i);
 			if($line == '' && $now == ' ' && $list = $this->listParser($text, $i)) {
@@ -252,15 +247,7 @@ class NamuMark {
 				continue;
 			}
 
-			// 표
-			if($line == '' && self::startsWith($text, '|', $i) && $table = $this->tableParser($text, $i)) {
-				$result .= ''
-					.$table
-					.'';
-				$line = '';
-				$now = '';
-				continue;
-			}
+			
 
 			// 인용문
 			if($line == '' && self::startsWith($text, '&gt;', $i) && $blockquote = $this->bqParser($text, $i)) {
@@ -284,6 +271,16 @@ class NamuMark {
 				}
 			}
 
+			// 표
+			if($line == '' && self::startsWith($text, '|', $i) && $table = $this->tableParser($text, $i)) {
+				$result .= ''
+					.$table
+					.'';
+				$line = '';
+				$now = '';
+				continue;
+			}
+
 			if($now == "\n") { // line parse
 				$result .= $this->lineParser($line);
 				$line = '';
@@ -294,7 +291,6 @@ class NamuMark {
 		if($line != '')
 			$result .= $this->lineParser($line);
 
-                // 최하단 각주 출력
 		$result .= $this->printFootnote();
 
 		// 분류 모음
@@ -313,7 +309,7 @@ class NamuMark {
 
 	// 인용문 from TheWiki Parser
 	private function bqParser($text, &$offset) {
-		$len = strlen($text);		
+		$len = strlen($text);
 		$innerhtml = '';
 		for($i=$offset;$i<$len;$i=self::seekEndOfLine($text, $i)+1) {
 			$eol = self::seekEndOfLine($text, $i);
@@ -335,8 +331,12 @@ class NamuMark {
 		$offset = $i-1;
 		return '<blockquote pressdo-blockquote class="wiki-quote">'.$innerhtml.'</blockquote>';
 	}
+	protected static function endsWith($haystack, $needle) {
+		// search forward starting from end minus needle length characters
+		return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
+	}
 
-	// 표
+	// 표 from TheWiki Parser
 	protected function tableParser($text, &$offset) {
 		$len = strlen($text);
 
@@ -636,13 +636,13 @@ class NamuMark {
 			return true;
 		}
 
-		$last = count($arr)-1;
+		$last = self::count($arr)-1;
 		$readableId = $last+1;
 		if($arr[0]['level'] >= $level) {
 			$arr[] = array('text' => $text, 'start' => $start, 'level' => $level, 'tag' => $tag, 'childNodes' => array());
 			return true;
 		}
-		
+
 		return $this->listInsert($arr[$last]['childNodes'], $text, $level, $tag);
 	}
 
@@ -665,15 +665,15 @@ class NamuMark {
 	private function lineParser($line) {
 		$result = '';
 		$line_len = strlen($line);
-		
+
 		// 주석
 		if(self::startsWith($line, '##')) {
 			$line = '';
 		}
-		
+
 		// == Title == (문단)
 		// + 공백 있어서 안 되는 오류 수정
-		if(self::startsWith($line, '=') && preg_match('/^(=+)(.*?)(=+) *$/', trim($line), $match) && $match[1]===$match[3]) {	
+		if(self::startsWith($line, '=') && preg_match('/^(=+)(.*?)(=+) *$/', trim($line), $match) && $match[1]===$match[3]) {
 			$level = strlen($match[1]);
 			$innertext = $this->blockParser($match[2]);
 
@@ -692,20 +692,20 @@ class NamuMark {
 			// + 문단에서 앵커가 태그속에 들어가는 부분 수정
 			if(preg_match('/\[anchor\((.*)\)\]/', $innertext, $anchor)){
 				$RealContent = str_replace($anchor[0], '', $innertext);
-				$result .= '<a id="'.$anchor[1].'"></a><span id="'.$RealContent.'">'.$RealContent;
+				$result .= '<a id="'.$anchor[1].'"></a><span id="'.trim($RealContent).'">'.$RealContent;
 			}else{
 				$result .= '<span id="'.$innertext.'">'.$innertext;
 			}
 
 			// + 부분 편집 기능 작업
 			// + content-s- 속성 추가 (문단 숨기기용)
-			$result .= '<span pressdo-edit-section><a href="/edit/@@@PressDo-Replace-Title-Here@@@?section='.$id.'" rel="nofollow">[편집]</a></span>
+			$result .= '<span pressdo-edit-section onclick="event.cancelBubble=true"><a href="/edit/@@@PressDo-Replace-Title-Here@@@?section='.$id.'" rel="nofollow">[편집]</a></span>
 							</span>
 						</h'.$level.'><div id="content-s-'.$id.'" pressdo-doc-paragraph '.$folded.'>';
 			$line = '';
-			
+
 		}
-		
+
               $line = preg_replace('/^[^-]*(-{4,9})[^-]*$/', '<hr>', $line);
 
 		$line = $this->blockParser($line);
@@ -847,14 +847,14 @@ class NamuMark {
 					return '<div '.htmlspecialchars_decode(substr($line, 11)).'>_(#!WIKIMARK)_';
 				}
 				if(preg_match('/^{{{#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}) (.*)$/', $line, $match)) {
-					if(count(explode("}}}", $match[0]))<=1){
+					if(self::count(explode("}}}", $match[0]))<=1){
 						$this->color_temp_line[] = $line;
 						$this->color = $match[1];
 						$this->finded_color_line = true;
 						return;
 					}
 				}
-				if(count(explode("}}}", $line))>1&&count($this->color_temp_line)>0&&$this->finded_color_line) {
+				if(self::count(explode("}}}", $line))>1&&self::count($this->color_temp_line)>0&&$this->finded_color_line) {
 					$line = implode("}}}{{{#!html <br>}}}{{{#".$this->color." ", $this->color_temp_line)." }}}{{{#!html <br>}}}{{{#".$this->color." ".$line;
 					unset($this->color_temp_line);
 					$this->finded_color_line = false;
@@ -879,7 +879,7 @@ class NamuMark {
 
 	// TheWiki Parser 코드 적용
 	private function renderProcessor($text, $type) {
-       		if(self::startsWithi($text, '#!html')) {
+       	if(self::startsWithi($text, '#!html')) {
 			$html = substr($text, 6);
 			$html = ltrim($html);
 			$html = htmlspecialchars_decode($html);
@@ -894,7 +894,7 @@ class NamuMark {
 			$child->wapRender = $this->wapRender;
 			$child->included = true;
 			$twPrint = $child->toHtml();
-			
+
 			return '<div pressdo-wikistyle '.htmlspecialchars_decode($match[1]).'>'.htmlspecialchars_decode($twPrint).'</div>';
 		}
 		return '<pre><code>'.substr($text, 1).'</code></pre>';
@@ -927,7 +927,7 @@ class NamuMark {
 			array_push($this->links, array('target'=>$category[0], 'type'=>'file'));
 			if($this->imageAsLink)
 				return '<span pressdo-link-file class="alternative">[<a pressdo-link-file target="_blank" title="'.$category[0].'" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
-			
+
 			$paramtxt = '';
 			$csstxt = '';
 			if(!empty($href[1])) {
@@ -959,7 +959,7 @@ class NamuMark {
 			$xd = md5($category[0].rand(1,50));
 			$ext = strtolower(end(explode(".", $category[0])));
 			$hash = sha1($category[0], FALSE);
-			
+
 			if(is_file("../files/".$hash.".".$ext)){
 				$google_photos_check = fopen("../files/".$hash.".".$ext, "r");
 				$google_photos = fread($google_photos_check, 158);
@@ -970,11 +970,11 @@ class NamuMark {
 					return '<img src="/files/'.$hash.'.'.$ext.'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
 				}
 			}
-			
-			$img = "SELECT * FROM file WHERE name = binary('$category[0]') LIMIT 1";
-			$imgres = mysqli_query($config_db, $img);
-			$imgarr = mysqli_fetch_array($imgres);
-			mysqli_close($conn);
+
+			//$img = "SELECT * FROM file WHERE name = binary('$category[0]') LIMIT 1";
+			//$imgres = mysqli_query($config_db, $img);
+			//$imgarr = mysqli_fetch_array($imgres);
+			//mysqli_close($conn);
 			if($imgarr['google']!=""){
 				return '<img src="'.$imgarr['google'].'" '.trim(str_replace('style="', 'style="cursor:hand; ', $paramtxt)).'>';
 			} else if($imgarr['dir']!=""){
@@ -988,7 +988,7 @@ class NamuMark {
 			array_push($this->links, array('target'=>$category[0], 'type'=>'file'));
 			if($this->imageAsLink)
 				return '<span pressdo-img-alternative class="alternative">[<a target="_blank" href="'.self::encodeURI($category[0]).'">image</a>]</span>';
-			
+
 			$paramtxt = '';
 			$csstxt = '';
 			if(!empty($href[1])) {
@@ -1024,7 +1024,7 @@ class NamuMark {
 				$href[0] = substr($href[0], 1);
 				$c=1;
 			}
-			$targetUrl = $this->prefix.self::encodeURI($href[0]);
+			$targetUrl = $this->prefix.'/'.self::encodeURI($href[0]);
 			if($this->wapRender && !empty($href[1]))
 				$title = $href[0];
 			if(empty($c))
@@ -1055,17 +1055,15 @@ class NamuMark {
 			case 'footnote':
 				// 각주모음
 				return $this->printFootnote();
-			case 'clearfix':
-				return '<div style="clear:both"></div>';
 			default:
 				if(self::startsWithi(strtolower($text), 'include') && preg_match('/^include\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					if($this->included)
 						return ' ';
 					$include = explode(',', $include);
 					array_push($this->links, array('target'=>$include[0], 'type'=>'include'));
-					
+
 					$w = $include[0];
-					if(count(explode(":", $w))>1){
+					if(self::count(explode(":", $w))>1){
 						$tp = explode(":", $w);
 						switch($tp[0]){
 							case '틀':
@@ -1094,7 +1092,7 @@ class NamuMark {
 								break;
 							default:
 								$namespace = '0';
-						
+
 						}
 						if($namespace>0){
 							$w = str_replace($tp[0].":", "", implode(":", $tp));
@@ -1102,35 +1100,35 @@ class NamuMark {
 					}
 					$_POST = array('namespace'=>$namespace, 'title'=>$w, 'ip'=>$_SERVER['REMOTE_ADDR'], 'option'=>'original');
 					include $_SERVER['DOCUMENT_ROOT'].'/API.php';
-					
+
 					if($api_result->status!='success'||$api_result->type=='refresh'){
 						return ' ';
 					} else {
 						$arr['text'] = $api_result->data;
 						unset($api_result);
 					}
-					
+
 					if(defined("isdeleted")){
 						return ' ';
 					}
-					
+
 					// themark 통합
 					$arr['text'] = simplemark($arr['text']);
-					
+
 					// #!folding 문법 #!end}}} 치환
 					$foldingstart = explode('{{{#!folding ', $arr['text']);
-					for($z=1;$z<count($foldingstart);$z++){
+					for($z=1;$z<self::count($foldingstart);$z++){
 						$foldingcheck = true;
 						$find = '';
 						$match = '';
 						$temp_explode = '';
-						
-						if(count(explode("}}}", $foldingstart[$z]))>1){
+
+						if(self::count(explode("}}}", $foldingstart[$z]))>1){
 							$temp_explode = explode("}}}", $foldingstart[$z]);
-							
+
 							$end_loop = 0;
-							while(count($temp_explode)>$end_loop){
-								if(count(explode('{{{', $temp_explode[$end_loop]))>1){
+							while(self::count($temp_explode)>$end_loop){
+								if(self::count(explode('{{{', $temp_explode[$end_loop]))>1){
 									$end_loop++;
 								} else {
 									for($x=0;$end_loop>$x;$x++){
@@ -1138,19 +1136,19 @@ class NamuMark {
 									}
 									$find = $match.$temp_explode[$end_loop].'}}}';
 									$match .= $temp_explode[$end_loop].'#!end}}}';
-									$end_loop = count($temp_explode)+1;
+									$end_loop = self::count($temp_explode)+1;
 								}
 							}
-							
+
 							$arr['text'] = str_replace('{{{#!folding '.$find, '{{{#!folding '.$match, $arr['text']);
 						}
 					}
 					// #!folding 문법 우선 적용
 					$foldingstart = explode('{{{#!folding ', $arr['text']);
-					for($z=1;$z<count($foldingstart);$z++){
+					for($z=1;$z<self::count($foldingstart);$z++){
 						$foldingcheck = true;
 						$foldopentemp = reset(explode("\n", $foldingstart[$z]));
-						if(count(explode("#!end}}}", $foldingstart[$z]))>1){
+						if(self::count(explode("#!end}}}", $foldingstart[$z]))>1){
 							$foldingtemp = str_replace("#!end}}}", "_(FOLDINGEND)_", $foldingstart[$z]);
 							$foldingdatatemp = next(explode($foldopentemp, reset(explode("_(FOLDINGEND)_", $foldingtemp))));
 							$md5 = md5(rand(1,10).$foldingdatatemp);
@@ -1159,7 +1157,7 @@ class NamuMark {
 							$arr['text'] = str_replace("{{{#!folding ".$foldopentemp.$foldingdatatemp."#!end}}}", "_(FOLDINGSTART)_".$md5."_(FOLDINGSTART2)_ _(FOLDINGDATA)_".$md5."_(FOLDINGDATA2)_ _(FOLDINGEND)_", $arr['text']);
 						}
 					}
-					
+
 					if($arr['text']!="") {
 						foreach($include as $var) {
 							$var = explode('=', ltrim($var));
@@ -1167,7 +1165,7 @@ class NamuMark {
 								$var[1]='';
 							$arr['text'] = str_replace('@'.$var[0].'@', $var[1], $arr['text']);
 						}
-						
+
 						$wPage2 = new PlainWikiPage($arr['text']);
 						$child = new NamuMark($wPage2);
 						$child->prefix = $this->prefix;
@@ -1175,16 +1173,16 @@ class NamuMark {
 						$child->wapRender = $this->wapRender;
 						$child->included = true;
 						$twPrint = $child->toHtml();
-						
+
 						// #!folding
 						if($foldingcheck){
 							$twPrint = str_replace('_(FOLDINGEND)_', '</div></dd></dl>', $twPrint);
-							
+
 							$getmd5 = explode("_(FOLDINGDATA)_", $twPrint);
-							for($xz=1;$xz<count($getmd5);$xz++){
+							for($xz=1;$xz<self::count($getmd5);$xz++){
 								$mymd5 = reset(explode("_(FOLDINGDATA2)_", $getmd5[$xz]));
 								$twPrint = str_replace('_(FOLDINGSTART)_'.$mymd5.'_(FOLDINGSTART2)_', '<dl class="wiki-folding"><dt><center>'.$foldopen[$mymd5].'</center></dt><dd style="display: none;"><div class="wiki-table-wrap">', $twPrint);
-								
+
 								$fPage = new PlainWikiPage($foldingdata[$mymd5]);
 								$child = new NamuMark($fPage);
 								$child->prefix = $this->prefix;
@@ -1192,11 +1190,11 @@ class NamuMark {
 								$child->wapRender = $this->wapRender;
 								$child->included = true;
 								$fwPrint = $child->toHtml();
-								
+
 								$twPrint = str_replace('<div class="wiki-table-wrap"> _(FOLDINGDATA)_'.$mymd5.'_(FOLDINGDATA2)_ </div>', '<div class="wiki-table-wrap"> '.$fwPrint.' </div>', $twPrint);
 							}
 						}
-						
+
 						return $twPrint;
 					}
 					return ' ';
@@ -1256,11 +1254,11 @@ class NamuMark {
 						? ((date("Y") - $include[0]) - 1)
 						: (date("Y") - $include[0]));
 					return $age;
-					
+
 				}
 				elseif(self::startsWithi(strtolower($text), 'anchor') && preg_match('/^anchor\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					// 앵커
-					return '<a name="'.$include.'"></a>';
+					return '';//<a name="'.$include.'"></a>';
 				}
 				elseif(self::startsWithi(strtolower($text), 'dday') && preg_match('/^dday\((.+)\)$/i', $text, $include) && $include = $include[1]) {
 					// D-DAY
@@ -1280,15 +1278,11 @@ class NamuMark {
 					$preview = str_replace('"', '\\"', $preview);
 					return '<a id="rfn-'.htmlspecialchars($id).'" class="wiki-fn" href="#fn-'.rawurlencode($id).'" title="'.$preview.'">['.($note[1]?$note[1]:$id).']</a>';
 				}
-				elseif(self::startsWithi(strtolower($text), 'pagecount') && preg_match('/^pagecount\((.+)\)$/i', $text, $include) && $include = $include[1]) {
-					// 앵커
-					return '[@@@PRESSDO-PAGECOUNT-'.$include.'@@@]';
-				}
 		}
 		return '['.$text.']';
 	}
 
-	// TheWiki Parser 일부 
+	// TheWiki Parser 일부
 	private function textProcessor($otext, $type) {
 		if($type != '{{{')
 			$text = $this->formatParser($otext);
@@ -1323,7 +1317,7 @@ class NamuMark {
 			case ',,':
 				// 아래첨자
                 		return '<sub>'.$text.'</sub>';
-			case '{{{': 
+			case '{{{':
 				// HTML
 				if(self::startsWith($text, '#!html')) {
 					$html = substr($text, 6);
@@ -1349,7 +1343,7 @@ class NamuMark {
 
 	// 각주 삽입
 	private function fnInsert(&$arr, &$text, $id = null) {
-		$arr_cnt = count($arr);
+		$arr_cnt = self::count($arr);
 		if(empty($id)) {
 			$multi = false;
 			$id = ++$this->fn_cnt;
@@ -1373,7 +1367,7 @@ class NamuMark {
 
 	// 페이지 하단 각주 목록
 	private function printFootnote() {
-		if(count($this->fn)==0)
+		if(self::count($this->fn)==0)
 			return '';
 
 		$result = $this->wapRender?'<hr>':'<hr><ol class="fn">';
@@ -1402,13 +1396,13 @@ class NamuMark {
 			$arr[0] = array('name' => $text, 'level' => $level, 'childNodes' => array());
 			return $path.'1';
 		}
-		$last = count($arr)-1;
+		$last = self::count($arr)-1;
 		$readableId = $last+1;
 		if($arr[0]['level'] >= $level) {
 			$arr[] = array('name' => $text, 'level' => $level, 'childNodes' => array());
 			return $path.($readableId+1);
 		}
-		
+
 		return $this->tocInsert($arr[$last]['childNodes'], $text, $level, $path.$readableId.'.');
 	}
 
@@ -1506,6 +1500,21 @@ class NamuMark {
 			$str = substr($string, $pointer, $bytes);
 			$pointer += $bytes;
 			return $str;
+		}
+	}
+
+	private static function count($var){
+		if(!is_array($var) && !is_countable($var)){
+			return false;
+		}else{
+			return count($var);
+		}
+	}
+	private static function in_array($var){
+		if(!is_array($var)){
+			return false;
+		}else{
+			return in_array($var);
 		}
 	}
 

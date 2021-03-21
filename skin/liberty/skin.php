@@ -19,6 +19,7 @@ namespace PressDo {
         }
 
         public static function page_frame(){
+            global $conf;
             // 공통 UI
             ?><style>
 @import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
@@ -85,7 +86,7 @@ a[pressdo-navitem-nonlist], a[pressdo-navitem-listdown]{color:#fff; font-size:1r
 a[pressd-navitem-nonlist]:hover, a[pressdo-navitem-listdown]:hover {background-color: #023e98;-webkit-transition: .3s; transition: .3s;}
 a[pressdo-navitem-nonlist] span[ionicon], a[pressdo-navitem-listdown] span[ionicon]{font-size:1rem; margin-right:.5rem;}
 span[ionicon]{display:inline-block; font: normal normal normal 14px/1.45 'Ionicons'; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-div[pressdo-navfunc]{position:absolute; top:100%; left:0; z-index:1000; display:none; float:left; min-width:160px; padding: 5px 0; margin: 2px 0 0; color:#373a3c; text-align:left; list-style:none; background-color:#fff; -webkit-background-clip: padding-box; background-clip:padding-box; border:1px solid rgba(0,0,0,.15); border-radius:.25rem; margin-top:0; border-top-left-radius:0; border-top-right-radius:0; font-size:.95rem; box-shadow:0 6px 12px rgba(0,0,0,.175); border-color:#e1e8ed;}
+div[pressdo-navfunc]{position:absolute; top:100%; left:0; z-index:1000; float:left; min-width:160px; padding: 5px 0; margin: 2px 0 0; color:#373a3c; text-align:left; list-style:none; background-color:#fff; -webkit-background-clip: padding-box; background-clip:padding-box; border:1px solid rgba(0,0,0,.15); border-radius:.25rem; margin-top:0; border-top-left-radius:0; border-top-right-radius:0; font-size:.95rem; box-shadow:0 6px 12px rgba(0,0,0,.175); border-color:#e1e8ed;}
 div[pressdo-navfunc] a[pressdo-navfunc-item]{ display:block; width:100%; padding:3px 20px; clear:both; font-weight:400; line-height:1.5; color:#373a3c; text-align:inherit; white-space: nowrap; background: 0,0; border:0;}
 div[pressdo-usermenu]{float:right; padding-left:.8rem;}
 form[pressdo-search-form]{padding:.4rem 0; float:right;}
@@ -129,9 +130,18 @@ iframe{display: block;max-width: 100%;}
 [pressdo-toc]{cursor:pointer;}
 [pressdo-toc]:before {float: left;font-family: Ionicons;font-weight: 400;font-size: .8em;text-align: center;margin: 0 .5rem 0 .2rem;width: .9em;color: #666;content: "\f3d0";}
 span[pressdo-edit-section] {float: right;font-size: .8rem;}    
+[pressdo-navfunc][pressdo-toc-fold=hide]{display:none;}
 [pressdo-toc][pressdo-toc-fold=hide]{opacity:.5;}
 [pressdo-toc][pressdo-toc-fold=hide]:before{content:"\f3d1";}
 div[pressdo-doc-paragraph][pressdo-toc-fold=hide]{display:none;}
+code,kbd,pre,samp{font-family:Menlo,Monaco,Consolas,Courier New,monospace;font-size:1em;}
+code{color:#bd4147;background-color:#f7f7f9;border-radius:.25rem;}
+code,kbd{padding:.2rem .4rem; font-size:90%!important;}
+code[pressdo-nowiki]{padding:2px;background-color:transparent;border:none;border-radius:0;}
+div[pressdo-doc-tablewrap]{display:block;max-width:100%;overflow-x:auto;margin:10px 0;}
+table{background-color:transparent;border-spacing:0;border-collapse:collapse;}
+table[pressdo-doc-table]{background-color:#f5f5f5;border-collapse:collapse;}
+table[pressdo-doc-table] td{padding: 5px 10px;border: 1px solid #ddd;}
 
 
 /* Viewer Primary Settings */
@@ -147,7 +157,11 @@ h3[pressdo-toc]{font-size: 1.6em;}
 h4[pressdo-toc]{font-size: 1.5em;}
 h5[pressdo-toc]{font-size: 1.3em;}
 h6[pressdo-toc]{font-size: 1.1em;}
-h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-toc], h6[pressdo-toc] {margin: 1.2em 0 .8em;border-bottom: 1px solid #ccc;padding-bottom: 5px;}
+h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-toc], h6[pressdo-toc] {margin: 1.2em 0 .8em;border-bottom: 1px solid #ccc;padding-bottom: 5px;font-weight:500;line-height:1.1;color:inherit;}
+
+/* Editor */
+textarea[pressdo-editor] {font-family: inherit;color: #55595c;font-size: .9rem;margin: 0;border-radius: 0;padding: .25rem .5rem;width: 100%;height: 30rem;border: none;resize: vertical;}
+textarea {width: 100%;border: 1px solid #e1e8ed;padding: .5rem;resize: vertical;}
 
 /* Ionicons Font Settings */
 *[ion-compass]:before {content: "\f37c";}
@@ -159,8 +173,8 @@ h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-t
 *[ion-move]:before {content: "\f133";min-width: 15px;display: block;}
 *[ion-unlogined]:before {content: "\f29e";}
               </style>
-<script>
-        function hiddencontents(a){
+              <script>
+    function hiddencontents(a){
         b = document.getElementById(a);
         c = document.getElementById('content-'+a);
         if(b.getAttribute('pressdo-toc-fold') == 'hide'){
@@ -196,12 +210,12 @@ h1[pressdo-toc], h2[pressdo-toc], h3[pressdo-toc], h4[pressdo-toc], h5[pressdo-t
                             </a>
                         </li>
                         <li pressdo-navitem-listdown>
-                            <a href="#" pressdo-navitem-listdown title="특수 기능">
+                            <a onclick="hiddencontents('nav-menu');" id="nav-menu" pressdo-toc-fold="hide" pressdo-navitem-listdown title="특수 기능">
                                 <span ionicon ion-func></span>
                                 <span nav-text>특수 기능</span>
                                 <span ionicon ion-dropdown></span>
                             </a>
-                            <div pressdo-navfunc role="menu">
+                            <div pressdo-navfunc pressdo-toc-fold="hide" id="content-nav-menu" role="menu">
                                 <a href="//board.namu.wiki/" title="게시판" data-v-193fc2b2="" data-v-b986d46e="" data-v-3e5e2b49="">
                                     <span class="i ion-ios-clipboard" data-v-193fc2b2=""></span> 
                                     <span class="t" data-v-193fc2b2="">게시판</span>
