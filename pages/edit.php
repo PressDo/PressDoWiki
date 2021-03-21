@@ -81,7 +81,7 @@ $array = $Doc_content[1];
                         parent.insertBefore(f, parent.childNodes[6]);
                         return false;
                     }
-                    f.action = '<?=$conf['ViewerUri'].urlencode($Doc)?>'; 
+                    f.action = '<?=$conf['ViewerUri'].rawurlencode($Doc)?>'; 
                 }
                 f.submit();
             }
@@ -90,7 +90,7 @@ $array = $Doc_content[1];
     </form><?php
     if($_POST['action'] == 'preview'){
         ?><p> 아래는 저장되지 않은 미리 보기의 모습입니다. </p><hr><?php
-        echo str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), PressDo::readSyntax($_POST['content'], 1));
+        echo str_replace('@@@PressDo-Replace-Title-Here@@@', rawurlencode($Title), PressDo::readSyntax($_POST['content'], 1));
     }?></div><?php
 WikiSkin::footer();
 ?>
