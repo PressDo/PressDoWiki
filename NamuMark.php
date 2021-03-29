@@ -221,8 +221,27 @@ class NamuMark{
 		else
 		    return array();
 	}
+	function bracketParser($wikitext, $pos, $bracket){
+		$cnt = 0;
+		$done = false;
+		for($i=$pos;$i<mb_strlen($wikitext);$i++){
+			if(str_starts_with(substr($wikitext, $i), $bracket['open']) && !($bracket['open'] == $bracket['close'] && $cnt > 0)){
+				$cnt++;
+				$done = true;
+				$i += strlen($bracket['open']) - 1;
+			} elseif(str_starts_with(substr($wikitext, $i), $bracket['close'])){
+				$cnt--;
+				$i += strlen($bracket['close']) - 1;
+			} elseif(!$bracket['multiline'] && strpos($wikitext,$i) === '\n')
+				return null;
+			
+			if($cnt == 0 && done){
+				$innerString = substr($wikitext, $pos + strlen($bracket['open']
+			}
+		}
+	}
 
-    function parse(){return $this->doParse();}
+    	function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
 	function setIncludeParameters($paramsObj){$options['includeParameters'] = $paramsObj;}
 	function setRenderer($r = null, $o = null){
