@@ -221,7 +221,7 @@ class NamuMark{
 		else
 		    return array();
 	}
-	function bracketParser($wikitext, $pos, $bracket){
+	function bracketParser($wikitext, $pos, $bracket, $cb){
 		$cnt = 0;
 		$done = false;
 		for($i=$pos;$i<mb_strlen($wikitext);$i++){
@@ -235,8 +235,10 @@ class NamuMark{
 			} elseif(!$bracket['multiline'] && strpos($wikitext,$i) === '\n')
 				return null;
 			
-			if($cnt == 0 && done){
-				$innerString = substr($wikitext, $pos + strlen($bracket['open']
+			if($cnt == 0 && $done){
+				($cb)?
+				$innerString = substr($wikitext, $pos + strlen($bracket['open']), $i - strlen($bracket['close']) + 1);
+				return array(renderProcessor($innerString, $bracket['open']), $i, mb_strlen($innerString) + strlen($bracket['open'] + strlen($bracket['close']));
 			}
 		}
 	}
