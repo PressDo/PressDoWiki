@@ -1,34 +1,37 @@
-<?php
-function defaultOptions($content, $aeie=array()){
-    return array(
-		'wiki' => array(
-			'read' => $content
-		),
-		'allowedExternalImageExts' => $aeie,
-		'included' => false,
-		'includeParameters' => array(),
-		'macroNames' => array('br', 'date', '목차', 'tableofcontents', '각주', 'footnote', 'toc', 'youtube', 'nicovideo', 'kakaotv', 'include', 'age', 'dday')
-	);
-}
-$multiBrackets = array(
-	'open' => '{{{',
-	'close' => '}}}',
-	'multiline' => true,
-	'processor' => 'renderProcessor'
-);
+< ?php
+require_once 'HTMLRenderer.php';
+
+
 $redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
 function seekEOL($text, $offset = 0){
 	return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
 }
 
 class NamuMark{
-public function __construct($content, $_options){
-	$options = array_merge(defaultOptions($content), $_options=null);
-	$wikitext = $options['wiki']['read'];
-	$rendererOptions = null;
-	$renderer = null;
-}
-	function doParse(){
+	public function __construct($content, $_options=array()){
+		global $wikitext;
+		$defaultOptions = array(
+			'wiki' => array(
+				'read' => $content
+			),
+			'allowedExternalImageExts' => $_options,
+			'included' => false,
+			'includeParameters' => array(),
+			'macroNames' => array('br', 'date', '목차', 'tableofcontents', '각주', 'footnote', 'toc', 'youtube', 'nicovideo', 'kakaotv', 'include', 'age', 'dday')
+		);
+		$options = $defaultOptions;
+		$wikitext = $options['wiki']['read'];
+		$rendererOptions = null;
+		$renderer = null;
+	}		
+	private static function doParse(){
+		global $wikitext;
+		$multiBrackets = array(
+			'open' => '{{{',
+			'close' => '}}}',
+			'multiline' => true,
+			'processor' => 'renderProcessor'
+		);
 		$renderer = ($rendererOptions)? new HTMLReader($rendererOptions):new HTMLReader();
 		$line = '';
 		$now = '';
@@ -74,12 +77,12 @@ public function __construct($content, $_options){
 			    $line = '';
 			}
 			else
-			    $line += $now;
+			    $line .= $now;
 		}
 		if(mb_strlen($line) != 0)
 		    $tokens = array_push($tokens,array(array('name' => 'wikitext', 'treatAsLine' => true, 'text' => $line)));
 		function processTokens($newarr){
-			(!is_array($newarr))?$newarr = array();
+			if(!is_array($newarr)) $newarr = array();
 			for($i=0;$i < count($newarr); $i++){
 				$v = $newarr[$i];
 				if(is_array($v))
@@ -139,7 +142,7 @@ public function __construct($content, $_options){
 				$imgUrl = $matches[1];
 				$optionsString = $matches[2];
 				$optionMatches = preg_match_all($extImgOptionPattern, $optionsString);
-				(!is_array($optionMatches[1]))?$optionMatches = array(null, array());
+				if (!is_array($optionMatches[1])) $optionMatches = array(null, array());
 				$styleOptions = array();
 				for($k=1;$k<count($optionMatches[1]);$k++){
 					$styleOptions[$optionMatches[1][$k]] = $optionMatches[2][$k];
@@ -158,7 +161,7 @@ public function __construct($content, $_options){
 					$bracket = $singleBrackets[$k];
 					$temp = null;
 					$innerStrLen = null;
-					if(str_starts_with(substr($line,$j),$bracket['open']) && $br_i = bracketParser($line, $nj, $bracket) && $temp = $br_i[0] && $nj = $br_i[1] && $innerStrLen = $br_i[2])){
+					if(str_starts_with(substr($line,$j),$bracket['open']) && $br_i = bracketParser($line, $nj, $bracket) && $temp = $br_i[0] && $nj = $br_i[1] && $innerStrLen = $br_i[2]){
 						if(strlen($plainTemp) !== 0){
 							array_push($result, array('name' => 'plain', 'text' => $plainTemp));
 							$plainTemp = '';
@@ -174,7 +177,7 @@ public function __construct($content, $_options){
 						array_push($result, array('name' => 'plain', 'text' => $plainTemp));
 						$plainTemp = '';
 					}else{
-						$plainTemp += $line[j];
+						$plainTemp .= $line[j];
 					}
 				}
 			}
@@ -199,7 +202,7 @@ public function __construct($content, $_options){
 
 		if(str_starts_with($line, '##'))
 		    return array(array('name' => 'comment', 'text' => substr($line,2)));
-		
+
 		if(str_starts_with($line, '=')){
 			foreach($headings as $patternString){
 				if(preg_match($patternString, $line, $hd_m)){
@@ -219,7 +222,7 @@ public function __construct($content, $_options){
 		    return array();
 	}
 
-    function parse($c){return doParse($c);}
+    function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
 	function setIncludeParameters($paramsObj){$options['includeParameters'] = $paramsObj;}
 	function setRenderer($r = null, $o = null){
