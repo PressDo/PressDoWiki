@@ -221,7 +221,18 @@ class NamuMark{
 		else
 		    return array();
 	}
+	
 	function bracketParser($wikitext, $pos, $bracket, $cb){
+		function callProc($proc, $arg1=null, $arg2=null, $arg3=null, $arg4=null){
+		switch($proc){
+			case 'render':
+				return renderProcessor($arg1, $arg2);
+				break;
+			case '':
+			default:
+				break;
+			}
+		}
 		$cnt = 0;
 		$done = false;
 		for($i=$pos;$i<mb_strlen($wikitext);$i++){
@@ -236,11 +247,87 @@ class NamuMark{
 				return null;
 			
 			if($cnt == 0 && $done){
-				($cb)?
+				($cb)?$re = mb_strlen($innerString) + strlen($bracket['open'] + strlen($bracket['close']):$re = null;
 				$innerString = substr($wikitext, $pos + strlen($bracket['open']), $i - strlen($bracket['close']) + 1);
-				return array(renderProcessor($innerString, $bracket['open']), $i, mb_strlen($innerString) + strlen($bracket['open'] + strlen($bracket['close']));
+				return array(callProc('render', $innerString, $bracket['open']), $i, $re);
 			}
 		}
+		return null;
+	}
+	function blockquoteParser($wikitext, $pos){
+		$temp = array();
+		$result = array();
+		for($i=$pos;$i<mb_strlen($wikitext);$i=seekEOL($wikitext, $i)+1){
+			$eol = seekEOL($wikitext, $i);
+			if(!str_starts_with(substr($wikitext, $i), '>'))
+				break;
+			preg_match('/^>+/', substr($wikitext,$i), $bq_match);
+			$level = mb_strlen($bq_match[0]);
+			$line = substr($wikitext, $i+$level, $eol);
+			array_push($temp, array('level' => $level, 'line' => $line));
+		}
+		if(count($temp) == 0)
+			return null;
+		$curLevel = 1;
+		array_push($result, array('name' => 'blockquote-start'));
+		for($i=0; $i<count($temp); $i++){
+			$curTemp = $temp[$i];
+			if($curTemp['level'] > $curLevel){
+				for($i=0; $i<$curTemp['level'] - $curLevel; $i++)
+					array_push($result, array('name' => 'blockquote-start'));
+			} elseif($curTemp['level'] < $curLevel){
+				for($i=0; $i<$curLevel - $curTemp['level']; $i++)
+					array_push($result, array('name' => 'blockquote-end'));
+			} else{
+				array_push($result, array('name' => 'new-line'));
+			}
+			array_push($result, array('name' => 'wikitext', 'parseFormat' => true, 'text' => $curTemp['line']));
+		}
+		array_push($result, array('name' => 'blockquote-end'));
+		return array($result, $i - 1);
+	}
+	function finishTokens($tokens){
+		$result = array();
+		$prevListLevel = 0;
+		$prevIndentLevel = 0;
+		$prevWasList = false;
+		for($i=0; $i<count($tokens); $i++){
+			$curToken = $tokens[$i];
+			$curWasList = $curToken['name'] === 'list-item-temp';
+			if($curWasList != $prevWasList) {
+				for($j=0; $j< ($prevWasList)?$prevListLevel:$prevIndentLevel; $j++)
+					array_push($result, array('name' => ($prevWasList)?'list-end':'indent-end';));
+				if($prevWasList) $prevListLevel = 0;
+				else $prevIndentLevel = 0;
+			}
+			switch($curToken['name']){
+				case 'list-item-temp':
+					if($prevListLevel < $curToken['level']) {
+						for($j=0; $j < $curToken['level'] - $prevListLevel; $j++)
+							array_push($result, array('name' => 'list-start', 'listType' => $curToken['listType']));
+					} elseif ($prevListLevel > $curToken['level']){
+						for($j=0; $j < $prevListLevel - $curToken['level']; $j++)
+							array_push($result, array('name' => 'list-end'));
+					} elseif($prevListType['ordered'] !== $curToken['listType']['ordered'] || $prevListType['type'] !== $curToken['listType']['type']){
+						array_push($result, array('name' => 'list-end'));
+						array_push($result, array('name' => 'list-start', 'listType' => $curToken['listType']));
+					}
+					$prevListLevel = $curToken['level'];
+					$prevListType = $curToken['listtype'];
+					array_push($result, array('name' => 'list-item-start', 'startNo' => ($curToken['startNo'])?$curToken['startNo']:null;));
+					### listParser.js 50행
+			}
+		}
+	}
+	function listParser($wikitext, $pos){
+		$listTags = array(
+			'*' => array('ordered' => false),
+			'1.' => array('ordered' => true, 'type' => 'decimal'),
+			'A.' => array('ordered' => true, 'type' => 'upper-alpha'),
+			'a.' => array('ordered' => true, 'type' => 'lower-alpha'),
+			'I.' => array('ordered' => true, 'type' => 'upper-roman'),
+			'i.' => array('ordered' => true, 'type' => 'lower-roman')
+		);
 	}
 
     	function parse(){return $this->doParse();}
