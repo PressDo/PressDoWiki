@@ -1,6 +1,6 @@
 <?php
 require_once 'HTMLRenderer.php';
-
+ 
 
 $redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
 function seekEOL($text, $offset = 0){
@@ -315,9 +315,33 @@ class NamuMark{
 					$prevListLevel = $curToken['level'];
 					$prevListType = $curToken['listtype'];
 					array_push($result, array('name' => 'list-item-start', 'startNo' => ($curToken['startNo'])?$curToken['startNo']:null;));
+					array_push($result, array('name' => 'wikitext', 'treatAsBlock' => true, 'text' => $curToken['wikitext']));
+					array_push($result, array('name' => 'list-item-end'));
+					break;
+				case 'indent-temp':
+					if($prevIndentLevel < $curToken['level']) {
+						for($j=0; $j<$curToken['level'] - $prevIndentLevel; $j++)
+							array_push($result, array('name' => 'indent-start'));
+					} elseif($prevIndentLevel > $curToken['level']) {
+						for($j=0; $j<$prevIndentLevel - $curToken['level']; $j++)
+							array_push($result, array('name' => 'indent-end'));
+					}
+					$prevIndentLevel = $curToken['level'];
+					array_push($result, array('name' => 'wikitext', 'treatAsBlock' => true, 'text' => $curToken['wikitext']));
 					### listParser.js 50행
 			}
+			if($i === count($tokens) - 1){
+				if($curWasList) {
+					for($j=0; $j < $prevListLevel; $j++)
+						array_push($result, array('name' => 'list-end'));
+				} else{
+					for($j=0; $j < $prevIndentLevel; $j++)
+						array_push($result, array('name' => 'indent-end'));
+				}
+			}
+			$prevWasList = $curWasList;
 		}
+		return $result;
 	}
 	function listParser($wikitext, $pos){
 		$listTags = array(
@@ -328,6 +352,11 @@ class NamuMark{
 			'I.' => array('ordered' => true, 'type' => 'upper-roman'),
 			'i.' => array('ordered' => true, 'type' => 'lower-roman')
 		);
+		$lineStart = $pos;
+		$result = array();
+		$isList = null;
+		$i = $pos;
+		for($i=0; $i <
 	}
 
     	function parse(){return $this->doParse();}
