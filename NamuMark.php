@@ -355,8 +355,39 @@ class NamuMark{
 		$lineStart = $pos;
 		$result = array();
 		$isList = null;
-		$i = $pos;
-		for($i=0; $i <
+		for($i=$pos; $i<mb_strlen($wikitext); $i++){
+			$char = substr($wikitext, $i, 1);
+			if($char != ' ')
+				break;
+			$level = $i - $lineStart;
+			$matched = false;
+			$quit = false;
+			$eol = seekEOL($wikitext, $i);
+			$innerString = substr($wikitext, $i, $eol);
+			for($listTags as $j){
+				$listTagInfo = $listTags[$j];
+				$innerString = substr($wikitext, $i + strlen($j), $eol);
+				preg_match('/'.preg_replace('/\*/g', '\\*', preg_replace('/\./g', '\\.', $j)).'#([0-9]+)/', substr($wikitext, $i), $startNoSpecifiedPattern);
+				if(str_starts_with(substr($wikitext, $i), $j)){
+					if($isList === null)
+						$isList = true;
+					elseif(!$isList) {
+						quit = true;
+						break;
+					}
+					$matched = true;
+					if($startNoSpecifiedPattern){
+						$startNo = intval($startNoSpecifiedPattern[1]);
+						$innerString = preg_replace('/^#[0-9]+/', '', $innerString);
+						array_push($result, array('name' => 'list-item-temp', 'listType' => $listTagInfo, 'level' => $level, 'startNo' => $startNo, 'wikitext' => $innerString));
+					} else {
+						array_push($result, array('name' => 'list-item-temp', 'listType' => $listTagInfo, 'level' => $level, 'wikitext' => $innerString));
+					}
+					$i = $eol;
+					$lineStart = $eol + 1;
+				}
+			}
+		}
 	}
 
     	function parse(){return $this->doParse();}
