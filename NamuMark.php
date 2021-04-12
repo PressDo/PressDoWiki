@@ -357,35 +357,178 @@ class NamuMark{
 		$isList = null;
 		for($i=$pos; $i<mb_strlen($wikitext); $i++){
 			$char = substr($wikitext, $i, 1);
-			if($char != ' ')
-				break;
-			$level = $i - $lineStart;
-			$matched = false;
-			$quit = false;
-			$eol = seekEOL($wikitext, $i);
-			$innerString = substr($wikitext, $i, $eol);
-			for($listTags as $j){
-				$listTagInfo = $listTags[$j];
-				$innerString = substr($wikitext, $i + strlen($j), $eol);
-				preg_match('/'.preg_replace('/\*/g', '\\*', preg_replace('/\./g', '\\.', $j)).'#([0-9]+)/', substr($wikitext, $i), $startNoSpecifiedPattern);
-				if(str_starts_with(substr($wikitext, $i), $j)){
-					if($isList === null)
-						$isList = true;
-					elseif(!$isList) {
-						quit = true;
+			if($char != ' ') {
+				if($lineStart === $i)
+					break;
+				$level = $i - $lineStart;
+				$matched = false;
+				$quit = false;
+				$eol = seekEOL($wikitext, $i);
+				$innerString = substr($wikitext, $i, $eol);
+				for($listTags as $j){
+					$listTagInfo = $listTags[$j];
+					$innerString = substr($wikitext, $i + strlen($j), $eol);
+					preg_match('/'.preg_replace('/\*/g', '\\*', preg_replace('/\./g', '\\.', $j)).'#([0-9]+)/', substr($wikitext, $i), $startNoSpecifiedPattern);
+					if(str_starts_with(substr($wikitext, $i), $j)){
+						if($isList === null)
+							$isList = true;
+						elseif(!$isList) {
+							quit = true;
+							break;
+						}
+						$matched = true;
+						if($startNoSpecifiedPattern){
+							$startNo = intval($startNoSpecifiedPattern[1]);
+							$innerString = preg_replace('/^#[0-9]+/', '', $innerString);
+							array_push($result, array('name' => 'list-item-temp', 'listType' => $listTagInfo, 'level' => $level, 'startNo' => $startNo, 'wikitext' => $innerString));
+						} else {
+							array_push($result, array('name' => 'list-item-temp', 'listType' => $listTagInfo, 'level' => $level, 'wikitext' => $innerString));
+						}
+						$i = $eol;
+						$lineStart = $eol + 1;
 						break;
 					}
-					$matched = true;
-					if($startNoSpecifiedPattern){
-						$startNo = intval($startNoSpecifiedPattern[1]);
-						$innerString = preg_replace('/^#[0-9]+/', '', $innerString);
-						array_push($result, array('name' => 'list-item-temp', 'listType' => $listTagInfo, 'level' => $level, 'startNo' => $startNo, 'wikitext' => $innerString));
-					} else {
-						array_push($result, array('name' => 'list-item-temp', 'listType' => $listTagInfo, 'level' => $level, 'wikitext' => $innerString));
-					}
-					$i = $eol;
-					$lineStart = $eol + 1;
 				}
+				if($quit){
+					$i = $lineStart;
+					break;
+				}
+				if(!$matched){
+					if($isList === null){
+						$isList = false;
+					} elseif($isList) {
+						$i = $lineStart;
+						break;
+					}
+					array_push($result, array('name' => 'indent-temp', 'level' => $level, 'wikitext' => $innerString));
+					$i = $eol;
+					$char = "\n";
+				}
+			}
+			if($char == '\n')
+				$lineStart = $i + 1;
+		}
+		if(count($result) === 0)
+			$result = null;
+			$setpos = null;
+		else{
+			$result = finishTokens($result);
+			$setpos = $i - 1;
+		}
+		return array($result, $setpos);
+	}
+	function parseOptionBracket($optionContent){
+		$colspan = 0;
+		$rowspan = 0;
+		$colOption = array();
+		$tableOptions = array();
+		$rowOptions = array();
+		$matched = false;
+		if(preg_match('/^-[0-9]+$/', $optionContent, $colspan_str)) {
+			$colspan += intval($colspan_str);
+			$matched = true;
+		} elseif(preg_match('/^\|([0-9]+)$/', $optionContent, $rowspan_mid) || preg_match('/^\^\|([0-9]+)$/', $optionContent, $rowspan_top) || preg_match('/^v\|([0-9]+)$/', $optionContent, $rowspan_bot)){
+			$matched = true;
+			if($rowspan_mid){
+				$rowspan += intval($rowspan_mid[1]);
+				$colOptions['vertical-align'] = 'middle';
+			} elseif($rowspan_top){
+				$rowspan += intval($rowspan_top[1]);
+				$colOptions['vertical-align'] = 'top';
+			} elseif($rowspan_bot){
+				$rowspan += intval($rowspan_top[1]);
+				$colOptions['vertical-align'] = 'top';
+			}
+		} elseif(str_starts_with($optionContent, 'table ')) {
+			$tableOptionContent = substr($optionContent, 6);
+			$tableOptionPatterns = array(
+				'align' => '/^align=(left|center|right)$/',
+				'background-color' => '/^bgcolor=(#[a-zA-Z0-9]{3,6}|[a-zA-Z]+)$/',
+				'border-color' => '/^bordercolor=(#[a-zA-Z0-9]{3,6}|[a-zA-Z]+)$/',
+				'width' => '/^width=([0-9]+(?:in|pt|pc|mm|cm|px))$/'
+			);
+			foreach($tableOptionPatterns as $optionName){
+				if(preg_match($tableOptionPatterns[$optionName], $tableOptionContent, $t_top)){
+					$tableOptions[$optionName] = $t_top[1];
+					$matched = true;
+				}
+			}
+		} else {
+			$textAlignCellOptions = array(
+				'left' => '/^\($/',
+				'middle' => '/^:$/',
+				'right' => '/^\)$/'
+			);
+			$paramlessCellOptions = array(
+				'background-color' => '/^bgcolor=(#[0-9a-zA-Z]{3,6}|[a-zA-Z0-9]+)$/',
+				'row-background-color' => '/^rowbgcolor=(#[0-9a-zA-Z]{3,6}|[a-zA-Z0-9]+)$/',
+				'width' => '/^width=([0-9]+(?:in|pt|pc|mm|cm|px|%))$/',
+				'height' => '/^height=([0-9]+(?:in|pt|pc|mm|cm|px|%))$/'
+			);
+			foreach ($textAlignCellOptions as $i) {
+				if(preg_match($textAlignCellOptions[$i], $optionContent)){
+					$colOptions['text-align'] = $optionContent;
+					$matched = true;
+				}
+				else
+					foreach($paramlessCellOptions as $optionName){
+						if(!preg_match($paramlessCellOptions[$optionName], $optionContent, $_prg_rop))
+							continue;
+						if(str_starts_with($optionName, 'row-'))
+							$rowOptions[substr($optionName, 4)] = $_prg_rop[1];
+						else
+							$colOptions[$optionName] = $_prg_rop[1];
+						$matched = true;
+					}
+			}
+		}
+		return array('colspan_add' => $colspan, 'rowspan_add' => $rowspan, 'colOptions_set' => $colOptions, 'rowOptions_set' => $rowOptions, 'tableOptions_set' => $tableOptions, 'matched' => $matched);
+	}
+	function tableParser($wikitext, $pos) {
+		$caption = null;
+		if(!str_starts_with(substr($wikitext, $pos), '||')){
+			$caption = substr($wikitext, $pos + 1, strpos($wikitext, '|', $pos + 2));
+			$pos = strpos($wikitext, '|', $pos + 1) + 1;
+			// echo $caption;
+		} else {
+			$pos += 2;
+		}
+		$cols = explode('||', $substr($wikitext, $pos));
+		$rowno = 0;
+		$hasTableContent = false;
+		$colspan = 0;
+		$rowspan = 0;
+		$optionPattern = '/<(.+?)>/';
+		// echo $cols;
+		$table = array(array());
+		$tableOptions = array();
+		if(count($cols) < 2)
+			return null;
+		for ($i=0; $i<count($cols); $i++) {
+			$col = $cols[$i];
+			$curColOptions = array();
+			$rowOption = array();
+			if(str_starts_with($col, '\n') && strlen($col) > 1){
+				break;
+			}
+			if($col == '\n'){
+				$table[++$rowno] = array();
+				continue;
+			}
+			if(strlen($col) == 0){
+				$colspan++;
+				continue;
+			}
+			
+			if(str_starts_with($col, ' ') && !str_ends_with($col, ' '))
+				$curColOptions['text-align'] = 'left';
+			elseif(!str_starts_with($col, ' ') && str_ends_with($col, ' '))
+				$curColOptions['text-align'] = 'right';
+			elseif(str_starts_with($col, ' ') && str_ends_with($col, ' '))
+				$curColOptions['text-align'] = 'middle';
+			
+			while (preg_match($optionPattern, $col, $match){
+				if($strpos($match)
 			}
 		}
 	}
