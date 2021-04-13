@@ -592,6 +592,9 @@ class NamuMark{
 			return null;
 		}
 	}
+	function closureProcessor($text, $type){
+		return array(array('name' => 'closure-start'), array('name' => 'wikitext', 'parseFormat' => true, 'text' => $text), array('name' => 'closure-end'));
+	}
 
     	function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
