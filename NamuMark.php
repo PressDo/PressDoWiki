@@ -528,8 +528,68 @@ class NamuMark{
 				$curColOptions['text-align'] = 'middle';
 			
 			while (preg_match($optionPattern, $col, $match){
-				if($strpos($match)
+				if($strpos($match) != 0)
+					break;
+				$optionContent = $match[1];
+				$pO = parseOptionBracket($optionContent);
+				$colOptions_set = $pO['colOptions_set'];
+				$tableOptions_set = $pO['tableOptions_set'];
+				$colspan_add = $pO['colspan_add'];
+				$rowspan_add = $pO['rowspan_add'];
+				$rowOptions_set = $pO['rowOptions_set'];
+				$matched = $pO['matched'];
+				$curColOptions = array_merge($curColOptions, $colOptions_set);
+				$tableOptions = array_merge($tableOptions, $colOptions_set);
+				$rowOptions_set = array_merge($rowOption, $rowOptions_set);
+				
+				$colspan += $colspan_add;
+				$rowspan += $rowspan_add;
+				
+				if($tableOptions['border-color']){
+					$tableOptions['border'] = '2px solid '.$tableOptions['border-color'];
+					unset($tableOptions['border-color']);
+				}
+				
+				$col = substr($col, mb_strlen($match[0]));
 			}
+			$colObj = array(
+				'options' => $curColOptions,
+				'colspan' => $colspan,
+				'rowspan' => $rowspan,
+				'rowOption' => $rowOption,
+				'wikitext'=> $col
+			);
+			$colspan = 0;
+			$rowspan = 0;
+			array_push($table[$rowno], $colObj);
+			$hasTableContent = true;
+		}
+		$rowOptions = array();
+		for($j=0; $j<count($table); $j++){
+			$rowOption = array();
+			for($k=0; $k<count($table[$j]); $k++){
+				$rowOption = array_merge($rowOption, $table[$j]['rowOption']);
+			}
+			array_push($rowOption, $rowOption);
+		}
+			       
+		$result = array(array('name' => 'table-start', 'options' => $tableOptions));
+		$rowCount = count($table);
+		for($j=0; $j<$rowCount; $j++){
+			array_push($result, array('name' => 'table-row-start', 'options' => $rowOptions[$j]));
+			for($k=0; $k<count($table[$j]); $k++){
+				array_push($result, array('name' => 'table-col-start', 'options' => $table[$j][$k]['colspan'], 'rowspan' =>  $table[$j][$k]['rowspan']));
+				array_push($result, array('name' => 'wikitext', 'text' => $table[$j][$k]['wikitext'], 'treatAsLine' => true));
+				array_push($result, array('name' => 'table-col-end'));
+			}
+			array_push($result, array('name' => 'table-row-end'));
+		}
+		array_push($result, array('name' => 'table-end'));
+		if($hasTableContent){
+			$setpos = mb_strlen($pos + implode('||', array_slice($cols, 0, $i))) + 1;
+			return array($result, $setpos);
+		}else{
+			return null;
 		}
 	}
 
