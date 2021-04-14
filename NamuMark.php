@@ -595,6 +595,95 @@ class NamuMark{
 	function closureProcessor($text, $type){
 		return array(array('name' => 'closure-start'), array('name' => 'wikitext', 'parseFormat' => true, 'text' => $text), array('name' => 'closure-end'));
 	}
+	function linkProcessor($text, $type){
+		global $defaultOptions;
+		$href = explode('|', $text);
+		if(preg_match('/^https?:\/\//', $text)){
+			if(count($href) > 1){
+				return array(array(
+					'name' => 'link-start',
+					'external' => true,
+					'target' => $href[0]
+				), array(
+					'name' => 'wikitext',
+					'parseFormat' => true,
+					'text' => $href[1]
+				));
+			}else{
+				return array(array(
+					'name' => 'link-start',
+					'external' => true,
+					'target' => $href[0]
+				), array(
+					'name' => 'plain',
+					'parseFormat' => true,
+					'text' => $href[0]
+				));
+			}
+		} elseif(preg_match('/^분류:(.+)$/', $href[0], $category)){
+			if(!$defaultOptions['included'])
+				return array(array(
+					'name' => 'add-category',
+					'blur' => str_ends_with('#blur'),
+					'categoryName' => $category
+				));
+		} elseif (preg_match('/^파일:(.+)$/', $href[0], $h_file)){
+			$fileOpts = array();
+			$haveOpts = false;
+			if(count($href) > 1){
+				$pattern = '/[&?]?(^[=]+)=([^\&]+)/g';
+				$match = null;
+				while(preg_match($pattern, $href[1], $match)){
+					if(($match[1] === 'width' || $match[1] === 'height') && preg_match('/^[0-9]$/', $match[2])) {
+						$match[2] = $match[2].'px';
+					}
+					$fileOpts[$match[1]] = $match[2];
+					$haveOpts = true;
+				}
+			}
+			if($haveOpts) {
+				return array(array(
+					'name' => 'image',
+					'taget' => $h_file[1]
+				));
+			} else {
+				return array(array(
+					'name' => 'image',
+					'taget' => $h_file[1],
+					'options' => $fileOpts
+				));
+			}
+		} else {
+			if(str_starts_with($href[0], ' ') || str_starts_with($href[0], ':')){
+				$href[0] = substr($href[0], 1);
+			}
+			if(count($href) > 1){
+				return array(array(
+					'name' => 'link-start',
+					'internal' => true,
+					'target' => $href[0]
+				), array(
+					'name' => 'wikitext',
+					'parseFormat' => true,
+					'text' => $href[1]
+				), array(
+					'name' => 'link-end'
+				));
+			} else {
+				return array(array(
+					'name' => 'link-start',
+					'internal' => true,
+					'target' => $href[0]
+				), array(
+					'name' => 'plain',
+					'text' => $href[0]
+				), array(
+					'name' => 'link-end'
+				));
+			}
+		}
+	}
+	function
 
     	function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
