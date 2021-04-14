@@ -1,9 +1,12 @@
 <?php
 require_once 'HTMLRenderer.php';
-require_once 'dbConnect.php';
+require_once 'PressDoLib.php';
 class NamuMark{
 	public $redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
-	public function __construct($content, $_options=array()){
+	public function __construct($content, $_to_content, $_options=array()){
+		if($_to_content == 1){
+			$content = Data::LoadLatestDocument($content);
+		}
 		$this->defaultOptions = array(
 			'wiki' => $content,
 			'allowedExternalImageExts' => $_options,
