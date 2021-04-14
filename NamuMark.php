@@ -20,39 +20,38 @@ class NamuMark{
 		return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
 	}		
 	private static function doParse(){
-		$wikitext = $this->wikitext;
 		$multiBrackets = array(
 			'open' => '{{{',
 			'close' => '}}}',
 			'multiline' => true,
 			'processor' => 'renderProcessor'
 		);
-		$renderer = ($this->rendererOptions)? new HTMLRenderer($this->rendererOptions):new HTMLRenderer();
+		$this->renderer = ($this->rendererOptions)? new HTMLRenderer($this->rendererOptions):new HTMLRenderer();
 		$line = '';
 		$now = '';
 		$tokens = array();
-		if($wikitext === null)
+		if($this->wikitext === null)
 		    return array(array('name' => 'error', 'type' => 'notfound'));
-		if(str_starts_with($wikitext, '#') && preg_match($this->redirectPattern, $wikitext, $r_match) && strpos($wikitext, $r_match[0]) === 0)
+		if(str_starts_with($this->wikitext, '#') && preg_match($this->redirectPattern, $this->wikitext, $r_match) && strpos($this->wikitext, $r_match[0]) === 0)
 	        return array(array('name' => 'redirect', 'target' => $r_match[1]));
-		for($i=0;$i < mb_strlen($wikitext); $i++){
+		for($i=0;$i < mb_strlen($this->wikitext); $i++){
 			$temp = array('pos' => $i);
-			$now = substr($wikitext,$i,1);
+			$now = substr($this->wikitext,$i,1);
 
 			// func[0] = Gijon gap, func[1]: v => i = v
-			if($line == '' && $now == ' ' && $l_i = listParser($wikitext, $i) && $temp = $l_i[0] && $i = $l_i[1]){
+			if($line == '' && $now == ' ' && $l_i = listParser($this->wikitext, $i) && $temp = $l_i[0] && $i = $l_i[1]){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($wikitext, $i), '|') && $t_i = tableParser($wikitext, $i) && $temp = $t_i[0] && $i = $t_i[1]){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '|') && $t_i = tableParser($this->wikitext, $i) && $temp = $t_i[0] && $i = $t_i[1]){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($wikitext, $i), '>') && $q_i = blockquoteParser($wikitext, $i) && $temp = $q_i[0] && $i = $q_i[1]){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $q_i = blockquoteParser($this->wikitext, $i) && $temp = $q_i[0] && $i = $q_i[1]){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
@@ -60,7 +59,7 @@ class NamuMark{
 			}
 			foreach($multiBrackets as $bracket){
 				// Callproc moved into func
-				if(str_starts_with(substr($wikitext, $i), $bracket['open']) && $b_i = bracketParser($wikitext, $i) && $temp = $b_i[0] && $i = $b_i[1]){
+				if(str_starts_with(substr($this->wikitext, $i), $bracket['open']) && $b_i = bracketParser($this->wikitext, $i) && $temp = $b_i[0] && $i = $b_i[1]){
 					$tokens = array_push($tokens, array(array('name' => 'wikitext', 'treatAsLine' => true, 'text' => $line)),$temp);
 					$line = '';
 					$now = '';
@@ -83,7 +82,7 @@ class NamuMark{
 				if(is_array($v))
 				    processTokens($v);
 				elseif($v['name'] !== 'wikitext')
-				    $renderer->processToken($v);
+				    $this->renderer->processToken($v);
 				elseif($v['parseFormat'] || $v['treatAsBlock'])
 				    processTokens(blockParser($v['text']));
 				elseif($v['treatAsLine'])
@@ -91,7 +90,7 @@ class NamuMark{
 			}
 		}
 		processTokens($tokens);
-		$renderer->getResult();
+		$this->renderer->getResult();
 	}
 
 	// do not forget to add callprocessor func in parser
@@ -615,7 +614,6 @@ class NamuMark{
 		return array(array('name' => 'closure-start'), array('name' => 'wikitext', 'parseFormat' => true, 'text' => $text), array('name' => 'closure-end'));
 	}
 	function linkProcessor($text, $type){
-		global $defaultOptions;
 		$href = explode('|', $text);
 		if(preg_match('/^https?:\/\//', $text)){
 			if(count($href) > 1){
@@ -640,7 +638,7 @@ class NamuMark{
 				));
 			}
 		} elseif(preg_match('/^분류:(.+)$/', $href[0], $category)){
-			if(!$defaultOptions['included'])
+			if(!$this->defaultOptions['included'])
 				return array(array(
 					'name' => 'add-category',
 					'blur' => str_ends_with('#blur'),
@@ -703,7 +701,6 @@ class NamuMark{
 		}
 	}
 	function macroProcessor($text, $type) {
-		global $defaultOptions;
 		$defaultResult = array(array('name' => 'plain', 'text' => '['.$text.']'));
 		if(str_starts_with($text, '*') && preg_match('/^\*([^ ]*) (.+)$/', $text, $matches)) {
 			(strlen($matches[1]) === 0)? $supText = null: $supText = $matches[1];
@@ -719,12 +716,12 @@ class NamuMark{
 			));
 		} else {
 			if(preg_match('/^[^\(]+$/', $text)){
-				if(!array_search($text, $defaultOptions['macroNames']))
+				if(!array_search($text, $this->defaultOptions['macroNames']))
 					return $defaultResult;
 				else
 					return array(array('name' => 'macro', 'macroName' => $text));
 			} elseif(preg_match('/^([^\(]+)\((.*)\)/', $text, $matches)){
-				if(!array_search($matches[1], $defaultOptions['macroNames']))
+				if(!array_search($matches[1], $this->defaultOptions['macroNames']))
 					return $defaultResult;
 				$macroName = $matches[1];
 				$optionSplitted = explode(',', $matches[2]);
@@ -832,7 +829,6 @@ class NamuMark{
 		));
 	}
 	function textProcessor($text, $type){
-		global $defaultOptions;
 		$styles = array(
 			"'''" => 'strong',
 			"''" => 'italic',
@@ -881,10 +877,10 @@ class NamuMark{
 				}
 				return array(array('name' => 'monoscape-font-start','pre' => true), array('name' => 'plain','text' => substr($text, 1)), array('name' => 'monoscape-font-end'));
 			case '@':
-				if(!$defaultOptions['included'])
+				if(!$this->defaultOptions['included'])
 					break;
-				if(array_search($text, array_keys($defaultOptions['includeParameters'])))
-					return array(array('name' => 'wikitext', 'parseFormat' => true, 'text' => $defaultOptions['includeParameters'][$text]));
+				if(array_search($text, array_keys($this->defaultOptions['includeParameters'])))
+					return array(array('name' => 'wikitext', 'parseFormat' => true, 'text' => $this->defaultOptions['includeParameters'][$text]));
 				else
 					return null;
 		}
@@ -892,11 +888,11 @@ class NamuMark{
 	}
 
     	function parse(){return $this->doParse();}
-	function setIncluded(){$options['included'] = true;}
-	function setIncludeParameters($paramsObj){$options['includeParameters'] = $paramsObj;}
+	function setIncluded(){$this->defaultOptions['included'] = true;}
+	function setIncludeParameters($paramsObj){$this->defaultOptions['includeParameters'] = $paramsObj;}
 	function setRenderer($r = null, $o = null){
-		if($r !==null) $rendererClass = $r;
-		if($o !==null) $rendererOptions = $o;
+		if($r !==null) $this->rendererClass = $r;
+		if($o !==null) $this->rendererOptions = $o;
 		return;
 	}
 }
