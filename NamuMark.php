@@ -102,7 +102,17 @@ class NamuMark{
 	// do not forget to add callprocessor func in parser
 	function blockParser($line){
 		$result = array();
-		$singleBrackets = array(
+		$s_formats = array("'''", "''", '~~', '--', '__', '^^',',,');
+		$s_result = array();
+		for($i=0; $i < count($s_formats); $i++) {
+			array_push($s_result, array(
+				'open' => $s_formats[$i],
+				'close' => $s_formats[$i],
+				'multiline' => false,
+				'processor' => 'textProcessor'
+			));
+		}
+		$singleBrackets = array_merge(array(
 			array(
 				'open' => '{{{',
 				'close' => '}}}',
@@ -133,7 +143,7 @@ class NamuMark{
 				'multiline' => false,
 				'processor' => 'textProcessor'
 			)
-		);
+		), $s_result);
 		$plainTemp = '';
 		for($j=0;$j<mb_strlen($line);$j++){
 			$extImgPattern = '/(https?:\\/\\/[^ \\n]+(?:\\??.)(?:'.implode('|',$options['allowedExternalImageExts']).'))(\\?[^ \n]+|)/i';
