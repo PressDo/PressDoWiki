@@ -1,6 +1,6 @@
 <?php
 require_once 'HTMLRenderer.php';
-
+require_once 'dbConnect.php';
 class NamuMark{
 	public $redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
 	public function __construct($content, $_options=array()){
@@ -19,7 +19,7 @@ class NamuMark{
 	private function seekEOL($text, $offset = 0){
 		return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
 	}		
-	private static function doParse(){
+	private function doParse(){
 		$multiBrackets = array(
 			'open' => '{{{',
 			'close' => '}}}',
