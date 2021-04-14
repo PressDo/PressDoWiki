@@ -739,6 +739,93 @@ class NamuMark{
 			return $defaultResult;
 		}
 	}
+	function renderProcessor($text, $type){
+		if(preg_match('/^#!html/i', $text)){
+			return array(array(
+				'name' => 'unsafe-plain',
+				'text' => substr($text, 6)
+			));
+		} elseif (preg_match('/^#!folding/i', $text) && strpos($text, '\n') >= 10) {
+			return array(array(
+				'name' => 'folding-start',
+				'summary' => substr($text, 10, strpos($text, '\n'))
+			), array(
+				'name' => 'wikitext',
+				'treatAsBlock' => true,
+				'text' => substr($text, strpos($text, '\n') + 1)
+			), array(
+				'name' => 'folding-end'
+			));
+		} elseif (preg_match('/^#!syntax/i', $text) && strpos($text, '\n') >= 9) {
+			return array(array(
+				'name' => 'syntax-highlighting',
+				'header' => substr($text, 9, strpos($text, '\n')),
+				'body' => substr($text, strpos($text, '\n') + 1)
+			));
+		} elseif (preg_match('/^#!wiki/i', $text)) {
+			if(strpos($text, '\n') >= 7) {
+				$params = substr($text, 7, strpos($text, '\n'));
+				if(str_starts_with($params, "style=\"") && preg_match('/" +$/', $params, $match)){
+					return array(array(
+						'name' => 'wiki-box-start',
+						'style' => substr($params, 7, mb_strlen($params) - mb_strlen($match[0]))
+					), array(
+						'name' => 'wikitext',
+						'treatAsBlock' => true,
+						'text' => substr($text, strpos($text, '\n') + 1)
+					), array(
+						'name' => 'wiki-box-end'
+					));
+				} else {
+					return array(array(
+						'name' => 'wiki-box-start',
+					), array(
+						'name' => 'wikitext',
+						'treatAsBlock' => true,
+						'text' => substr($text, strpos($text, '\n') + 1)
+					), array(
+						'name' => 'wiki-box-end'
+					));
+				}
+			}
+		} elseif (preg_match('/^#([A-Fa-f0-9]{3,6}) (.*)$/', $text, $matches)){
+			if(strlen($matches[1]) === 0 && strlen($matches[2]) === 0)
+				return array(array(
+					'name' => 'plain',
+					'text' => $text
+				));
+			return array(array(
+				'name' => 'font-color-start',
+				'color' => $matches[1]
+			), array(
+				'name' => 'wikitext',
+				'parseFormat' => true,
+				'text' => $matches[2]
+			), array(
+				'name' => 'font-color-end'
+			));
+		} elseif (preg_match('/^\+([1-5]) (.*)$/', $text, $matches)){
+			return array(array(
+				'name' => 'font-size-start',
+				'color' => $matches[1]
+			), array(
+				'name' => 'wikitext',
+				'parseFormat' => true,
+				'text' => $matches[2]
+			), array(
+				'name' => 'font-size-end'
+			));
+		}
+		return array(array(
+			'name' => 'monoscape-font-start',
+			'pre' => true
+		), array(
+			'name' => 'plain',
+			'text' => substr($text, 1)
+		), array(
+			'name' => 'monoscape-font-end'
+		));
+	}
 
     	function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
