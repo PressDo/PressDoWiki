@@ -223,12 +223,26 @@ class NamuMark{
 	}
 	
 	function bracketParser($wikitext, $pos, $bracket, $cb){
-		function callProc($proc, $arg1=null, $arg2=null, $arg3=null, $arg4=null){
+		function callProc($proc, $arg1=null, $arg2=null){
 		switch($proc){
-			case 'render':
+			case 'renderProcessor':
 				return renderProcessor($arg1, $arg2);
 				break;
-			case '':
+			case 'linkProcessor':
+				return linkProcessor($arg1, $arg2);
+				break;
+			case 'macroProcessor':
+				return macroProcessor($arg1, $arg2);
+				break;
+			case 'linkProcessor':
+				return linkProcessor($arg1, $arg2);
+				break;
+			case 'closureProcessor':
+				return closureProcessor($arg1, $arg2);
+				break;
+			case 'textProcessor':
+				return textProcessor($arg1, $arg2);
+				break;
 			default:
 				break;
 			}
@@ -249,7 +263,7 @@ class NamuMark{
 			if($cnt == 0 && $done){
 				($cb)?$re = mb_strlen($innerString) + strlen($bracket['open'] + strlen($bracket['close']):$re = null;
 				$innerString = substr($wikitext, $pos + strlen($bracket['open']), $i - strlen($bracket['close']) + 1);
-				return array(callProc('render', $innerString, $bracket['open']), $i, $re);
+				return array(callProc($bracket['processor'], $innerString, $bracket['open']), $i, $re);
 			}
 		}
 		return null;
@@ -683,7 +697,48 @@ class NamuMark{
 			}
 		}
 	}
-	function
+	function macroProcessor($text, $type) {
+		global $defaultOptions;
+		$defaultResult = array(array('name' => 'plain', 'text' => '['.$text.']'));
+		if(str_starts_with($text, '*') && preg_match('/^\*([^ ]*) (.+)$/', $text, $matches)) {
+			(strlen($matches[1]) === 0)? $supText = null: $supText = $matches[1];
+			return array(array(
+				'name' => 'footnote-start',
+				'supText' => $supText
+			), array(
+				'name' => 'wikitext',
+				'treatAsBlock' => true,
+				'text' => $matches[2]
+			), array(
+				'name' => 'footnote-end'
+			));
+		} else {
+			if(preg_match('/^[^\(]+$/', $text)){
+				if(!array_search($text, $defaultOptions['macroNames']))
+					return $defaultResult;
+				else
+					return array(array('name' => 'macro', 'macroName' => $text));
+			} elseif(preg_match('/^([^\(]+)\((.*)\)/', $text, $matches)){
+				if(!array_search($matches[1], $defaultOptions['macroNames']))
+					return $defaultResult;
+				$macroName = $matches[1];
+				$optionSplitted = explode(',', $matches[2]);
+				$options = array();
+				if(strlen($matches[2]) != 0) {
+					for($optionSplitted as $i){
+						if(!array_search('=', $i)){
+							array_push($options, $i);
+						} else {
+							$_m_i_v = explode('=', $i);
+							array_push($options, array('name' => $_m_i_v[0], 'value' => $_m_i_v[1]));
+						}
+					}
+				}
+				return array(array('name' => 'macro', 'macroName' => $macroName, 'options', => $options));
+			}
+			return $defaultResult;
+		}
+	}
 
     	function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
