@@ -727,7 +727,7 @@ class NamuMark{
 				$optionSplitted = explode(',', $matches[2]);
 				$options = array();
 				if(strlen($matches[2]) != 0) {
-					for($optionSplitted as $i){
+					foreach($optionSplitted as $i){
 						if(!array_search('=', $i)){
 							array_push($options, $i);
 						} else {
