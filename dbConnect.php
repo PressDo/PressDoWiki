@@ -2,7 +2,7 @@
 # PressDo SQL Core File
 # **functions**
 # SQL_Query()
-# 
+# SQL_Assoc()
 #
 session_start();
 define('PressDo_Config', true);
