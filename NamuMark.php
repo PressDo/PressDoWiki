@@ -1,44 +1,39 @@
 <?php
 require_once 'HTMLRenderer.php';
- 
-
-$redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
-function seekEOL($text, $offset = 0){
-	return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
-}
 
 class NamuMark{
+	public $redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
 	public function __construct($content, $_options=array()){
-		global $wikitext;
-		$defaultOptions = array(
-			'wiki' => array(
-				'read' => $content
-			),
+		$this->defaultOptions = array(
+			'wiki' => $content,
 			'allowedExternalImageExts' => $_options,
 			'included' => false,
 			'includeParameters' => array(),
 			'macroNames' => array('br', 'date', '목차', 'tableofcontents', '각주', 'footnote', 'toc', 'youtube', 'nicovideo', 'kakaotv', 'include', 'age', 'dday')
 		);
-		$options = $defaultOptions;
-		$wikitext = $options['wiki']['read'];
-		$rendererOptions = null;
-		$renderer = null;
+		$options = $this->defaultOptions;
+		$this->wikitext = $options['wiki']['read'];
+		$this->rendererOptions = null;
+		$this->renderer = null;
+	}
+	private function seekEOL($text, $offset = 0){
+		return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
 	}		
 	private static function doParse(){
-		global $wikitext;
+		$wikitext = $this->wikitext;
 		$multiBrackets = array(
 			'open' => '{{{',
 			'close' => '}}}',
 			'multiline' => true,
 			'processor' => 'renderProcessor'
 		);
-		$renderer = ($rendererOptions)? new HTMLReader($rendererOptions):new HTMLReader();
+		$renderer = ($this->rendererOptions)? new HTMLRenderer($this->rendererOptions):new HTMLRenderer();
 		$line = '';
 		$now = '';
 		$tokens = array();
 		if($wikitext === null)
 		    return array(array('name' => 'error', 'type' => 'notfound'));
-		if(str_starts_with($wikitext, '#') && preg_match($redirectPattern, $wikitext, $r_match) && strpos($wikitext, $r_match[0]) === 0)
+		if(str_starts_with($wikitext, '#') && preg_match($this->redirectPattern, $wikitext, $r_match) && strpos($wikitext, $r_match[0]) === 0)
 	        return array(array('name' => 'redirect', 'target' => $r_match[1]));
 		for($i=0;$i < mb_strlen($wikitext); $i++){
 			$temp = array('pos' => $i);
