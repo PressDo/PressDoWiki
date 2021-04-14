@@ -826,6 +826,65 @@ class NamuMark{
 			'name' => 'monoscape-font-end'
 		));
 	}
+	function textProcessor($text, $type){
+		global $defaultOptions;
+		$styles = array(
+			"'''" => 'strong',
+			"''" => 'italic',
+			'--' => 'strike',
+			'~~' => 'strike',
+			'__' => 'underline',
+			'^^' => 'superscript',
+			',,' => 'subscript'
+		);
+		switch($type){
+			case "'''":
+			case "''":
+			case '--':
+			case '~~':
+			case '__':
+			case '^^':
+			case ',,':
+				return array(array('name' => $styles[$type].'-start'), array('name' => 'wikitext', 'parseFormat' => true, 'text' => $text), array('name' => $styles[$type].'-end'));
+			case '{{{':
+				if(str_starts_with($text, '#!html')){
+					return array(array('name' => 'unsafe-plain', 'text' => substr($text, 6)));
+				} elseif (preg_match('/^#([A-Fa-f0-9]{3,6}) (.*)$/', $text, $matches)){
+					if(strlen($matches[1]) === 0 && strlen($matches[2]) === 0)
+						return array(array('name' => 'plain','text' => $text));
+					return array(array(
+						'name' => 'font-color-start',
+						'color' => $matches[1]
+					), array(
+						'name' => 'wikitext',
+						'parseFormat' => true,
+						'text' => $matches[2]
+					), array(
+						'name' => 'font-color-end'
+					));
+				} elseif (preg_match('/^\+([1-5]) (.*)$/', $text, $matches)) {
+					return array(array(
+						'name' => 'font-size-start',
+						'color' => $matches[1]
+					), array(
+						'name' => 'wikitext',
+						'parseFormat' => true,
+						'text' => $matches[2]
+					), array(
+						'name' => 'font-size-end'
+					)); 
+				}
+				return array(array('name' => 'monoscape-font-start','pre' => true), array('name' => 'plain','text' => substr($text, 1)), array('name' => 'monoscape-font-end'));
+			case '@':
+				if(!$defaultOptions['included'])
+					break;
+				if(array_search($text, array_keys($defaultOptions['includeParameters'])))
+					return array(array('name' => 'wikitext', 'parseFormat' => true, 'text' => $defaultOptions['includeParameters'][$text]));
+				else
+					return null;
+		}
+		return array(array('name' => 'plain', 'text' => $type.$text.$type));
+	}
 
     	function parse(){return $this->doParse();}
 	function setIncluded(){$options['included'] = true;}
