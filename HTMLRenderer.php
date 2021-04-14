@@ -2,7 +2,7 @@
 require_once 'NamuMark.php';
 
 // callback: (err,result) => { if(err) console.log('ERROR') let html, categories = result; console.log(complete0
-function gr_cb($err, $result){
+function getresult_callback($err, $result){
     if($err) callback($err);
     else callback(null, $result);
 }
@@ -62,5 +62,69 @@ class HTMLRenderer {
             }
             $this->resultTemp = $resultTemp;
         }
+    }
+    private function ObjToCssString($obj) {
+        $styleString = '';
+        foreach($obj as $name){
+            $styleString /= $name.':'.$obj[$name].'; ';
+        }
+        return substr($styleString, 0, mb_strlen($styleString) - 1);
+    }
+    private function processToken($i) {
+        switch($i['name']){
+            case 'blockquote-start':
+                appendResult('<blockquote>');
+                break;
+            # 계속 추가
+        }
+    }
+    private function finalLoop() {
+        $result = '';
+        if(count($this->footnotes) > 0){
+            $this->processToken(array('name' => 'macro', 'macroName' => '각주'));
+        }
+        if(is_string($item))
+            mapcb(null, $item);
+        elseif($item['name'] = 'macro') {
+            switch($item['macroName']){
+                case 'tableofcontents':
+                case '목차':
+                    $macroContent = '<div class="wiki-toc" id="wiki-toc"><div class="wiki-toc-heading">목차</div>';
+                    $hLevels = $this->hLevels;
+                    $lastLevel = -1;
+                    for($j=0; $j < count($this->headings); $j++) {
+                        $curHeading = $this->headings[$j];
+                        if($lastLevel != -1 && $curHeading['level'] > $lastLevel)
+                            $hLevels[$curHeading['level']] = 0;
+                        $hLevels[$curHeading['level']]++;
+                        $macroContent .= '<div class="wiki-toc-item wiki-toc-item-indent-'.$curHeading['level'].'"><a href="#heading-'.$j+1.'">'.$hLevels[$curHeading['level'].'.</a> '.$curHeading['value'].'</div>';
+                        $lastLevel = $curHeading['level'];
+                    }
+                    $macroContent .= '<div></div>';
+                    return mapcb(null, $macroContent);
+                case 'include':
+                    if(!isset($item['options']) || strlen($item['options']) === 0)
+                        return mapcb(null, '<span class="wikitext-syntax-error">오류 : Include 매크로는 최소한 include할 문서명이 필요합니다.</span>');
+                    elseif(!is_string($item['options'][0]))
+                        return mapcb(null, '<span class="wikitext-syntax-error">오류 : include할 문서명이 첫번째로 매크로 매개변수로 전달되어야 합니다.</span>');
+                    $childPage = new NamuMark($item['options']);
+                    $childPage->setIncluded();
+                    if(count($item['options']) > 1){
+                        $incArgs = array();
+                        for($k=1; $k < count($item['options']); $k++){
+                            $incArg = $item['options'][$k];
+                            if(is_string($incArg)) continue;
+                            $incArgs[$incArg['name']] = $incArg['value'];
+                        }
+                        $childPage->setIncludeParameters($incArgs);
+                    }
+                    $childPage->setRenderer(null, $options);
+                    $childPage->parse;
+                    break;
+            }
+        }
+    }
+    function getResult() {
+        finalLoop();
     }
 }
