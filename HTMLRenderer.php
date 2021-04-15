@@ -174,6 +174,9 @@ class HTMLRenderer {
                 break;
             case 'macro':
                 switch($i['macroName']){
+                    case 'clearfix':
+                        $this->appendResult('<div style="clear:both">');
+                        break;
                     case 'br':
                         $this->appendResult('<br>');
                         break;
