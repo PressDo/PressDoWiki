@@ -191,37 +191,40 @@ namespace PressDo
         }
 
         // 문서 ACL 설정 가져오기
-        public static function getDocACL($DocNm, $action)
+        public static function getDocACL($DocNm, $access)
         {
             $DocNm = rawurlencode($DocNm);
-            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE BINARY DocNm='$DocNm' AND action='$action'");
+            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE BINARY DocNm='$DocNm' AND Access='$access'");
             $res = array();
             while ($row = SQL_Assoc($get)) {
-                $h = array('ACLID' => $row['aclid'], 
-                    'access' => $row['access'],
-                    'condition' => $row['condition'],
-                    'expiry' => $row['expiration']
+                $h = array(
+                    'Access' => $row['access'],
+                    'Condition' => $row['condition'],
+                    'Action' => $row['action'],
+                    'Expiration' => $row['expiration']
                 );
-                array_push($res, $h);
+                $res[$row['no']] = $h;
+               // (1 => a(), 2 => a())
             }
-            if(empty($res)) return array(false);
+            if(empty($res)) return false;
             return $res;
         }
 
         // 선택한 이름공간의 ACL 가져오기
-        public static function getNSACL($ns)
+        public static function getNSACL($ns,$access)
         {
-            $get = SQL_Query("SELECT `type`,`name`,`$ns` FROM `ACL_NS`");
+            $get = SQL_Query("SELECT * FROM `ACL_NS` WHERE BINARY Namespace='$ns' AND Access='$access'");
             $res = array();
             while ($row = SQL_Assoc($get)) {
-
-                $h = array('type' => $row['type'], 
-                    'name' => $row['name'],
-                    'value' => $row[$ns]
+                $h = array('No' => $row['no'], 
+                    'Access' => $row['access'],
+                    'Condition' => $row['condition'],
+                    'Action' => $row['action'],
+                    'Expiration' => $row['expiration']
                 );
                 array_push($res, $h);
             }
-            if(empty($res)) return array(false);
+            if(empty($res)) return false;
             return $res;
         }
 
@@ -231,30 +234,30 @@ namespace PressDo
             $u = explode(':', $User);
             $un = $u[0];
             $ut = $u[1];
-            $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_group_list.priority FROM `ACL_user`,`ACL_group_list` WHERE ACL_user.username='$un' AND ACL_user.usertype='$ut' AND ACL_group_list.name=ACL_user.aclgroup ORDER BY ACL_group_list.priority ASC");
+            $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_groups.priority FROM `ACL_user`,`ACL_groups` WHERE ACL_user.username='$un' AND ACL_user.usertype='$ut' AND ACL_groups.name=ACL_user.aclgroup ORDER BY ACL_groups.priority ASC");
             return SQL_Assoc($get);
         }
 
-        // 문서 ACL 제거
-        public static function removeDocACL($ACLID)
+        // ACL 규칙 삭제
+        public static function deleteACL($DocNm, $ACLID)
         {
-            $get = SQL_Query("DELETE FROM `ACL_Document` WHERE aclid='$ACLID'");
+            $get = SQL_Query("DELETE FROM `ACL_Document` WHERE DocNm='$DocNm' AND aclid='$ACLID'");
         }
 
-        // ACL 그룹에 사용자 제거
-        public static function removeUserACLgroup($seq)
+        // ACL 그룹에서 사용자 제거
+        public static function delfromACLgroup($id)
         {
-            $get = SQL_Query("DELETE FROM `ACL_user` WHERE seq='$seq'");
+            $get = SQL_Query("DELETE FROM `ACL_user` WHERE id='$id'");
         }
 
         // ACL 그룹 삭제
         public static function removeACLgroup($aclgroup)
         {
-            $get = SQL_Query("DELETE FROM `ACL_group_list` WHERE name='$aclgroup'");
+            $get = SQL_Query("DELETE FROM `ACL_groups` WHERE name='$aclgroup'");
         }
 
-        // 문서 ACL 설정
-        public static function setDocACL($DocNm, $action, $access, $type, $target, $expiry = null)
+        // 문서 ACL 설정 / 규칙 추가
+        public static function setDocACL($DocNm, $Condition, $Access, $Action, $Expiration = 0)
         {
             global $SQL;
             $DocNm = rawurlencode($DocNm);
@@ -285,26 +288,39 @@ namespace PressDo
         }
 
         // 새 ACL 그룹 추가
-        public static function addACLgroup($aclgroup, $desc, $document, $template_set, $category, $file, $user, $special, $wiki, $discuss, $bin, $poll, $filebin, $operation, $template)
+        public static function addACLgroup($name, $desc, $perms)
         {
-            $get = SQL_Query("INSERT INTO `ACL_group_list` (name, description, document, template_set, category, file, user, special, wiki, discuss, bin, poll, filebin, operation, template) VALUES('$aclgroup', '$desc', '$document', '$template_set', '$category', '$file', '$user', '$special', '$wiki', '$discuss', '$bin', '$poll', '$filebin', '$operation', '$template')");
+            $get = SQL_Query("INSERT INTO `ACL_groups` (name, description, perms) VALUES('$name', '$desc', '$perms')");
         }
-        // 사용자가 ACL 그룹에 속해있는지 확인
-        public static function inACLgroup($user, $aclgroup)
-        {
-            $u = explode(':', $user);
-            $type = $u[0];
-            $username = $u[1];
-            $get = SQL_Query("SELECT seq FROM `ACL_user` WHERE 'usertype'='$type' AND 'username'='$username' AND 'aclgroup'='$aclgroup'");
-            $ass = SQL_Assoc($get);
-            if(!$ass['seq']){ return false;}else{return true;}
-        }
-        public static function checkACL($user, $action, $DocNm, $DocNS)
-        {
-            $DocACL = Data::getDocACL($DocNm, $action);
-            $NSACL = Data::splitACL(getNSACL($DocNS), $action);
 
-            return $acceptance;
+        // 사용자가 Condition에 해당하는지 확인. 규칙이 있다는 전제하에 실행
+        public static function checkACL($user, $rules)
+        {
+            // user: arr(name: 'type:ID', ip: IP, geoip: GEOIP, perm: arr(), aclgroup: arr())
+            foreach($rules as $rule){
+                $u = explode(':', $user['name']);
+                $c = explode(':', $rule['condition']); // : 뒤에글자 추출
+                switch($c[0]){
+                    case 'perm': // 뒤에글자가 사용자 펌 안에 있으면 결과반환
+                        if(in_array($c[1], $user['perm'])) return $rule['action'];
+                        break;
+                    case 'member': // 뒤에글자가 아이디랑 같으면 적용
+                        if($c[1] == $u[1]) return $rule['action'];
+                        break;
+                    case 'ip':
+                        if($c[1] == $user['ip']) return $rule['action'];
+                        break;
+                    case 'aclgroup':
+                        if(in_array($c[1], $user['aclgroup'])) return $rule['action'];
+                        break;
+                    case 'geoip':
+                        if($c[1] == $user['geoip']) return $rule['action'];
+                        break;
+                    default:
+                        return 'none'; // 문서/이름공간 여부에 따라 다르게 처리
+                        break;
+                }
+            }
         }
     }
 }
