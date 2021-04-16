@@ -71,7 +71,7 @@ if ($acl['ok'] == false) {
         </div>
         <div id="cont_ent" pressdo-doc-content>
             <div id="categoryspace_top"></div>
-            <?=str_replace('@@@PressDo-Replace-Title-Here@@@', rawurlencode($Title), PressDo::readSyntax($array['content']));?>
+            <?=str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), PressDo::readSyntax($array['content']));?>
             <script>
                 // 분류 위치 조정
                 var f = document.getElementById('categories');

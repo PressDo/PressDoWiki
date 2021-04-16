@@ -50,7 +50,7 @@ if (!$array['content']) {
             </h1>
         </div>
         <div id="cont_ent" pressdo-doc-content>
-            <textarea readonly="readonly" pressdo-editor><?=str_replace('@@@PressDo-Replace-Title-Here@@@', rawurlencode($Title), $array['content'])?></textarea>
+            <textarea readonly="readonly" pressdo-editor><?=str_replace('@@@PressDo-Replace-Title-Here@@@', urlencode($Title), $array['content'])?></textarea>
         </div>
     </div><?php
 
