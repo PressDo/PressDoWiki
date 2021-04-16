@@ -142,7 +142,7 @@ div[pressdo-doc-tablewrap]{display:block;max-width:100%;overflow-x:auto;margin:1
 table{background-color:transparent;border-spacing:0;border-collapse:collapse;}
 table[pressdo-doc-table]{background-color:#f5f5f5;border-collapse:collapse;}
 table[pressdo-doc-table] td{padding: 5px 10px;border: 1px solid #ddd;}
-
+blockquote[pressdo-blockquote]{padding: 1em calc(2em + 25px) 1em 1em;margin: 1em 0;background: #eee;display: table;border: 2px dashed #ccc;border-left: 5px solid #71bc6d;}
 
 /* Viewer Primary Settings */
 h1{font-size: 2rem;}
