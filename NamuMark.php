@@ -22,7 +22,7 @@ class NamuMark{
 	private function seekEOL($text, $offset = 0){
 		return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
 	}		
-	private function doParse(){
+	private function doParse($callback){
 		$multiBrackets = array(
 			'open' => '{{{',
 			'close' => '}}}',
@@ -42,19 +42,19 @@ class NamuMark{
 			$now = substr($this->wikitext,$i,1);
 
 			// func[0] = Gijon gap, func[1]: v => i = v
-			if($line == '' && $now == ' ' && $l_i = listParser($this->wikitext, $i) && $temp = $l_i[0] && $i = $l_i[1]){
+			if($line == '' && $now == ' ' && $temp = listParser($this->wikitext, $i, function($v){$i = $v})){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($this->wikitext, $i), '|') && $t_i = tableParser($this->wikitext, $i) && $temp = $t_i[0] && $i = $t_i[1]){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '|') && $temp = tableParser($this->wikitext, $i, function($v){$i = $v})){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $q_i = blockquoteParser($this->wikitext, $i) && $temp = $q_i[0] && $i = $q_i[1]){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $temp = blockquoteParser($this->wikitext, $i, function($v){$i = $v})){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
@@ -229,7 +229,7 @@ class NamuMark{
 		    return array();
 	}
 	
-	function bracketParser($wikitext, $pos, $bracket, $cb){
+	function bracketParser($wikitext, $pos, $bracket, $setpos, $callProc, $matchLenCallback=null){
 		function callProc($proc, $arg1=null, $arg2=null){
 		switch($proc){
 			case 'renderProcessor':
@@ -275,7 +275,7 @@ class NamuMark{
 		}
 		return null;
 	}
-	function blockquoteParser($wikitext, $pos){
+	function blockquoteParser($wikitext, $pos, $setpos){
 		$temp = array();
 		$result = array();
 		for($i=$pos;$i<mb_strlen($wikitext);$i=seekEOL($wikitext, $i)+1){
@@ -364,7 +364,7 @@ class NamuMark{
 		}
 		return $result;
 	}
-	function listParser($wikitext, $pos){
+	function listParser($wikitext, $pos, $setpos){
 		$listTags = array(
 			'*' => array('ordered' => false),
 			'1.' => array('ordered' => true, 'type' => 'decimal'),
