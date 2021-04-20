@@ -54,7 +54,7 @@ class NamuMark{
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $temp = blockquoteParser($this->wikitext, $i, fn($v) => $i = $v, $callProc)){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $temp = blockquoteParser($this->wikitext, $i, fn($v) => $i = $v, $callProcessor)){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
@@ -93,10 +93,9 @@ class NamuMark{
 			}
 		}
 		processTokens($tokens);
-		$this->renderer->getResult();
+		$this->renderer->getResult(function($err, $result) {if($err) $callback($err); else $callback(null, $result);});
 	}
 
-	// do not forget to add callprocessor func in parser
 	function blockParser($line){
 		$result = array();
 		$s_formats = array("'''", "''", '~~', '--', '__', '^^',',,');
@@ -229,30 +228,9 @@ class NamuMark{
 		    return array();
 	}
 
-$callProc = function($proc, $arg1=null, $arg2=null){
-		switch($proc){
-			case 'renderProcessor':
-				return renderProcessor($arg1, $arg2);
-				break;
-			case 'linkProcessor':
-				return linkProcessor($arg1, $arg2);
-				break;
-			case 'macroProcessor':
-				return macroProcessor($arg1, $arg2);
-				break;
-			case 'linkProcessor':
-				return linkProcessor($arg1, $arg2);
-				break;
-			case 'closureProcessor':
-				return closureProcessor($arg1, $arg2);
-				break;
-			case 'textProcessor':
-				return textProcessor($arg1, $arg2);
-				break;
-			default:
-				break;
-			}
-		}
+        $callProcessor = function($proc, $args){
+		return call_user_func($proc, $args[1], $args[2]);
+	}
 	
 	function bracketParser($wikitext, $pos, $bracket, $setpos, $callProc, $matchLenCallback=null){
 		$cnt = 0;
@@ -269,9 +247,10 @@ $callProc = function($proc, $arg1=null, $arg2=null){
 				return null;
 			
 			if($cnt == 0 && $done){
-				($cb)?$re = mb_strlen($innerString) + strlen($bracket['open'] + strlen($bracket['close']):$re = null;
 				$innerString = substr($wikitext, $pos + strlen($bracket['open']), $i - strlen($bracket['close']) + 1);
-				return array(callProc($bracket['processor'], $innerString, $bracket['open']), $i, $re);
+				if($matchLenCallback) $matchLenCallback(mb_strlen($innerString) + strlen($bracket['open'] + strlen($bracket['close']));
+                                $setpos($i);
+                                return $callProc($bracket['processor'], array($innerString, $bracket['open']));
 			}
 		}
 		return null;
