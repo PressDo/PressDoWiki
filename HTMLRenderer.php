@@ -1,26 +1,6 @@
 <?php
 require_once 'NamuMark.php';
 
-// c 함수
-// callback: (err,result) => { if(err) console.log('ERROR') let html, categories = result; console.log(complete0
-function gR_callback($err, $result){
-    if($err) callback($err);
-    else callback(null, $result);
-}
-// Original Code: getResult(gr_cb(null, {html: html, categories: categories}))
-
-// callback 함수
-function fL_callback($err, $html) {
-    if($err)
-        return gR_callback($err);
-    gR_callback(null, array('html' => $html, 'categories' => $categories));
-}
-
-function fL_map_cb($err, $finalFragments){
-    if($err)
-        fL_callback($err);
-}
-
 class HTMLRenderer {
     public $defaultOptions = array(
         'wiki' => array(
@@ -346,7 +326,7 @@ class HTMLRenderer {
                 break;
         }
     }
-    private function finalLoop() {
+    private function finalLoop($callback) {
         $result = '';
         if(count($this->footnotes) > 0){
             $this->processToken(array('name' => 'macro', 'macroName' => '각주'));
@@ -392,7 +372,11 @@ class HTMLRenderer {
             }
         }
     }
-    function getResult() {
-        finalLoop();
+    $this->getResult = fn ($c) => {
+        finalLoop(fn ($err, $html) => {
+            if ($err)
+                return $c($err);
+            $c(null, array('html' => $html, 'categories' => $categories));
+        });
     }
 }
