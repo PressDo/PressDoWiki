@@ -285,7 +285,8 @@ class NamuMark{
 			array_push($result, array('name' => 'wikitext', 'parseFormat' => true, 'text' => $curTemp['line']));
 		}
 		array_push($result, array('name' => 'blockquote-end'));
-		return array($result, $i - 1);
+		$setpos($i-1);
+                return $result;
 	}
 	function finishTokens($tokens){
 		$result = array();
@@ -414,9 +415,9 @@ class NamuMark{
 			$setpos = null;
 		else{
 			$result = finishTokens($result);
-			$setpos = $i - 1;
+			$setpos($i - 1);
 		}
-		return array($result, $setpos);
+		return $result;
 	}
 	function parseOptionBracket($optionContent){
 		$colspan = 0;
@@ -870,10 +871,10 @@ class NamuMark{
 		return array(array('name' => 'plain', 'text' => $type.$text.$type));
 	}
 
-    	function parse($c){return $this->doParse($c);}
+    	$this->parse = fn($c) => {return $this->doParse($c);}
 	function setIncluded(){$this->defaultOptions['included'] = true;}
 	function setIncludeParameters($paramsObj){$this->defaultOptions['includeParameters'] = $paramsObj;}
-	function setRenderer($r = null, $o = null){
+	$this->setRenderer = fn($r = null, $o = null) => {
 		if($r !==null) $this->rendererClass = $r;
 		if($o !==null) $this->rendererOptions = $o;
 		return;
