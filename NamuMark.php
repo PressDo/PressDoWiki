@@ -229,7 +229,7 @@ class NamuMark{
 	}
 
         $callProcessor = function($proc, $args){
-		return call_user_func($proc, $args[1], $args[2]);
+		return $this->$proc($args[1], $args[2]);
 	}
 	
 	function bracketParser($wikitext, $pos, $bracket, $setpos, $callProc, $matchLenCallback=null){
@@ -872,8 +872,8 @@ class NamuMark{
 	}
 
     	$this->parse = fn($c) => {return $this->doParse($c);}
-	function setIncluded(){$this->defaultOptions['included'] = true;}
-	function setIncludeParameters($paramsObj){$this->defaultOptions['includeParameters'] = $paramsObj;}
+        $this->setIncluded = fn() =>{$this->defaultOptions['included'] = true;}
+	$this->setIncludeParameters = fn($paramsObj) => {$this->defaultOptions['includeParameters'] = $paramsObj;}
 	$this->setRenderer = fn($r = null, $o = null) => {
 		if($r !==null) $this->rendererClass = $r;
 		if($o !==null) $this->rendererOptions = $o;
