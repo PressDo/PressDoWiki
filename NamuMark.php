@@ -505,7 +505,7 @@ class NamuMark{
 		}
 		return array('colspan_add' => $colspan, 'rowspan_add' => $rowspan, 'colOptions_set' => $colOptions, 'rowOptions_set' => $rowOptions, 'tableOptions_set' => $tableOptions, 'matched' => $matched);
 	}
-	function tableParser($wikitext, $pos) {
+	function tableParser($wikitext, $pos, $setpos) {
 		$caption = null;
 		if(!str_starts_with(substr($wikitext, $pos), '||')){
 			$caption = substr($wikitext, $pos + 1, strpos($wikitext, '|', $pos + 2));
@@ -607,8 +607,8 @@ class NamuMark{
 		}
 		array_push($result, array('name' => 'table-end'));
 		if($hasTableContent){
-			$setpos = mb_strlen($pos + implode('||', array_slice($cols, 0, $i))) + 1;
-			return array($result, $setpos);
+			$setpos(mb_strlen($pos + implode('||', array_slice($cols, 0, $i))) + 1);
+			return $result;
 		}else{
 			return null;
 		}
@@ -890,7 +890,7 @@ class NamuMark{
 		return array(array('name' => 'plain', 'text' => $type.$text.$type));
 	}
 
-    	function parse(){return $this->doParse();}
+    	function parse($c){return $this->doParse($c);}
 	function setIncluded(){$this->defaultOptions['included'] = true;}
 	function setIncludeParameters($paramsObj){$this->defaultOptions['includeParameters'] = $paramsObj;}
 	function setRenderer($r = null, $o = null){
