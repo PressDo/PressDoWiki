@@ -42,19 +42,19 @@ class NamuMark{
 			$now = substr($this->wikitext,$i,1);
 
 			// func[0] = Gijon gap, func[1]: v => i = v
-			if($line == '' && $now == ' ' && $temp = listParser($this->wikitext, $i, function($v){$i = $v})){
+			if($line == '' && $now == ' ' && $temp = listParser($this->wikitext, $i, fn($v) => $i = $v)){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($this->wikitext, $i), '|') && $temp = tableParser($this->wikitext, $i, function($v){$i = $v})){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '|') && $temp = tableParser($this->wikitext, $i, fn($v)=>$i = $v)){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
 				continue;
 			}
-			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $temp = blockquoteParser($this->wikitext, $i, function($v){$i = $v})){
+			if($line == '' && str_starts_with(substr($this->wikitext, $i), '>') && $temp = blockquoteParser($this->wikitext, $i, fn($v) => $i = $v, $callProc)){
 				$tokens = array_push($tokens, $temp);
 				$line = '';
 				$now = '';
@@ -62,7 +62,7 @@ class NamuMark{
 			}
 			foreach($multiBrackets as $bracket){
 				// Callproc moved into func
-				if(str_starts_with(substr($this->wikitext, $i), $bracket['open']) && $b_i = bracketParser($this->wikitext, $i) && $temp = $b_i[0] && $i = $b_i[1]){
+				if(str_starts_with(substr($this->wikitext, $i), $bracket['open']) && $temp = bracketParser($this->wikitext, $i, fn($v) => $i = $v)){
 					$tokens = array_push($tokens, array(array('name' => 'wikitext', 'treatAsLine' => true, 'text' => $line)),$temp);
 					$line = '';
 					$now = '';
@@ -228,9 +228,8 @@ class NamuMark{
 		else
 		    return array();
 	}
-	
-	function bracketParser($wikitext, $pos, $bracket, $setpos, $callProc, $matchLenCallback=null){
-		function callProc($proc, $arg1=null, $arg2=null){
+
+$callProc = function($proc, $arg1=null, $arg2=null){
 		switch($proc){
 			case 'renderProcessor':
 				return renderProcessor($arg1, $arg2);
@@ -254,6 +253,8 @@ class NamuMark{
 				break;
 			}
 		}
+	
+	function bracketParser($wikitext, $pos, $bracket, $setpos, $callProc, $matchLenCallback=null){
 		$cnt = 0;
 		$done = false;
 		for($i=$pos;$i<mb_strlen($wikitext);$i++){
