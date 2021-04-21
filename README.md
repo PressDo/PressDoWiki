@@ -23,6 +23,12 @@
 - PHP 8.0 이상
 - MariaDB 10.3.25 이상
 
+- php-mbstring
+- php-mysqli
+- php-sqlite3
+- PHP PECL Extension
+
+
 -------------------------
 ### 개발 환경 (Development Environment)
 ![PHP](https://img.shields.io/badge/PHP-8.0-4F5D95?style=for-the-badge&logo=php)
