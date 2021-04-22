@@ -2,27 +2,22 @@
 require_once 'NamuMark.php';
 
 class HTMLRenderer {
-    public $defaultOptions = array(
-        'wiki' => array(
-            'exists' => true,
-            'includeParserOptions' => array()
-        )
-    );
+    public $defaultOptions =  ['wiki' => ['exists' => true, 'includeParserOptions' => []]];
     public function __construct($_options){
         $this->_options = $_options;
-        $this->resultTemp = array();
+        $this->resultTemp = [];
         $this->options = array_merge($this->defaultOptions, $_options);
-        $this->headings = array();
-        $this->footnotes = array();
-        $this->categories = array();
-        $this->links = array();
+        $this->headings = [];
+        $this->footnotes = [];
+        $this->categories = [];
+        $this->links = [];
         $this->isHeadingNow = false;
         $this->isFootnoteNow = false;
         $this->lastHeadingLevel = 0;
-        $this->hLevels = array(1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0);
+        $this->hLevels = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0];
         $this->footnoteCount = 0;
         $this->headingCount = 0;
-        $this->lastListOrdered = array();
+        $this->lastListOrdered = [];
         $this->wasPreMono = false;
     }
     private function resolvUrl($target, $type){
@@ -36,24 +31,23 @@ class HTMLRenderer {
         }
     }
     private function appendResult($value) {
-        $resultTemp = $this->resultTemp;
+        $this->resultTemp;
         if($this->isFootnoteNow) {
             $this->footnotes[count($this->footnotes) - 1] .= (is_string($value))? $value: strval($value);
             return;
         } elseif($this->isHeadingNow) {
             $this->headings[count($this->headings) - 1] .= (is_string($value))? $value: strval($value);
         }
-        if(count($resultTemp) === 0)
-            array_push($resultTemp, $value);
+        if(count($this->resultTemp) === 0)
+            array_push($this->resultTemp, $value);
         else {
             $isArgumentString = is_string($value);
-            $isLastItemString = is_string($resultTemp[count($resultTemp)-1]);
+            $isLastItemString = is_string($this->resultTemp[count($this->resultTemp)-1]);
             if($isArgumentString && $isLastItemString){
-                $resultTemp[count($resultTemp)-1] .= $value;
+                $this->resultTemp[count($this->resultTemp)-1] .= $value;
             } else {
-                array_push($resultTemp, $value);
+                array_push($this->resultTemp, $value);
             }
-            $this->resultTemp = $resultTemp;
         }
     }
     private function ObjToCssString($obj) {
@@ -329,8 +323,9 @@ class HTMLRenderer {
     private function finalLoop($callback) {
         $result = '';
         if(count($this->footnotes) > 0){
-            $this->processToken(array('name' => 'macro', 'macroName' => '각주'));
+            $this->processToken(['name' => 'macro', 'macroName' => '각주']);
         }
+        $finalFragments = array_map(fn($item, $mapcb) => {
         if(is_string($item))
             $mapcb(null, $item);
         elseif($item['name'] = 'macro') {
@@ -352,9 +347,9 @@ class HTMLRenderer {
                     return $mapcb(null, $macroContent);
                 case 'include':
                     if(!isset($item['options']) || strlen($item['options']) === 0)
-                        return mapcb(null, '<span class="wikitext-syntax-error">오류 : Include 매크로는 최소한 include할 문서명이 필요합니다.</span>');
+                        return $mapcb(null, '<span class="wikitext-syntax-error">오류 : Include 매크로는 최소한 include할 문서명이 필요합니다.</span>');
                     elseif(!is_string($item['options'][0]))
-                        return mapcb(null, '<span class="wikitext-syntax-error">오류 : include할 문서명이 첫번째로 매크로 매개변수로 전달되어야 합니다.</span>');
+                        return $mapcb(null, '<span class="wikitext-syntax-error">오류 : include할 문서명이 첫번째로 매크로 매개변수로 전달되어야 합니다.</span>');
                     $childPage = new NamuMark($item['options'][0]);
                     $childPage->setIncluded();
                     if(count($item['options']) > 1){
@@ -371,6 +366,12 @@ class HTMLRenderer {
                     break;
             }
         }
+        }, $this->resultTemp);
+        $result = '';
+        for($i = 0; $i < count($finalFragments); $i++) {
+                $result .= $finalFragments[$i];
+            }
+            $callback(null, $result);
     }
     $this->getResult = fn ($c) => {
         finalLoop(fn ($err, $html) => {
