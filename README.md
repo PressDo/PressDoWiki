@@ -19,15 +19,28 @@
 ![PHP](https://img.shields.io/badge/PHP-%3E%3D8.0-4F5D95?style=for-the-badge&logo=php)
 ![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
 -------------------------
-
+#### 필수 사항
 - PHP 8.0 이상
+
+
+#### 다음 사항은 택1입니다.
 - MariaDB 10.3.25 이상
+- MySQL
+- PostgreSQL
+- Oracle DB
+- Microsoft Access
+- MSSQL
+- IBM DB2
 
 - php-mbstring
 - php-mysqli
 - php-sqlite3
-- PHP PECL Extension
-
+- PHP-pdo-odbc
+- PHP-pgsql
+- PHP OCI8
+- PHP-sqlsrv
+- PHP ibm_db2
+- SQLite
 
 -------------------------
 ### 개발 환경 (Development Environment)
