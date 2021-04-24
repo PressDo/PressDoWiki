@@ -167,7 +167,7 @@ class NamuMark{
 					$bracket = $singleBrackets[$k];
 					$temp = null;
 					$innerStrLen = null;
-					if(str_starts_with(substr($line,$j),$bracket['open']) && $br_i = bracketParser($line, $nj, $bracket) && $temp = $br_i[0] && $nj = $br_i[1] && $innerStrLen = $br_i[2]){
+					if(str_starts_with(substr($line,$j),$bracket['open']) && ($temp = bracketParser($line, $nj, $bracket, fn($v) => $nj = $v, $callProcessor, fn($v) => $innerStrLen = $v))){
 						if(strlen($plainTemp) !== 0){
 							array_push($result, ['name' => 'plain', 'text' => $plainTemp]);
 							$plainTemp = '';
