@@ -34,9 +34,9 @@ class NamuMark{
 		$now = '';
 		$tokens = array();
 		if($this->wikitext === null)
-		    return array(array('name' => 'error', 'type' => 'notfound'));
+		    return array(['name' => 'error', 'type' => 'notfound']);
 		if(str_starts_with($this->wikitext, '#') && preg_match($this->redirectPattern, $this->wikitext, $r_match) && strpos($this->wikitext, $r_match[0]) === 0)
-	        return array(array('name' => 'redirect', 'target' => $r_match[1]));
+	        return array(['name' => 'redirect', 'target' => $r_match[1]]);
 		for($i=0;$i < mb_strlen($this->wikitext); $i++){
 			$temp = array('pos' => $i);
 			$now = substr($this->wikitext,$i,1);
@@ -63,23 +63,23 @@ class NamuMark{
 			foreach($multiBrackets as $bracket){
 				// Callproc moved into func
 				if(str_starts_with(substr($this->wikitext, $i), $bracket['open']) && $temp = bracketParser($this->wikitext, $i, fn($v) => $i = $v)){
-					$tokens = array_push($tokens, array(array('name' => 'wikitext', 'treatAsLine' => true, 'text' => $line)),$temp);
+					$tokens = array_push($tokens, array(['name' => 'wikitext', 'treatAsLine' => true, 'text' => $line]),$temp);
 					$line = '';
 					$now = '';
 					break;
 				}
 			}
 			if($now === '\n'){
-				$tokens = array_push($tokens, array(array('name' => 'wikitext', 'treatAsLine' => true, 'text' => $line)));
+				$tokens = array_push($tokens, array(['name' => 'wikitext', 'treatAsLine' => true, 'text' => $line]));
 			    $line = '';
 			}
 			else
 			    $line .= $now;
 		}
 		if(mb_strlen($line) != 0)
-		    $tokens = array_push($tokens,array(array('name' => 'wikitext', 'treatAsLine' => true, 'text' => $line)));
+		    $tokens = array_push($tokens,array(['name' => 'wikitext', 'treatAsLine' => true, 'text' => $line]));
 		function processTokens($newarr){
-			if(!is_array($newarr)) $newarr = array();
+			if(!is_array($newarr)) $newarr = [];
 			for($i=0;$i < count($newarr); $i++){
 				$v = $newarr[$i];
 				if(is_array($v))
@@ -98,8 +98,8 @@ class NamuMark{
 
 	function blockParser($line){
 		$result = array();
-		$s_formats = array("'''", "''", '~~', '--', '__', '^^',',,');
-		$s_result = array();
+		$s_formats = ["'''", "''", '~~', '--', '__', '^^',',,'];
+		$s_result = [];
 		for($i=0; $i < count($s_formats); $i++) {
 			array_push($s_result, array(
 				'open' => $s_formats[$i],
@@ -148,8 +148,8 @@ class NamuMark{
 				$imgUrl = $matches[1];
 				$optionsString = $matches[2];
 				$optionMatches = preg_match_all($extImgOptionPattern, $optionsString);
-				if (!is_array($optionMatches[1])) $optionMatches = array(null, array());
-				$styleOptions = array();
+				if (!is_array($optionMatches[1])) $optionMatches = array(null, []);
+				$styleOptions = [];
 				for($k=1;$k<count($optionMatches[1]);$k++){
 					$styleOptions[$optionMatches[1][$k]] = $optionMatches[2][$k];
 				}
@@ -157,7 +157,7 @@ class NamuMark{
 					array_push($result, array('name' => 'plain', 'text' => $plainTemp));
 					$plainTemp = '';
 				}
-				array_push($result, array('name' => 'external-image', 'style'=> $styleOptions, 'target' => $imgUrl));
+				array_push($result, ['name' => 'external-image', 'style'=> $styleOptions, 'target' => $imgUrl]);
 				$j += mb_strlen($matches[0]) -1;
 				continue;
 			}else{
@@ -169,7 +169,7 @@ class NamuMark{
 					$innerStrLen = null;
 					if(str_starts_with(substr($line,$j),$bracket['open']) && $br_i = bracketParser($line, $nj, $bracket) && $temp = $br_i[0] && $nj = $br_i[1] && $innerStrLen = $br_i[2]){
 						if(strlen($plainTemp) !== 0){
-							array_push($result, array('name' => 'plain', 'text' => $plainTemp));
+							array_push($result, ['name' => 'plain', 'text' => $plainTemp]);
 							$plainTemp = '';
 						}
 						$result = array_push($result, $temp);
