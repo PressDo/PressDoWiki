@@ -45,9 +45,13 @@
 ![PHP](https://img.shields.io/badge/PHP-8.0-4F5D95?style=for-the-badge&logo=php)
 ![MariaDB](https://img.shields.io/badge/MariaDB-%3E%3D10.3.25-003545?style=for-the-badge&logo=mariadb)
 -------------------------
-
 - PHP 8.0 
 - MariaDB 10.3.25
+
+### 지원 문법 (Supported Markup)
+- 나무마크(Namumark)
+- 마크다운(Markdown) (예정)
+- BBCode (예정)
 
 ### 지원 스킨 (Supported Skins)
 - ~~senkawa~~ (저작권 문제로 배포하지 않음)
