@@ -40,6 +40,6 @@ $conf = array(
         "TestExtension"
     ],
     "comments" => "본 위키는 PressDo 엔진 테스트를 목적으로 생성되었습니다."
-    "forceRecaptchaPublic" => "",
-    "recaptchaPublic" => ""
+    "ForceRecaptchaPublic" => "",
+    "RecaptchaPublic" => ""
 );
