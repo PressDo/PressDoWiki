@@ -5,6 +5,7 @@ use PressDo\Data;
 $User = PressDo::ConstUser($_SESSION);
 require_once '../PressDoLib.php';
 require_once '../skin/'.$user['skin'].'/skin.php';
+include '../skin/'.$user['skin'].'/html/header.html';
 
 $ReqURI = preg_match('/\/([^\/]*)\/(.*)$/', $_SERVER['REQUEST_URI']);
 switch ($ReqURI[1]){
@@ -159,5 +160,5 @@ if ($acl['ok'] == false) {
     </div><?php
 
 }
-WikiSkin::footer();
+include '../skin/'.$user['skin'].'/html/footer.html';
 ?>
