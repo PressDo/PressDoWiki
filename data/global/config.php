@@ -4,7 +4,7 @@ $conf = array(
     "NameSpace" => "PressDoWiki",
     "Domain" => "",
     "ScriptPath" => "/",
-    "ViewerUri" => "/w/",
+    "ViewerUri" => "w",
     "Language" => "ko-kr",
     "FrontPage" => "대문",
     "CopyRightText" => "\u003Cimg alt=\"크리에이티브 커먼즈 라이선스\" style=\"border-width: 0;\" src=\"/img/cc-by-nc-sa-2.0-88x31.png\"\u003E\u003Cbr\u003E\r\n이 저작물은 \u003Ca rel=\"license\" href=\"//creativecommons.org/licenses/by-nc-sa/2.0/kr/\"\u003ECC BY-NC-SA 2.0 KR\u003C/a\u003E에 따라 이용할 수 있습니다.",
