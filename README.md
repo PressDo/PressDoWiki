@@ -32,7 +32,7 @@
 - SQLite
 
 #### 다음 사항은 택1입니다.
-- MariaDB 10.3.25 이상
+- MariaDB 10.2 이상
 - MySQL 5.7 이상
 - PostgreSQL 9.2 이상
 - Oracle DB
