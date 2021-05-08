@@ -23,14 +23,7 @@
 #### 필수 사항
 - PHP 8.0 이상
 - php-mbstring
-- php-mysqli
-- php-sqlite3
-- PHP-pdo-odbc
-- PHP-pgsql
-- PHP OCI8
-- PHP-sqlsrv
-- PHP ibm_db2
-- SQLite
+- PHP PDO 모듈
 
 #### 다음 사항은 택1입니다.
 - MariaDB 10.2 이상
@@ -40,6 +33,7 @@
 - Microsoft Access
 - MSSQL
 - IBM DB2
+- SQLite
 
 -------------------------
 ### 개발 환경 (Development Environment)
