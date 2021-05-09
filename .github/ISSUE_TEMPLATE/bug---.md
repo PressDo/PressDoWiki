@@ -2,7 +2,7 @@
 name: Bug 버그
 about: 버그제보용 양식
 title: "[v0.4] 렌더러 버그 제보"
-labels: ''
+labels: 버그 (Bug)
 assignees: aaei924
 
 ---
