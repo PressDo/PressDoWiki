@@ -1,142 +1,13 @@
 <?php
 namespace PressDo
 {
-    class WikiSkin
+    class Pages
     {
-        public static function AboveContent(){
-            global $conf, $uri;
-            ?><!DOCTYPE html>
-              <head>
-                <link rel="stylesheet" href="/skin/liberty/skin.css">
-                <link href="<?=$conf['FaviconURL']?>" rel="SHORTCUT ICON">
-                <meta charset="UTF-8">
-                <meta name="author" content="PRASEOD-">
-                <meta name="title" content="<?=$conf['SiteName']?>">
-                <meta name="description" content="<?=$conf['Description']?>">
-                <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 ,user-scalable=no">
-                <meta http-equiv="Content-Type" content="text/html;">
-                <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                <meta property="og:type" content="website">
-                <meta property="og:title" content=<?=$conf['SiteName']?>>
-                <meta property="og:description" content="<?=$conf['Description']?>">
-                <title> <?=$_GET['title']?> - <?=$conf['SiteName']?> </title>
-            <script>
-                function hiddencontents(a){
-                    b = document.getElementById(a);
-                    c = document.getElementById('content-'+a);
-                    if(b.getAttribute('pressdo-toc-fold') == 'hide'){
-                        b.setAttribute('pressdo-toc-fold', 'show');
-                        c.setAttribute('pressdo-toc-fold', 'show');
-                    }else{
-                    b.setAttribute('pressdo-toc-fold', 'hide');
-                        c.setAttribute('pressdo-toc-fold', 'hide');
-                    }
-                }
-            </script>
-            </head>
-            <body>
-                    <div pressdo-cover>
-                        <div nav-cover>
-                            <nav>
-                                <a href="/" pressdo-logo><?=$conf['TitleText']?></a>
-                                <ul nav-container>
-                                    <li pressdo-navitem-nonlist>
-                                        <a href="<?=$uri['RecentChanges']?>" pressdo-navitem-nonlist title="최근 변경">
-                                            <span ionicon ion-compass></span>
-                                            <span nav-text>최근 변경</span>
-                                        </a>
-                                    </li>
-                                    <li pressdo-navitem-listdown>
-                                        <a href="<?=$uri['RecentDiscuss']?>" pressdo-navitem-nonlist title="최근 토론">
-                                            <span ionicon ion-discuss></span>
-                                            <span nav-text>최근 토론</span>
-                                        </a>
-                                    </li>
-                                    <li pressdo-navitem-nonlist>
-                                        <a href="<?=$uri['random']?>" pressdo-navitem-nonlist title="무작위">
-                                            <span ionicon ion-rand></span>
-                                            <span nav-text>무작위</span>
-                                        </a>
-                                    </li>
-                                    <li pressdo-navitem-listdown>
-                                        <a id="nav-menu" pressdo-toc-fold=hide pressdo-navitem-listdown title="특수 기능">
-                                            <span ionicon ion-func></span>
-                                            <span nav-text>특수 기능</span>
-                                            <span ionicon ion-dropdown></span>
-                                        </a>
-                                        <div pressdo-navfunc pressdo-toc-fold=hide id="content-nav-menu" role="menu">
-                                            <a href="//board.namu.wiki/" title="게시판" data-v-193fc2b2="" data-v-b986d46e="" data-v-3e5e2b49="">
-                                                <span class="i ion-ios-clipboard" data-v-193fc2b2=""></span> 
-                                                <span class="t" data-v-193fc2b2="">게시판</span>
-                                            </a> 
-                                            <div pressdo-crossline></div> 
-                                            <a href="<?=$uri['NeededPages']?>" title="작성이 필요한 문서" data-v-193fc2b2="" data-v-b986d46e="" data-v-3e5e2b49="">
-                                                <span class="i ion-md-alert" data-v-193fc2b2=""></span> 
-                                                <span class="t" data-v-193fc2b2="">작성이 필요한 문서</span>
-                                            </a>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <div pressdo-usermenu>
-                            <?php if(isset($_SESSION['userid'])){ ?>
-                                <a href="#" title="Profile" pressdo-usermenu>
-                                    <img pressdo-usermenu src=<?=$_SESSION['pfpic']?> alt=<?=$_SESSION['userid']?>>
-                                </a><?php
-                            }else{ ?>
-                                <a href="<?=$uri['login']?>" title="Login" pressdo-usermenu>
-                                    <span ionicon ion-unlogined pressdo-usermenu-unlogined></span>
-                                </a><?php
-                            } ?>
-
-                                </div>
-                                <form pressdo-search-form>
-                                    <div pressdo-search-form>
-                                        <input type="search" name="keyword" placeholder="Search" tabindex="1" pressdo-search autocomplete="off">
-                                        <span pressdo-sb>
-                                            <button type="button" onclick="search();" pressdo-sb>
-                                                <span ionicon ion-search></span>
-                                            </button>
-                                            <button type="button" onclick="godirectly();" pressdo-sb>
-                                                <span ionicon ion-move></span>
-                                            </button>
-                                        </span>
-                                    </div>
-                                </form>
-                            </nav>
-                        </div>
-                        <section>
-                        <aside>
-                            <div>
-                                편집 내역
-                            </div>
-                        </aside>
-                        <div pressdo-content> <?php
-        }
-
-        public static function BelowContent(){
-            global $conf; ?>
-            </section>
-                    <footer>
-                        <ul class="pressdo-footer-icons">
-                            <li class="pressdo-footer-poweredby">
-                                <a href="//gitlab.com/librewiki/Liberty-MW-Skin">Liberty</a> | 
-                                <a href="//github.com/aaei924/PressDoWiki/">PressDo</a>
-                            </li>
-                        </ul>
-                        <hr>
-                        <?=stripslashes($conf['PageFooter'])?>
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                    </footer>
-                    </div></body><?php
-        }
-
         public static function wiki($Doc, $NS, $Title, $content, $savetime, $rev=null){
             global $conf, $uri;
-            WikiSkin::AboveContent();
-            if(!$content){?>
+            if(!$content){
+            ?>
+            <div pressdo-content>
                 <div pressdo-content-header>
                     <div pressdo-toolbar>
                         <div pressdo-toolbar-menu>
@@ -156,8 +27,9 @@ namespace PressDo
                 <footer pressdo-con-footer>
                     <p><?=stripslashes($conf['CopyRightText'])?></p>
                 </footer>
-            
+            </div>
             <?php }else{ ?>
+                 <div pressdo-content>
                     <div pressdo-content-header>
                         <div pressdo-toolbar>
                             <div pressdo-toolbar-menu>
@@ -168,9 +40,10 @@ namespace PressDo
                                 <a pressdo-toolbar-link pressdo-toolbar-last href="<?=$uri['acl'].$Doc?>">ACL</a>
                             </div>
                         </div>
-                        <h1 pressdo-doc-title><a href="<?=$uri['wiki'].rawurlencode($Doc)?>"><span pressdo-title-namespace><?=$NS?></span><?=$Title?></a>
+                        <h1 pressdo-doc-title><a href="<?=$uri['wiki'].rawurlencode($Doc)?>"><?=$Doc?></a>
                             <?php if($rev !== null){ ?><small pressdo-doc-action>(r<?=$rev?> 판)</small><?php } ?>
                         </h1>
+                        <p pressdo-doc-changed>이 문서는 <?=date("Y-m-d H:i:s", $savetime)?> 에 마지막으로 바뀌었습니다.</p>
                     </div>
                     <div id="cont_ent" pressdo-doc-content>
                         <div id="categoryspace_top"></div>
@@ -183,17 +56,15 @@ namespace PressDo
                         </script>
                     </div>
                     <footer pressdo-con-footer>
-                        <ul>
-                            <li pressdo-doc-changed>이 문서는 <?=date("Y-m-d H:i:s", $savetime)?> 에 마지막으로 바뀌었습니다.</li>
-                            <li pressdo-doc-copyright> <?=stripslashes($conf['CopyRightText'])?></li>
-                        </ul>
+                            <p><?=stripslashes($conf['CopyRightText'])?></p>
                     </footer>
-            <?php WikiSkin::BelowContent();
+                </div>
+            <?php
             }
         }
         public static function edit($Doc, $raw, $ver=false, $preview=false){
             global $conf;
-            WikiSkin::AboveContent();?>
+            ?> <div pressdo-content>
                 <div pressdo-content-header>
                     <div pressdo-toolbar>
                         <div pressdo-toolbar-menu>
@@ -253,11 +124,11 @@ namespace PressDo
                 if($preview){
                     ?><p> 아래는 저장되지 않은 미리 보기의 모습입니다. </p><hr><?php
                     echo PressDo::readSyntax($raw);
-                }?><?php WikiSkin::BelowContent();
+                }?></div><?php
         }
 
         public static function history($Doc, $ver){
-            WikiSkin::AboveContent();?>
+            ?> <div pressdo-content>
                 <div pressdo-content-header>
                     <div pressdo-toolbar>
                         <div pressdo-toolbar-menu>
@@ -342,7 +213,8 @@ namespace PressDo
                     <div pressdo-history-menu style="display:inline;"><?=$User?></div>
                     (<span style="color:grey"><?=$OldData[1]['summary']?></span>)</li><?php
             } ?>
-            </ul></form></div><?php WikiSkin::BelowContent();
+            </ul></form></div>
+            </div><?php
         }
     }
 }

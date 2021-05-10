@@ -1,9 +1,8 @@
 <?php
 namespace PressDo
 {
-    require_once 'dbConnect.php';
-    ini_set('include_path', __DIR__);
     session_start();
+    require_once 'data/global/config.php';
     if($conf['DevMode'] == true){
         $ip = explode('.', PressDo::getip());
         //if (PressDo::getip() == '127.0.0.1' || $ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)){
@@ -13,7 +12,8 @@ namespace PressDo
         //}
        // if($inside !== true){}
     }
-
+    require_once 'db.php';
+    ($conf['UseShortURI'] == true)? require_once 'data/global/uri_short.php':require_once 'data/global/uri_long.php';
     class PressDo
     {
         public static function readSyntax($Raw)
@@ -23,7 +23,7 @@ namespace PressDo
         }
 
         public static function getip()
-        { // 사용자IP확인
+        {
             $ipaddress = '';
             if (getenv('HTTP_CLIENT_IP')) {
                 $ipaddress = getenv('HTTP_CLIENT_IP');
@@ -42,285 +42,290 @@ namespace PressDo
             }
             return $ipaddress;
         }
-        public static function ConstUser($session)
+
+        public static function starDocument($action, int $docid, $username)
         {
-            if(!$session['username']) $session['username'] = PressDo::getip();
-            $u = $session['usertype'].':'.$session['username'];
-            $perm = array($session['usertype'], $session['dateFromRegister']);
-            return array('username' => $u, 'group' => Data::getACLofUser($u), 'perm' => $perm);
+            global $db;
+            if($action == 'star'){
+                $d = $db->prepare("INSERT INTO `starred`(docid, user) VALUES(?,?)");
+                $d->execute([$docid, $username]);
+            }elseif($action == 'unstar'){
+                $d = $db->prepare("DELETE FROM `starred` WHERE `docid`=? AND `user`=?");
+                $d->execute([$docid, $username]);
+            }
         }
-        public static function splitACL($acls, $action)
+
+        public static function getStarred($username)
+        {   global $db;
+            $d = $db->prepare("SELECT `docid` FROM `starred` WHERE `user`=?");
+            $d->execute([$username]);
+            return $d->fetchAll();
+        }
+
+        public static function ifStarred($username, $docid)
+        {   global $db;
+            $d = $db->prepare("SELECT `docid` FROM `starred` WHERE `docid`=? AND `user`=?");
+            $d->execute([$docid, $username]);
+            ($d->rowCount() < 1)? $bool = false:$bool = true;
+            return $bool;
+        }
+
+        public static function countStar($docid)
+        {   global $db;
+            $d = $db->prepare("SELECT `user` FROM `starred` WHERE `docid`=?");
+            $d->execute([$docid]);
+            return $d->rowCount();
+        }
+
+        public static function requestAPI($url, $session)
         {
-            $acts = array('view', 'edit', 'move', 'delete', 'create_thread', 'write_thread_comment', 'edit_request', 'acl');
-            $a_k = array_search($acts, $action);
-            return substr($acls, $a_k, 1);
+            // header, method, body를 설정한다.
+            $options = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query(['session' => $session])
+                )
+            );
+            $context  = stream_context_create($options);
+            $result = file_get_contents($url, false, $context);
+            return json_decode($result, true);
         }
     }
 
-    class Data
+    class Member
     {
-        public static function LoadOldDocument($docnm, $rev)
+        public static function addUser($id, $pw, $email, $ua)
         {
-            // 문서 로드(구)
-            $d = rawurlencode($docnm);
-            $s = "SELECT * from `old_Document` where BINARY DocNm='$d' AND version='$rev'";
-            $q = SQL_Query($s);
-            $r = SQL_Assoc($q);
-            if($q->num_rows < 1){
-                return false;
-            }else{
-                return array($docnm, $r);
-            }
+            global $db;
+            $gravatar_url = '//www.gravatar.com/avatar/'.md5(strtolower(trim($email))).'?d=retro';
+            $d = $db->prepare("INSERT INTO `member`(username,password,email,gravatar_url,perm,last_login_ua) VALUES(?,?,?,?,?,?)");
+            $d->execute([$id, $pw, $email, $gravatar_url, '[]',$ua]);
         }
 
-        public static function LoadLatestDocument($docnm)
+        public static function loginUser($id, $pw, $dt, $ip, $ua)
         {
-            // 문서 로드(최신)
-            $d = rawurlencode($docnm);
-            $s = "SELECT * from `Document` where BINARY DocNm='$d';";
-            $q = SQL_Query($s);
-            $r = SQL_Assoc($q);
-            if($q->num_rows < 1){
-                return false;
-            }else{
-                return array($docnm, $r);
-            }
+            global $db;
+            $d = $db->prepare("SELECT `id` FROM `member` WHERE 'username'=? AND 'password'=?");
+            $d->execute([$id, $pw]);
+            if($s->num_rows == 1){
+                $d = $db->prepare("INSERT INTO `login_history`(username,ip,datetime) VALUES(?,?,?)");
+                $d->execute([$id, $ip, $dt]);
+                $e = $db->prepare("UPDATE `member` SET `last_login_ua`=?");
+                $e->execute([$ua]);
+            }else return false;
         }
-
-        public static function SaveDocument($docnm, $content, $sum = null)
+        
+        public static function modifyUser($id, $pw, $email)
         {
-            global $SQL, $conf;
-            // 문서유형 설정
-            if(preg_match('/^'.$conf['NameSpace'].':/', $docnm) || preg_match('/^'.$conf['Title'].'$/', $docnm)){
-                $r = 'wiki';
-            }elseif(preg_match('/^특수:/', $docnm)){
-                $r = 'special';
-            }elseif(preg_match('/^분류:/', $docnm)){
-                $r = 'category';
-            }else{
-                $r = 'document';
-            }
-            // 문서 저장
-            $doc = rawurlencode($docnm);
-            $s = "SELECT * from `Document` where DocNm='$doc'";
-            $q = SQL_Query($s);
-            $res = SQL_Assoc($q);
-            
+            global $db;
+            $gravatar_url = '//www.gravatar.com/avatar/'.md5(strtolower(trim($email))).'?d=retro';
+            $d = $db->prepare("UPDATE `member` SET `password`=? AND `email`=? AND `gravatar_url`=? WHERE `id`=?");
+            $d->execute([$pw,$email,$gravatar_url,$id]);
+        }
+        
+        public static function loginHistory($id, $ip, $exec)
+        {
+            global $db;
+            $dt = time();
+            $d = $db->prepare("SELECT * FROM `login_history` WHERE `username`=? OR `ip`=? ORDER BY `datetime` DESC");
+            $d->execute([$id,$ip]);
+            $e = $db->prepare("INSERT INTO `acl_group_log` (executor,target_ip,target_member,datetime,action) VALUES(?,?,?,?,'login_history')");
+            $e->execute([$exec, $ip, $id, $dt]);
+            return $d->fetchAll();
+        }
+        
+        public static function grantUser($id, array $perms, $exec)
+        {
+            global $db;
+            $d = $db->prepare("SELECT `perm` FROM `member` WHERE `id`=?");
+            $d->execute([$id]);
+            $b = $d->fetch();
+            $minus = array_map(fn($a) => '-'.$a, array_diff($b['perm'], $perms));
+            $plus = array_map(fn($a) => '+'.$a, array_diff($perms, $b['perm']));
+            $granted = implode(' ', array_merge($plus, $minus));
+            $c = json_encode($perms, JSON_UNESCAPED_UNICODE);
+            $e = $db->prepare("UPDATE `member` SET `perm`=? WHERE `id`=?");
+            $e->execute([$c,$id]);
+            $f = $db->prepare("INSERT INTO `acl_group_log` (executor,target_member,datetime,action,granted) VALUES(?,?,?,'grant',?)");
+            $f->execute([$exec, $id, $dt, $granted]);
+        }
+    }
 
-            // 이전 버전과 차이 없으면 업데이트 안함
-            if($res['content'] == $content){
-                 return false;
+    class Docs
+    {
+        public static function LoadDocument($namespace, $title, $rev=null)
+        {
+            global $db;
+            if($rev == null){
+                $d = $db->prepare("SELECT * FROM `document` WHERE BINARY `namespace`=? AND `title`=? AND `is_hidden`='false' ORDER BY `datetime` DESC LIMIT 1");
+                $d->execute([$namespace,$title]);
+            } else {
+                $d = $db->prepare("SELECT * FROM `document` WHERE BINARY `namespace`=? AND `title`=? AND `is_hidden`='false' ORDER BY `datetime` ASC LIMIT ?, 1");
+                $d->execute([$namespace,$title,$rev-1]);
+            }
+            ($d->rowCount() < 1)? $a = ['namespace' => null, 'title' => null, 'content' => null, 'categories' => null]:$a = $d->fetch($db->FETCH_ASSOC);
+            return $a;
+        }
+        
+        public static function SaveDocument($ns, $t, $con, $com, $act, $id, $ip){
+            global $db;
+            $d = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE `namespace`=? AND `title`=?");
+            $d->execute([$ns,$t]);
+            if($a->num_rows < 1){
+                $e = $db->prepare("INSERT INTO `live_document_list`(namespace,title) VALUES(?,?)");
+                $e->execute([$ns,$t]);
+                $f = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE `namespace`=? AND `title`=?");
+                $f->execute([$ns,$t]);
+                $did = $f->fetch(pdo::FETCH_ASSOC);
             }else{
-                // 기여자 설정
-                if(!$_SESSION['userid']){
-                    $con = PressDo::getip();
-                    $l = 0;
+                $did = $d->fetch(pdo::FETCH_ASSOC);
+            }
+            $g = $db->prepare("INSERT INTO `document`(docid,namespace, title, content, length, comment, datetime, action, contributor_m, contributor_i) VALUES(?,?,?,?,?,?,?,?,?,?)");
+            $g->execute([$did['docid'], $ns, $t, $con, mb_strlen($con), $com, time(), $act, $id, $ip]);
+        }
+        
+        public static function LoadHistory($docid=null, $from=null){
+            global $db;
+            if($docid !== null){
+                if($from == null){
+                    $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` DESC LIMIT 31");
+                    $d->execute([$docid]);
                 }else{
-                    $con = $_SESSION['userid'];
-                    $l = 1;
+                    $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` ASC LIMIT ?, 30");
+                    $d->execute([$docid,$from-1]);
                 }
-                $c = $content;
-                $len = mb_strlen($content);
-                $dt = date("Y-m-d H:i:s");
-                if(!$res){
-                    $rev = 1;
-                    $log = 'create';
-                    $s = 'INSERT INTO `Document` (DocNm, content, version, strlen, type, contributor, savetime, summary, loginedit, logtype) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)';
-                }else{
-                    // 기존 데이터 이동
-                    $rev = $res['version'] + 1;
-                    $log = 'edit';
-                    $old = SQL_Query("INSERT INTO `old_Document` SELECT * FROM `Document` WHERE DocNm='$doc'");
-                    $s = "UPDATE `Document` SET DocNm=?, content=?, version=?, strlen=?, type=?, contributor=?, savetime=?, summary=?, loginedit=?, logtype=? WHERE DocNm='$doc'";
-                }
-                
-                $stmt = $SQL->prepare($s);
-                $stmt->bind_param("ssisssssis", $doc, $c, $rev, $len, $r, $con, $dt, $sum, $l, $log);
-                $q = $stmt->execute();
-                if(!$q){
-                    return 'false'.mysqli_error($SQL);
-                }
-            }
-        }
-
-        // 판본 숨기기
-        public static function hidehistory($DocNm, $rev)
-        {
-            $doc = rawurlencode($DocNm);
-            $q = SQL_Assoc(SQL_Query("SELECT * from `Document` where DocNm='$doc'"));
-            if($q['version'] == $rev){
-                // 최신 판본
-                $act = SQL_Query("INSERT INTO `hidden_history` SELECT * FROM `Document` WHERE DocNm='$doc'");
-                $d = SQL_Query("DELETE FROM `Document` WHERE DocNm='$doc' AND version='$rev'");
             }else{
-                // 구 판본
-                $act = SQL_Query("INSERT INTO `hidden_history` SELECT * FROM `old_Document` WHERE DocNm='$doc' AND version='$rev'");
-                $d = SQL_Query("DELETE FROM `old_Document` WHERE DocNm='$doc' AND version='$rev'");
+                $d = $db->query("SELECT `namespace`, `title`, `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to` FROM `document` WHERE BINARY `is_hidden`='false' ORDER BY `datetime` DESC LIMIT 100");
             }
+            return $d->fetchAll();
         }
-
-        // 최근편집
-        public static function LoadWholeHistory($logtype)
-        {
-            $s = SQL_Query("SELECT * FROM `old_Document` ".$logtype." UNION ALL SELECT * FROM `Document` ".$logtype." ORDER BY `savetime` DESC LIMIT 200");
-            $histories = array();
-            while ($row = SQL_Assoc($s)) {
-                $h = array('DocNm' => $row['DocNm'], 
-                    'content' => $row['content'], 
-                    'version' => $row['version'],
-                    'strlen' => $row['strlen'],
-                    'type' => $row['type'],
-                    'category' => $row['category'],
-                    'contributor' => $row['contributor'],
-                    'savetime' => $row['savetime'],
-                    'parent' => $row['parent'],
-                    'summary' => $row['summary'],
-                    'loginedit' => $row['loginedit'],
-                    'logtype' => $row['logtype']
-                );
-                array_push($histories, $h);
+        
+        public static function hideHistory($docid, $timestamp){
+            global $db;
+            $d = $db->prepare("UPDATE `document` SET `is_hidden`='true' WHERE `docid`=? AND `datetime`=?");
+            $d->execute([$docid, $timestamp]);
+        }
+        
+        public static function unhideHistory($docid, $timestamp){
+            global $db;
+            $d = $db->prepare("UPDATE `document` SET `is_hidden`='true' WHERE `docid`=? AND `datetime`=?");
+            $d->execute([$docid,$timestamp]);
+        }
+        
+        public static function getRandom($n, $ns='document'){
+            global $db;
+            $d = $db->prepare("SELECT `title` FROM `live_document_list` WHERE `namespace`=? ORDER BY RAND() LIMIT ?");
+            $d->execute([$ns,$n]);
+            return $d->fetchAll();
+        }
+        
+        public static function editRequest($ns, $t, $con, $com, $id, $ip, $rv, $url){
+            global $db;
+            $d = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE `namespace`=? AND `title`=?");
+            $d->execute([$ns,$t]);
+            $docid = $d->fetch();
+            $e = $db->prepare("INSERT INTO `edit_request`(urlstr,docid,status,comment,content,contributor_m,contributor_i,base_revision,datetime,lastedit) VALUES(?,?,'open',?,?,?,?,?,?,?)");
+            $e->execute([$url, $docid, $com, $con, $id, $ip, $rv, time(), time()]);
+        }
+        
+        public static function modifyEditRequest(){
+        
+        }
+        
+        public static function processEditRequest(){
+        
+        }
+    }
+    class ACL
+    {
+        public static function getDocACL(){
+        
+        }
+        
+        public static function addACL(){
+        
+        }
+        
+        public static function checkACL(){
+        
+        }
+        
+        public static function deleteACL(){
+        
+        }
+        
+        public static function addACLgroup(){
+        
+        }
+        
+        public static function delACLgroup(){
+        
+        }
+        
+        public static function ACLgroupList(){
+        
+        }
+        
+        public static function addtoACLgroup(){
+        
+        }
+        
+        public static function getNSACL(){
+        
+        }
+        
+        public static function addNSACL(){
+        
+        }
+        
+        public static function deleteNSACL(){
+        
+        }
+        
+        public static function writeACLlog(){
+        
+        }
+        
+    }
+    class Thread
+    {
+        public static function checkUserThread($username){
+            global $db;
+            $d = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE `namespace`='사용자' AND `title`=?");
+            $d->execute([$username]);
+            $docid = $d->fetchAll();
+            $e = $db->prepare("SELECT `last_comment` FROM `thread_list` WHERE `docid`=? ORDER BY `last_comment` DESC LIMIT 1");
+            $e->execute([$docid[0]]);
+            return $e->fetchAll();
+        }
+        public static function getDocThread($docid, $mode){
+            global $db;
+            if($mode == 1){
+                $d = $db->prepare("SELECT `urlstr` FROM `thread_list` WHERE `docid`=?");
+                $d->execute([$docid]);
+                return $d->fetchAll();
             }
-            return $histories;
+            //$d = $db->prepare(
         }
-
-        // 임의문서
-        public static function goRandom($n = 1)
-        {
-            $rand = SQL_Query("SELECT * FROM `Document` ORDER BY RAND() LIMIT $n");
-            return SQL_Assoc($rand);
+        public static function addThread(){
+        
         }
-
-        // 문서 ACL 설정 가져오기
-        public static function getDocACL($DocNm, $access)
-        {
-            $DocNm = rawurlencode($DocNm);
-            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE BINARY DocNm='$DocNm' AND Access='$access'");
-            $res = array();
-            while ($row = SQL_Assoc($get)) {
-                $h = array(
-                    'Access' => $row['access'],
-                    'Condition' => $row['condition'],
-                    'Action' => $row['action'],
-                    'Expiration' => $row['expiration']
-                );
-                $res[$row['no']] = $h;
-               // (1 => a(), 2 => a())
-            }
-            if(empty($res)) return false;
-            return $res;
+        
+        public static function addThreadComment(){
+        
         }
-
-        // 선택한 이름공간의 ACL 가져오기
-        public static function getNSACL($ns,$access)
-        {
-            $get = SQL_Query("SELECT * FROM `ACL_NS` WHERE BINARY Namespace='$ns' AND Access='$access'");
-            $res = array();
-            while ($row = SQL_Assoc($get)) {
-                $h = array('No' => $row['no'], 
-                    'Access' => $row['access'],
-                    'Condition' => $row['condition'],
-                    'Action' => $row['action'],
-                    'Expiration' => $row['expiration']
-                );
-                array_push($res, $h);
-            }
-            if(empty($res)) return false;
-            return $res;
+        
+        public static function editThread(){
+        
         }
-
-        // 사용자의 ACL 그룹 가져오기
-        public static function getACLofUser($User)
-        {
-            $u = explode(':', $User);
-            $un = $u[0];
-            $ut = $u[1];
-            $get = SQL_Query("SELECT ACL_user.aclgroup,ACL_groups.priority FROM `ACL_user`,`ACL_groups` WHERE ACL_user.username='$un' AND ACL_user.usertype='$ut' AND ACL_groups.name=ACL_user.aclgroup ORDER BY ACL_groups.priority ASC");
-            return SQL_Assoc($get);
+        
+        public static function moveThread(){
+        
         }
-
-        // ACL 규칙 삭제
-        public static function deleteACL($DocNm, $ACLID)
-        {
-            $get = SQL_Query("DELETE FROM `ACL_Document` WHERE DocNm='$DocNm' AND aclid='$ACLID'");
-        }
-
-        // ACL 그룹에서 사용자 제거
-        public static function delfromACLgroup($id)
-        {
-            $get = SQL_Query("DELETE FROM `ACL_user` WHERE id='$id'");
-        }
-
-        // ACL 그룹 삭제
-        public static function removeACLgroup($aclgroup)
-        {
-            $get = SQL_Query("DELETE FROM `ACL_groups` WHERE name='$aclgroup'");
-        }
-
-        // 문서 ACL 설정 / 규칙 추가
-        public static function setDocACL($DocNm, $Condition, $Access, $Action, $Expiration = 0)
-        {
-            global $SQL;
-            $DocNm = rawurlencode($DocNm);
-            $get = SQL_Query("SELECT * FROM `ACL_Document` WHERE DocNm='$DocNm' AND action='$action' AND type='$type', condition='$target'");
-            if($get->num_rows < 1){
-                // 새 설정
-                $in = SQL_Query("INSERT INTO `ACL_Document` (DocNm, action, access, type, condition, expiration) VALUES($DocNm, $action, $access, $type, $target, $expiry)");
-            }else{
-                // 기존 설정 업데이트
-                $in = SQL_Query("UPDATE `ACL_Document` SET DocNm='$DocNm', action='$action', access='$access', type='$type', condition='$target', expiration='$expiry'");
-            }
-            if(!$in){
-                return 'false'.mysqli_error($SQL);
-            }
-        }
-
-        // ACL 그룹에 사용자 추가
-        public static function addUserACLgroup($User, $aclgroup)
-        {
-            $User = rawurlencode($User);
-            $get = SQL_Query("INSERT INTO `ACL_user` (username, aclgroup) VALUES('$User', '$aclgroup')");
-        }
-
-        // 이름공간 ACL 변경
-        public static function setACLNS($aclgroup, $document, $template_set, $category, $file, $user, $special, $wiki, $discuss, $bin, $poll, $filebin, $operation, $template)
-        {
-            $get = SQL_Query("UPDATE `ACL_group_list` SET document='$document', template_set='$template_set', category='$category', file='$file', user='$user', special='$special', wiki='$wiki', discuss='$discuss', bin='$bin', poll='$poll', filebin='$filebin', operation='$operation', template='$template' WHERE name='$aclgroup'");
-        }
-
-        // 새 ACL 그룹 추가
-        public static function addACLgroup($name, $desc, $perms)
-        {
-            $get = SQL_Query("INSERT INTO `ACL_groups` (name, description, perms) VALUES('$name', '$desc', '$perms')");
-        }
-
-        // 사용자가 Condition에 해당하는지 확인. 규칙이 있다는 전제하에 실행
-        public static function checkACL($user, $rules)
-        {
-            // user: arr(name: 'type:ID', ip: IP, geoip: GEOIP, perm: arr(), aclgroup: arr())
-            foreach($rules as $rule){
-                $u = explode(':', $user['name']);
-                $c = explode(':', $rule['condition']); // : 뒤에글자 추출
-                switch($c[0]){
-                    case 'perm': // 뒤에글자가 사용자 펌 안에 있으면 결과반환
-                        if(in_array($c[1], $user['perm'])) return $rule['action'];
-                        break;
-                    case 'member': // 뒤에글자가 아이디랑 같으면 적용
-                        if($c[1] == $u[1]) return $rule['action'];
-                        break;
-                    case 'ip':
-                        if($c[1] == $user['ip']) return $rule['action'];
-                        break;
-                    case 'aclgroup':
-                        if(in_array($c[1], $user['aclgroup'])) return $rule['action'];
-                        break;
-                    case 'geoip':
-                        if($c[1] == $user['geoip']) return $rule['action'];
-                        break;
-                    default:
-                        return 'none'; // 문서/이름공간 여부에 따라 다르게 처리
-                        break;
-                }
-            }
+        
+        public static function deleteThread(){
+        
         }
     }
 }

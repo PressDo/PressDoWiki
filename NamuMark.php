@@ -1,6 +1,6 @@
 <?php
 require_once 'HTMLRenderer.php';
-require_once 'PressDoLib.php';
+require_once 'db.php';
 class NamuMark{
 	public $redirectPattern = '/^#(?:redirect|넘겨주기) (.+)$/im';
 	public function __construct($content, $_to_content, $_options=array()){
