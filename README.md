@@ -55,3 +55,4 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 ### 자세히 (Details)
 - [Wiki](https://github.com/aaei924/PressDoWiki/wiki)
 - 추후 테스트 위키에 가이드가 수록될 예정입니다.
+- 본 엔진은 js-namumark을 PHP로 포팅하여 사용하고 있기 때문에 AGPL-3.0이 적용되지만, 각 스킨에 대해서는 GPL-3.0이 적용됩니다.
