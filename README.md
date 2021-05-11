@@ -48,9 +48,9 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 
 ### 지원 스킨 (Supported Skins)
 - ~~senkawa~~ (저작권 문제로 배포하지 않음)
-- liberty (예정)
-- vector (예정)
-- buma (예정)
+- [liberty](https://github.com/PressDo/PressDo-skin-Liberty) (예정)
+- [vector](https://github.com/PressDo/PressDoW-skin-vector) (예정)
+- [buma](https://github.com/PressDo/PressDo-skin-buma) (예정)
 
 ### 자세히 (Details)
 - [Wiki](https://github.com/aaei924/PressDoWiki/wiki)
