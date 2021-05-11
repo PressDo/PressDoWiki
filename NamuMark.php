@@ -22,7 +22,7 @@ class NamuMark{
 	private function seekEOL($text, $offset = 0){
 		return (strpos($text, '\n', $offset) == -1 )? mb_strlen($text) : strpos($text, '\n', $offset);
 	}		
-	private function doParse($callback){
+	private function doParse(){
 		$multiBrackets = array(
 			'open' => '{{{',
 			'close' => '}}}',
@@ -93,7 +93,7 @@ class NamuMark{
 			}
 		}
 		processTokens($tokens);
-		$this->renderer->getResult(function($err, $result) {if($err) $callback($err); else $callback(null, $result);});
+		$this->renderer->getResult();
 	}
 
 	function blockParser($line){
