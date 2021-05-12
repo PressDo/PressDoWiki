@@ -43,8 +43,8 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 
 ### 지원 문법 (Supported Markup)
 - 나무마크(Namumark)
-- 마크다운(Markdown) (예정)
-- BBCode (예정)
+- 마크다운(Markdown)
+- BBCode
 
 ### 지원 스킨 (Supported Skins)
 - ~~senkawa~~ (저작권 문제로 배포하지 않음)
