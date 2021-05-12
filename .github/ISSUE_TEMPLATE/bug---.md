@@ -1,8 +1,8 @@
 ---
 name: Bug 버그
 about: 버그제보용 양식
-title: "[v0.4] 렌더러 버그 제보"
-labels: 버그 (Bug)
+title: "[버그]"
+labels: 버그 (Bug), v0.4
 assignees: aaei924
 
 ---
