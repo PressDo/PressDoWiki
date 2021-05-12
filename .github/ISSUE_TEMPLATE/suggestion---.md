@@ -1,7 +1,7 @@
 ---
 name: Suggestion 제안
 about: 새로운 기능의 추가나 기존 기능의 개선을 요청합니다.
-title: OOO OO 기능 추가 요청
+title: [제안]
 labels: 요청 (Requests), 기능 (Functions), 개선 (Improvements)
 assignees: aaei924
 
