@@ -28,3 +28,4 @@ default:
 }
     ($conf['DBType'] !== 'db2')? $db = new PDO($dsn, $conf['DBUser'], $conf['DBPass']): $db = new PDO($dsn, '', '');
     if(!$db) return false;
+$_DB_pINT = PDO::PARAM_INT;

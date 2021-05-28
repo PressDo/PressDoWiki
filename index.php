@@ -1,51 +1,93 @@
 <?php
+session_start();
 use PressDo\PressDo;
 use PressDo\Docs;
 use PressDo\WikiSkin;
 use PressDo\Pages;
-require_once 'PressDoLib.php';
-require_once 'skin/liberty/skin.php';
+use PressDo\ACL;
+require 'PressDoLib.php';
+require 'skin/liberty/skin.php';
+$_SESSION['ip'] = PressDo::getip();
 $pagename = $_GET['page'];
 if($conf['UseShortURI'])
-   $api = fn() => PressDo::requestAPI('http://'.$conf['Domain'].'/internal'.$_SERVER['REQUEST_URI'], $_SESSION);
+    $api = PressDo::requestAPI('http://'.$conf['Domain'].'/internal'.$_SERVER['REQUEST_URI'], $_SESSION);
 else
-   $api = fn() => PressDo::requestAPI('http://'.$conf['Domain'].'/internal.php?'.$_SERVER['QUERY_STRING'], $_SESSION);
-($api()['page']['data']['document']['namespace'] == $_ns['document'])? $ns = '':$ns = $api()['page']['data']['document']['namespace'].':';
+    $api = PressDo::requestAPI('http://'.$conf['Domain'].'/internal.php?'.$_SERVER['QUERY_STRING'], $_SESSION);
+($api['page']['data']['document']['namespace'] == $_ns['document'])? $ns = '':$ns = $api['page']['data']['document']['namespace'].':';
 switch ($pagename){
     case '':
         Header('Location: http://'.$conf['Domain'].$uri['wiki'].$conf['FrontPage']);
-        break;
+        exit;
     case 'w':
     case 'jump':
-        WikiSkin::wiki($_GET['title'], $ns, $api()['page']['data']['document']['title'], $api()['page']['data']['document']['content'], $api()['page']['data']['date']);
+        WikiSkin::wiki($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['document']['content'], $api['page']['data']['date'], $_GET['rev'], false, $api['page']['error']['content']);
+        unset($api);
         break;
     case 'edit':
-        WikiSkin::edit($_GET['title'], false);
+        if(isset($_POST['content']) && $_POST['content'] == $_SESSION['editor']['raw']){
+            $errMsg = '문서 내용이 같습니다.';
+            WikiSkin::edit($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['editor']['raw'], $_SESSION['token'],$api['page']['data']['editor']['baserev'], $api['page']['data']['editor']['preview'], $errMsg);
+        }elseif(isset($_SESSION['editor']['fulltitle']) && isset($_SESSION['editor']['title']) && ($_SESSION['editor']['token'] == $_POST['token']) && isset($_SESSION['editor']['identifier']) && isset($_POST['content']) && isset($_POST['token'])){
+            $identifier = explode(':',$_SESSION['editor']['identifier']);
+            if(!isset($identifier[1])) {
+                WikiSkin::error('잘못된 접근입니다.');
+                exit;
+            }
+            if($identifier[0] === 'm'){ $id=$identifier[1]; $ip=null;}elseif($identifier[0] === 'i'){ $id=null; $ip=$identifier[1];}
+            if(!$_SESSION['editor']['baserev'])
+                $action = 'create';
+            else
+                $action = 'modify';
+            // 세션 데이터 + 토큰 일치 + 편집값 있음
+            Docs::SaveDocument(rawurlencode(array_search($_SESSION['editor']['namespace'], $_ns)), rawurlencode($_SESSION['editor']['title']), $_POST['content'], rawurlencode($_POST['summary']),$action,$id,$ip);
+            Header('Location: http://'.$conf['Domain'].$uri['wiki'].$_SESSION['editor']['fulltitle']);
+            unset($_SESSION['editor']);
+            exit;
+        }else{
+            if(isset($_POST['token']) && $_SESSION['editor']['token'] !== $_POST['token']) $errMsg = 'CSRF 방지 토큰이 일치하지 않습니다.';
+            if(!$errMsg) $errMsg = null;
+            $_SESSION['editor'] = array(
+                'fulltitle' => $_GET['title'], 
+                'namespace' => $api['page']['data']['document']['namespace'],
+                'title' => $api['page']['data']['document']['title'],
+                'token' => $api['page']['data']['token'],
+                'identifier' => $api['session']['identifier'],
+                'baserev' => $api['page']['data']['editor']['baserev'],
+                'raw' => $api['page']['data']['editor']['raw']
+            );
+            WikiSkin::edit($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['editor']['raw'], $_SESSION['editor']['token'],$api['page']['data']['editor']['baserev'], $api['page']['data']['editor']['preview'], $errMsg);
+        }
+        unset($api);
         break;
     case 'acl':
-        
+        WikiSkin::acl($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['docACL']['acls'], $api['page']['data']['nsACL']['acls'], $api['page']['data']['ACLTypes']);
         break;
     case 'move':
-        
         break;
     case 'delete':
-        
         break;
     case 'history':
-        WikiSkin::history($_GET['title'], false);
+        WikiSkin::history($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['history'], $api['page']['data']['prev_ver'], $api['page']['data']['next_ver']);
+        unset($api);
         break;
     case 'backlink':
         
         break;
     case 'raw':
-        
+        WikiSkin::wiki($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['text'], $api['page']['data']['date'], $_GET['rev'], true);
+        unset($api);
         break;
     case 'blame':
         
         break;
     case 'random':
-        
-        break;
+        $r = Docs::getRandom(1);
+        if($conf['ForceShowNameSpace'] === false && $r[0]['namespace'] === 'document')
+            $title = $r[0]['title'];
+        else
+            $title = $r[0]['namespace'].':'.$r[0]['title'];
+        Header('Location: http://'.$conf['Domain'].$uri['wiki'].$title);
+        exit;
     case 'revert':
         
         break;
