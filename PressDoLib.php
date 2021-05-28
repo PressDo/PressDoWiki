@@ -95,7 +95,6 @@ namespace PressDo
 
         public static function requestAPI($url, $session)
         {
-            // header, method, body를 설정한다.
             $options = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -219,15 +218,15 @@ namespace PressDo
                 $c->execute([$NS, $Title]);
                 if($c->rowCount() < 1) return null;
                 $docid = $c->fetch()[0];
-                if($from !== null){ // from 값 지정
+                if($from !== null){ 
                     $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` DESC LIMIT ".$nv-$from.", 31");
                     $d->execute([$docid]);
                     $ra = $d->fetchAll();
-                }elseif($until !== null){ // until 값 지정
+                }elseif($until !== null){ 
                     $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` ASC LIMIT ".$until-1 .", 31");
                     $d->execute([$docid]);
                     $ra = array_reverse($d->fetchAll());
-                }else{ // 아무것도 없음
+                }else{
                     $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` DESC LIMIT 31");
                     $d->execute([$docid]);
                     $ra = $d->fetchAll();
@@ -312,11 +311,6 @@ namespace PressDo
         }
         
         public static function checkACL($API){
-            /*
-            [0] => true/false
-            [1] => err_permission
-            [2] => editable
-            */
             function check($action){
                 if($action == 'allow'){
                     return true;
@@ -326,7 +320,6 @@ namespace PressDo
             }
             global $db, $conf, $uri;
             if($API['session']['member'] !== null){
-                // 로그인된 유저인 경우 perm 가져오기
                 $s = $db->prepare("SELECT perm FROM `member` WHERE 'username'=?");
                 $s->execute([$API['session']['member']['username']]);
                 $r = $s->fetch();
@@ -336,12 +329,10 @@ namespace PressDo
                 $sql_str = '`target_member`=\''.$i[1].'\'';
             elseif($i[0] == 'i')
                 $sql_str = '`target_ip`=\''.$i[1].'\'';
-            // 만료되지 않았거나 영구설정으로 동록된 거
             $t = $db->prepare("SELECT `target_aclgroup`, `action` FROM `acl_group_log` WHERE $sql_str AND (`until`>=? OR `until`=0) ORDER BY `datetime` ASC");
             $t->execute([$_SERVER['REQUEST_TIME']]);
             $u = $t->fetchAll();
             foreach($u as $e){
-                // 만료된 애들은 걸러내기
                 $a = [];
                 if($e['action'] == 'aclgroup_add')
                     array_push($a, $e['target_aclgroup']);
@@ -351,7 +342,6 @@ namespace PressDo
             $args = [true => '/acl/', false =>'.php?page=acl&title='];
             $api = PressDo::requestAPI('http://'.$conf['Domain'].'/internal'.$args[$conf['UseShortURI']].$API['page']['title'], $_SESSION);
             $acls = [$api['page']['data']['docACL']['acls'], $acln_s = $api['page']['data']['nsACL']['acls']];
-            // acltype 지정
             switch($API['page']['viewName']){
                 case 'wiki':
                 case 'raw':
@@ -366,13 +356,6 @@ namespace PressDo
                 default:
                     $acltype = $API['page']['viewName'];
             }
-            /* 
-             ACL 설정값 처리 >완료
-             read 기본처리
-             gotons 처리>완료
-             문서ACL 설정이 하나라도 있지만 해당되는 설정이 없을 때 거부
-            */
-            // STEP 1
             for ($i=0; $i<2; $i++){
                 $acl_d = $acls[$i][$acltype];
                 foreach ($acl_d as $ad){
