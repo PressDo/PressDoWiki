@@ -1,10 +1,10 @@
 # PressDoWiki - Fast & Light PHP Wiki Engine
 
-[![Issues](https://img.shields.io/github/issues/aaei924/PressDoWiki?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
-[![Forks](https://img.shields.io/github/forks/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
-[![Stars](https://img.shields.io/github/stars/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
-[![CodeFactor](https://www.codefactor.io/repository/github/aaei924/pressdowiki/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/PressDo/pressdowiki)
-[![License](https://img.shields.io/github/license/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![Issues](https://img.shields.io/github/issues/PressDo/PressDoWiki?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![Forks](https://img.shields.io/github/forks/PressDo/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![Stars](https://img.shields.io/github/stars/PressDo/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![CodeFactor](https://www.codefactor.io/repository/github/PressDo/pressdowiki/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/PressDo/pressdowiki)
+[![License](https://img.shields.io/github/license/PressDo/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
 
 -------------------------
 ### 이 위키는 현재 제작 중입니다.
