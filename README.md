@@ -1,10 +1,10 @@
 # PressDoWiki - Fast & Light PHP Wiki Engine
 
-[![Issues](https://img.shields.io/github/issues/aaei924/PressDoWiki?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
-[![Forks](https://img.shields.io/github/forks/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
-[![Stars](https://img.shields.io/github/stars/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
-[![CodeFactor](https://www.codefactor.io/repository/github/aaei924/pressdowiki/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/aaei924/pressdowiki)
-[![License](https://img.shields.io/github/license/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
+[![Issues](https://img.shields.io/github/issues/aaei924/PressDoWiki?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![Forks](https://img.shields.io/github/forks/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![Stars](https://img.shields.io/github/stars/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
+[![CodeFactor](https://www.codefactor.io/repository/github/aaei924/pressdowiki/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/PressDo/pressdowiki)
+[![License](https://img.shields.io/github/license/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
 
 -------------------------
 ### 이 위키는 현재 제작 중입니다.
@@ -19,7 +19,8 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 -------------------------
 #### 필수 사항
 - PHP 8.0 이상
-- php-mbstring
+- php-phar
+- php-curl
 - PHP PDO 모듈
 
 #### 다음 사항은 택1입니다.
