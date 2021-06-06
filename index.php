@@ -5,6 +5,7 @@ use PressDo\Docs;
 use PressDo\WikiSkin;
 use PressDo\Pages;
 use PressDo\ACL;
+use PressDo\Member;
 require 'PressDoLib.php';
 require 'skin/liberty/skin.php';
 $_SESSION['ip'] = PressDo::getip();
@@ -13,7 +14,7 @@ if($conf['UseShortURI'])
     $api = PressDo::requestAPI('http://'.$conf['Domain'].'/internal'.$_SERVER['REQUEST_URI'], $_SESSION);
 else
     $api = PressDo::requestAPI('http://'.$conf['Domain'].'/internal.php?'.$_SERVER['QUERY_STRING'], $_SESSION);
-($api['page']['data']['document']['namespace'] == $_ns['document'])? $ns = '':$ns = $api['page']['data']['document']['namespace'].':';
+($api['page']['data']['document']['namespace'] == $lang['ns:document'])? $ns = '':$ns = $api['page']['data']['document']['namespace'].':';
 switch ($pagename){
     case '':
         Header('Location: http://'.$conf['Domain'].$uri['wiki'].$conf['FrontPage']);
@@ -24,6 +25,9 @@ switch ($pagename){
         unset($api);
         break;
     case 'edit':
+        if(is_array($api['page']['error'])){
+            WikiSkin::error($api['page']['error']['content']);
+        }else{
         if(isset($_POST['content']) && $_POST['content'] == $_SESSION['editor']['raw']){
             $errMsg = '문서 내용이 같습니다.';
             WikiSkin::edit($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['editor']['raw'], $_SESSION['token'],$api['page']['data']['editor']['baserev'], $api['page']['data']['editor']['preview'], $errMsg);
@@ -56,6 +60,7 @@ switch ($pagename){
                 'raw' => $api['page']['data']['editor']['raw']
             );
             WikiSkin::edit($_GET['title'], $ns, $api['page']['data']['document']['title'], $api['page']['data']['editor']['raw'], $_SESSION['editor']['token'],$api['page']['data']['editor']['baserev'], $api['page']['data']['editor']['preview'], $errMsg);
+        }
         }
         unset($api);
         break;
@@ -147,6 +152,41 @@ switch ($pagename){
         break;
     case 'internal':
         include 'internal.php';
+        break;
+    case 'member':
+        switch($_GET['title']){
+            case 'login':
+                if(isset($_POST['username']) && isset($_POST['password'])){
+                    $l = Member::loginUser($_POST['username'], $_POST['password'], $_SERVER['REQUEST_TIME'], PressDo::getip(), $_SERER['HTTP_USER_AGENT']);
+                    if(!$l){
+                        $ShowPage = 1;
+                        $LoginError = 1;
+                    }else{
+                        $_SESSION = array(
+                            'menus' => [],
+                            'member' => [
+                                'user_document_discuss' => null,
+                                'username' => $_POST['username'],
+                                'gravatar_url' => $l
+                            ],
+                            'ip' => PressDo::getip()
+                        );
+                        Header('Location:'.base64_decode($_GET['redirect']));
+                    }
+                }else{
+                    $ShowPage = 1;
+                }
+                if($ShowPage == 1){ 
+                    WikiSkin::login($_GET['redirect']);
+                }
+                break;
+            case 'signup':
+                WikiSkin::signup();
+            case 'logout':
+            case 'mypage':
+                WikiSkin::mypage();
+                break;
+        }
         break;
     default:
         break;
