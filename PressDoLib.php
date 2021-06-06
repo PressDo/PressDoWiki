@@ -2,16 +2,6 @@
 namespace PressDo
 {
     session_start();
-    require 'data/global/config.php';
-    if($conf['DevMode'] === true){
-        $ip = explode('.', PressDo::getip());
-        //if (PressDo::getip() == '127.0.0.1' || $ip[0] == 10 || ($ip[0] == 172 && $ip[1] >= 16 && $ip[1] <= 31) || ($ip[0] == 192 && $ip[1] == 168)){
-            $inside = true;
-            error_reporting(E_ALL);
-            ini_set("display_errors", 1);
-        //}
-       // if($inside !== true){}
-    }
     require 'db.php';
     ($conf['UseShortURI'] === true)? require 'data/global/uri_short.php':require 'data/global/uri_long.php';
     class PressDo
@@ -57,6 +47,21 @@ namespace PressDo
             return $ipaddress;
         }
 
+        public static function CIDRCheck ($IP, $CIDR)
+        {
+            // from PHP.net by claudiu at cnixs dot com
+            list ($net, $mask) = split ("/", $CIDR);
+            $ip_mask = ~((1 << (32 - $mask)) - 1);
+            $ip_ip_net = ip2long ($IP) & $ip_mask;
+            return ($ip_ip_net == ip2long ($net));
+        }
+
+        public static function geoip($ip)
+        {
+            return json_decode(file_get_contents('http://ip-api.com/json/'.$ip), true)['countryCode'];
+            
+        }
+
         public static function starDocument($action, int $docid, $username)
         {
             global $db;
@@ -95,6 +100,7 @@ namespace PressDo
 
         public static function requestAPI($url, $session)
         {
+            // header, method, body를 설정한다.
             $options = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -122,13 +128,14 @@ namespace PressDo
         public static function loginUser($id, $pw, $dt, $ip, $ua)
         {
             global $db;
-            $s = $db->prepare("SELECT count(id) as cnt FROM `member` WHERE 'username'=? AND 'password'=?");
+            $s = $db->prepare("SELECT count(id) as cnt, `gravatar_url` FROM `member` WHERE 'username'=? AND 'password'=?");
             $s->execute([$id, $pw]);
             if($s->fetch()[0] === 1){
                 $d = $db->prepare("INSERT INTO `login_history`(username,ip,datetime) VALUES(?,?,?)");
                 $d->execute([$id, $ip, $dt]);
                 $e = $db->prepare("UPDATE `member` SET `last_login_ua`=?");
                 $e->execute([$ua]);
+                return $s->fetch()[1];
             }else return false;
             unset($s,$d,$e);
         }
@@ -218,15 +225,15 @@ namespace PressDo
                 $c->execute([$NS, $Title]);
                 if($c->rowCount() < 1) return null;
                 $docid = $c->fetch()[0];
-                if($from !== null){ 
+                if($from !== null){ // from 값 지정
                     $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` DESC LIMIT ".$nv-$from.", 31");
                     $d->execute([$docid]);
                     $ra = $d->fetchAll();
-                }elseif($until !== null){ 
+                }elseif($until !== null){ // until 값 지정
                     $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` ASC LIMIT ".$until-1 .", 31");
                     $d->execute([$docid]);
                     $ra = array_reverse($d->fetchAll());
-                }else{
+                }else{ // 아무것도 없음
                     $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` DESC LIMIT 31");
                     $d->execute([$docid]);
                     $ra = $d->fetchAll();
@@ -297,9 +304,10 @@ namespace PressDo
     {
         public static function getDocACL($NS, $Title){
             global $db;
-            $n = Docs::getIdAndVersion($NS, $Title)[1];
-            if(is_int($n)) {
-                $d = $db->query("SELECT `id`,`access`,`condition`,`action`,`until` as `expired` FROM `acl_document` WHERE `docid`=$n ORDER BY `id` ASC");
+            $n = intval(Docs::getIdAndVersion($NS, $Title)[1]);
+            if($n > 0) {
+                $d = $db->prepare("SELECT `id`,`access`,`condition`,`action`,`until` as `expired` FROM `acl_document` WHERE `docid`=$n AND (`until`>=? OR `until`=0) ORDER BY `id` ASC");
+                $d->execute([$_SERVER['REQUEST_TIME']]);
                 $r = $d->fetchAll();
             }else
                 $r = null;
@@ -311,6 +319,16 @@ namespace PressDo
         }
         
         public static function checkACL($API){
+            global $db, $conf, $uri;
+            /*
+            Perm Type
+            default: any, member, ip, 
+
+            [0] => true/false
+            [1] => err_permission
+            [2] => editable
+            */
+            $perms = [];
             function check($action){
                 if($action == 'allow'){
                     return true;
@@ -318,21 +336,25 @@ namespace PressDo
                     return false;
                 }
             }
-            global $db, $conf, $uri;
+           
             if($API['session']['member'] !== null){
+                // 로그인된 유저 perm 가져오기
                 $s = $db->prepare("SELECT perm FROM `member` WHERE 'username'=?");
                 $s->execute([$API['session']['member']['username']]);
-                $r = $s->fetch();
+                $perms = json_decode($s->fetch(), true);
+                if(in_array('nsacl', $perms)) return [true, $acltype];
             }
             $i = explode(':',$API['session']['identifier']);
             if($i[0] == 'm')
                 $sql_str = '`target_member`=\''.$i[1].'\'';
             elseif($i[0] == 'i')
                 $sql_str = '`target_ip`=\''.$i[1].'\'';
+            // 만료되지 않았거나 영구설정으로 동록된 거
             $t = $db->prepare("SELECT `target_aclgroup`, `action` FROM `acl_group_log` WHERE $sql_str AND (`until`>=? OR `until`=0) ORDER BY `datetime` ASC");
             $t->execute([$_SERVER['REQUEST_TIME']]);
             $u = $t->fetchAll();
             foreach($u as $e){
+                // 만료된 애들은 걸러내기
                 $a = [];
                 if($e['action'] == 'aclgroup_add')
                     array_push($a, $e['target_aclgroup']);
@@ -342,6 +364,7 @@ namespace PressDo
             $args = [true => '/acl/', false =>'.php?page=acl&title='];
             $api = PressDo::requestAPI('http://'.$conf['Domain'].'/internal'.$args[$conf['UseShortURI']].$API['page']['title'], $_SESSION);
             $acls = [$api['page']['data']['docACL']['acls'], $acln_s = $api['page']['data']['nsACL']['acls']];
+            // acltype 지정
             switch($API['page']['viewName']){
                 case 'wiki':
                 case 'raw':
@@ -356,23 +379,27 @@ namespace PressDo
                 default:
                     $acltype = $API['page']['viewName'];
             }
-            for ($i=0; $i<2; $i++){
+            // STEP 1
+        function FinalCheck($acltype, $acls, $perms){
+            for ($i=0; $i<2; $i++){ // 1단계 Loop: Doc / NS, read / edit ...
                 $acl_d = $acls[$i][$acltype];
-                foreach ($acl_d as $ad){
+                foreach ($acl_d as $ad){ // 2단계 Loop: ACL 
                     if($i === 0 && count($acl_d) == 0)
-                        break;
+                        break; // DocACL이고 ACL 설정이 없을 때
                     elseif($i === 1 && count($acl_d) == 0)
-                        return [false, $acltype, null];
+                        return [false, $acltype, null]; // NSACL 설정이 없을 때
+                    $allowed = [];
+                    if($ad['action'] == 'allow') array_push($allowed, $ad['condition']);
                     $cond = explode(':',$ad['condition']);
                     switch($cond[0]){
                         case 'perm':
-                            if($cond[1] == 'any' || in_array($cond[1], json_decode($r[0], true))){
+                            if($cond[1] == 'any' || in_array($cond[1], $perms)){
                                 if($ad['action'] == 'gotons')
                                     break 2;
                                 else
                                     return [check($ad['action']), $acltype];
-                            }
-                            break;
+                            }else
+                                break;
                         case 'member':
                             if($cond[1] == $API['session']['member']['username']){
                                 if($ad['action'] == 'gotons')
@@ -405,8 +432,19 @@ namespace PressDo
                                     return [check($ad['action']), $acltype];
                             }
                     }
+                    if(count($acl_d) > 0)
+                        return [false, $acltype, $allowed]; // 규칙 있지만 허용되지 않음
                 }
             }
+        }
+       
+        if(FinalCheck('read', $acls, $perms)[0] == false) return FinalCheck('read', $acls, $perms);
+        if($acltype == 'create_thread'){
+            if(FinalCheck('write_thread_comment', $acls, $perms)[0] == false) return FinalCheck('write_thread_comment', $acls, $perms);
+        }elseif($acltype == 'delete' || $acltype == 'move'){
+            if(FinalCheck('edit', $acls, $perms)[0] == false) return FinalCheck('edit', $acls, $perms);
+        }
+        return FinalCheck($acltype, $acls, $perms);
         }
         
         public static function deleteACL(){
@@ -431,8 +469,8 @@ namespace PressDo
         
         public static function getNSACL($NS){
             global $db;
-            $d = $db->prepare('SELECT `id`,`access`,`condition`,`action`,`until` as `expired` FROM `acl_namespace` WHERE `namespace`=? ORDER BY `id` ASC');
-            $d->execute([$NS]);
+            $d = $db->prepare('SELECT `id`,`access`,`condition`,`action`,`until` as `expired` FROM `acl_namespace` WHERE `namespace`=? AND (`until`>=? OR `until`=0) ORDER BY `id` ASC');
+            $d->execute([$NS, $_SERVER['REQUEST_TIME']]);
             return $d->fetchAll();
         }
         
