@@ -119,7 +119,7 @@ namespace PressDo
                         <ul pressdo-footer-icons>
                             <li pressdo-footer-poweredby>
                                 <a href="//gitlab.com/librewiki/Liberty-MW-Skin">Liberty</a> | 
-                                <a href="//github.com/aaei924/PressDoWiki/">PressDo</a>
+                                <a href="//github.com/PressDo/PressDoWiki/">PressDo</a>
                             </li>
                         </ul>
                         <?=stripslashes($conf['PageFooter'])?>
