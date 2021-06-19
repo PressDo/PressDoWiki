@@ -29,10 +29,15 @@ $uri = array(
     'OldPages' => '/index.php?page=OldPages',
     'ShortestPages' => '/index.php?page=ShortestPages',
     'LongestPages' => '/index.php?page=LongestPages',
-    'LoginHistory' => '/index.php?page=login_history',
-    'grant' => '/index.php?page=grant',
-    'login' => '/index.php?page=login',
-    'signup' => '/index.php?page=signup',
-    'mypage' => '/index.php?page=mypage',
-    'internal' => '/index.php?page=internal'
+    'login_history' => '/index.php?page=admin&title=login_history',
+    'grant' => '/index.php?page=admin&title=grant',
+    'login' => '/index.php?page=member&title=login',
+    'login_r' => '/index.php?page=member&title=login&redirect=',
+    'logout' => '/index.php?page=member&title=logout',
+    'logout_r' => '/index.php?page=member&title=logout&redirect=',
+    'signup' => '/index.php?page=member&title=signup',
+    'recover_password' => '/index.php?page=member&title=recover_password',
+    'mypage' => '/index.php?page=member&title=mypage',
+    'internal' => '/index.php?page=internal',
+    'search' => '/index.php?page=Search&q='
 );
