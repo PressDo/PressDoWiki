@@ -1,10 +1,18 @@
 <?php
+$_license = array(
+    'license' => 'CC0',
+    'version' => '1.0',
+    'country' => '',
+    'URL' => '//creativecommons.org/publicdomain/zero/1.0/deed.ko'
+);
 $conf = array(
     'SiteName' => "",
+    'SiteName_en' => '',
     'NameSpace' => "",
+    'FullURL' => '',
     'Domain' => "",
     'Language' => "ko-kr",
-    'FrontPage' => "PressDoWiki:대문",
+    'FrontPage' => "",
     'Description' => "",
     'CopyRightText' => "",
     'EditAgreeText' => "",
@@ -26,11 +34,18 @@ $conf = array(
     'PublicLevel' => 0,
     "AllowJoin" => true,
     "DefaultSkin" => "liberty",
+    'Mark' => 'NamuMark',
     "TitleText" => "",
     "LogoWidth" => "6.6rem",
     "UseShortURI" => false,
-    "ACLAutoTemplate" => true,
     "UseMailWhitelist" => true,
+    'UseMailAuth' => false,
+    'SMTPHost' => '',
+    'SMTPPort' => '',
+    'SMTPProtocol' => '',
+    'SMTPUsername' => '',
+    'SMTPPassword' => '',
+    'SMTPAddress' => '',
     "MailWhitelist" => [
         "gmail.com",
         "naver.com",
@@ -44,20 +59,21 @@ $conf = array(
     'ForceRecaptchaPublic' => '',
     'RecaptchaPublic' => '',
     'ForceShowNameSpace' => false,
-    'Mark' => 'NamuMark'
+    'MasterKey' => ''
 );
+require 'data/language/'.$conf['Language'].'.php';
 $_ns = array(
-    'wiki' => $conf['NameSpace'],
-    'file' => '파일',
-    'include' => '틀',
-    'template' => '템플릿',
-    'category' => '분류',
-    'trash' => '휴지통',
-    'filetrash' => '파일휴지통',
-    'wikioperation' => '위키운영',
-    'document' => '문서',
-    'user' => '사용자',
-    'specialfunction' => '특수기능',
-    'vote' => '투표',
-    'discussion' => '토론'
+     'wiki' => $lang['ns:wiki'],
+     'file' => $lang['ns:file'],
+     'template' => $lang['ns:template'],
+     'category' => $lang['ns:category'],
+     'trash' => $lang['ns:trash'],
+     'document' => $lang['ns:document'],
+     'user' => $lang['ns:user'],
+     'specialfunction' => $lang['ns:specialfunction'],
+     'vote' => $lang['ns:vote'],
+     'discussion' => $lang['ns:discussion']
+ );
+$icon = array(
+    'aclgroup' => 'ion-md-color-wand'
 );
