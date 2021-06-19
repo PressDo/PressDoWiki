@@ -1,6 +1,6 @@
 <?php
 define('PressDo_Config', true);
-require_once __DIR__.'/data/global/config.php';
+require __DIR__.'/data/global/config.php';
 session_start();
 switch($conf['DBType']){
 case 'mysql':
