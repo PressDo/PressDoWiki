@@ -60,6 +60,7 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 ### Used open-sources
 - [php-namumark](https://github.com/koreapyj/php-namumark)
 - [php-diff](https://github.com/chrisboulton/php-diff)
+- [PHPMailer](https://github.com/PHPMailer/PHPMailer)
 
 ### Special Thanks
 - theseed.io
