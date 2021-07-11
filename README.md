@@ -30,7 +30,7 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 - Microsoft Access
 - MSSQL
 - IBM DB2
-- SQLite
+- SQLite 3
 
 -------------------------
 ### 개발 환경 (Development Environment)
