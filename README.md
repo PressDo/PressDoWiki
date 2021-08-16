@@ -55,7 +55,7 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 ### 자세히 (Details)
 - [Wiki](https://github.com/aaei924/PressDoWiki/wiki)
 - 추후 테스트 위키에 가이드가 수록될 예정입니다.
-- 나무마크 렌더러는 임시로 php-namumark를 사용하였습니다.
+- 나무마크 렌더러는 배포 시 별도 확장으로 분리될 예정입니다.
 
 ### Used open-sources
 - [php-namumark](https://github.com/koreapyj/php-namumark)
