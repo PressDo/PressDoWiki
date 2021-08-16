@@ -6,6 +6,8 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/PressDo/pressdowiki/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/PressDo/pressdowiki)
 [![License](https://img.shields.io/github/license/PressDo/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
 
+[공식 디스코드 서버](https://discord.gg/Tdwsj9S2W5)
+
 -------------------------
 ### 이 위키는 현재 제작 중입니다.
 ### Currently in development.
