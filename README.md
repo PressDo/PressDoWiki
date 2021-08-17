@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/github/license/PressDo/PressDoWiki.svg?style=for-the-badge)](https://github.com/PressDo/PressDoWiki)
 
 [공식 디스코드 서버](https://discord.gg/Tdwsj9S2W5)
-
+개발 현황 등은 디스코드 서버에서 신속히 확인하실 수 있습니다.
 -------------------------
 ### 이 위키는 현재 제작 중입니다.
 ### Currently in development.
