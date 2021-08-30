@@ -46,7 +46,7 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 - MySQL 8.0.20
 
 ### 지원 문법 (Supported Markup)
-- 나무마크(Namumark)
+- 나무마크(Namumark) [확장 필요]
 - 마크다운(Markdown)
 - BBCode
 
@@ -57,7 +57,7 @@ the seed와 최대한 유사하게 구현하는 것을 목표로 하고 있는 P
 - [buma](https://github.com/PressDo/PressDo-skin-buma) (예정)
 
 ### 자세히 (Details)
-- [Wiki](https://github.com/aaei924/PressDoWiki/wiki)
+- [Wiki](https://github.com/PressDo/PressDoWiki/wiki)
 - 추후 테스트 위키에 가이드가 수록될 예정입니다.
 - 나무마크 렌더러는 배포 시 별도 확장으로 분리될 예정입니다.
 
