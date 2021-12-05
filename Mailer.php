@@ -3,7 +3,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+require 'external/PHPMailer/src/Exception.php';
+require 'external/PHPMailer/src/PHPMailer.php';
+require 'external/PHPMailer/src/SMTP.php';
 
 function mail_send($to, $subject, $body) {
     global $conf;
@@ -16,9 +18,9 @@ function mail_send($to, $subject, $body) {
         $mail->Password   = $conf['SMTPPassword'];
         $mail->CharSet = 'UTF-8'; 
         $mail->Encoding = "base64";
-        $mail->SMTPSecure = 'ssl'; 
+        $mail->SMTPSecure = $conf['SMTPProtocol']; 
         $mail->Port       = $conf['SMTPPort'];
-        $mail->setFrom($conf['SMTPAddress'], $conf['SiteName']);
+        $mail->setFrom($conf['SMTPAddress'], $conf['SiteName_en']);
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -26,6 +28,6 @@ function mail_send($to, $subject, $body) {
         $mail->send();
         return true;
     } catch (Exception $e) {
-        return false;
+        return $e->getMessage();
     }
 }

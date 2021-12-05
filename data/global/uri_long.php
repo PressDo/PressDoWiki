@@ -1,5 +1,6 @@
 <?php
 $uri = array(
+    'prefix' => '&',
     'wiki' => '/index.php?page=w&title=',
     'edit' => '/index.php?page=edit&title=',
     'acl' => '/index.php?page=acl&title=',
@@ -18,7 +19,7 @@ $uri = array(
     'License' => '/index.php?page=License',
     'RandomPage' => '/index.php?page=RandomPage',
     'discuss' => '/index.php?page=discuss&title=',
-    'thread' => '/index.php?page=thread&thread=',
+    'thread' => '/index.php?page=thread&title=',
     'edit_request' => '/index.php?page=edit_request&eq=',
     'new_edit_request' => '/index.php?page=new_edit_request&title=',
     'RecentChanges' => '/index.php?page=RecentChanges',
@@ -29,6 +30,7 @@ $uri = array(
     'OldPages' => '/index.php?page=OldPages',
     'ShortestPages' => '/index.php?page=ShortestPages',
     'LongestPages' => '/index.php?page=LongestPages',
+    'BlockHistory' => '/index.php?page=BlockHistory',
     'login_history' => '/index.php?page=admin&title=login_history',
     'grant' => '/index.php?page=admin&title=grant',
     'login' => '/index.php?page=member&title=login',
@@ -38,6 +40,12 @@ $uri = array(
     'signup' => '/index.php?page=member&title=signup',
     'recover_password' => '/index.php?page=member&title=recover_password',
     'mypage' => '/index.php?page=member&title=mypage',
+    'starred_documents' => '/index.php?page=member&title=starred_documents',
+    'contribution_document_m' => '/index.php?page=contribution&title=author&user=@1@&type=document',
+    'contribution_discuss_m' => '/index.php?page=contribution&title=author&user=@1@&type=discuss',
+    'contribution_document_i' => '/index.php?page=contribution&title=ip&user=@1@&type=document',
+    'contribution_discuss_i' => '/index.php?page=contribution&title=ip&user=@1@&type=discuss',
     'internal' => '/index.php?page=internal',
-    'search' => '/index.php?page=Search&q='
+    'admin' => '/index.php?page=admin&title=',
+    'Search' => '/index.php?page=Search&q='
 );

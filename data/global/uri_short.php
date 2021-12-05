@@ -1,5 +1,6 @@
 <?php
 $uri = array(
+    'prefix' => '?',
     'wiki' => '/w/',
     'edit' => '/edit/',
     'acl' => '/acl/',
@@ -29,6 +30,7 @@ $uri = array(
     'OldPages' => '/OldPages',
     'ShortestPages' => '/ShortestPages',
     'LongestPages' => '/LongestPages',
+    'BlockHistory' => '/BlockHistory',
     'login_history' => '/admin/login_history',
     'grant' => '/admin/grant',
     'login' => '/member/login',
@@ -38,6 +40,12 @@ $uri = array(
     'signup' => '/member/signup',
     'recover_password' => '/member/recover_password',
     'mypage' => '/member/mypage',
+    'contribution_document_m' => '/contribution/ip/@1@/document',
+    'contribution_discuss_m' => '/contribution/ip/@1@/discuss',
+    'contribution_document_i' => '/contribution/ip/@1@/document',
+    'contribution_discuss_i' => '/contribution/ip/@1@/discuss',
+    'starred_documents' => '/member/starred_documents',
     'internal' => '/internal/',
-    'search' => '/Search?q='
+    'Search' => '/Search?q=',
+    'admin' => '/admin/'
 );

@@ -1,5 +1,5 @@
 <?php
-function loadMarkUp($title, $content){
+function loadMarkUp($content, $uri, array $options){
     require 'wikitext.php';
     WikitextParser::init();
     $parser = new WikitextParser($content);

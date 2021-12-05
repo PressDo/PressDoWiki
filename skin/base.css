@@ -1,0 +1,93 @@
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@charset "UTF-8";
+@-webkit-keyframes data-pressdo-warning-unlogined{0%{color:#000}to{color:red}}
+@keyframes data-pressdo-warning-unlogined{0%{color:#000;}to{color:red;}}
+
+*[v=none]{display:none!important;}
+*[v=hidden]{visibility:hidden!important;}
+*[v=block]{display:block!important;}
+*[v=inline-block]{display:inline-block!important;}
+*[v=inline]{display:inline!important;}
+
+p[data-pressdo-warning-unlogined]{margin-top: 0; margin-bottom: 1rem;font-weight: 700;-webkit-animation: data-pressdo-warning-unlogined 1s infinite alternate; animation: data-pressdo-warning-unlogined 1s infinite alternate;}
+textarea[disabled][data-pressdo-thread]{cursor: not-allowed;background-color: #eceeef;opacity: 1;}
+button[data-pressdo-button]{margin: 0;display: inline-block;font-size: 1rem;font-weight: 400;line-height: 1.5;text-align: center;white-space: nowrap;vertical-align: middle;touch-action: manipulation;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;padding: .2rem .7rem;color: #373a3c;background-color: #fff;border: .0625rem solid #ccc;font-size: .9rem;}
+button[data-pressdo-button][data-pressdo-button-blue]{color: #fff;background-color: #0275d8;border-color: #0275d8;}
+button[data-pressdo-button][data-pressdo-button-red]{color: #fff;background-color: #d9534f;border-color: #d9534f;}
+button[data-pressdo-button][data-pressdo-button-red]:not([disabled]):active, 
+button[data-pressdo-button][data-pressdo-button-red]:not([disabled]):hover {text-decoration:none;background-color: #c9302c;border-color: #c12e2a;}
+button[data-pressdo-button][data-pressdo-button-blue]:not([disabled]):active, 
+button[data-pressdo-button][data-pressdo-button-blue]:not([disabled]):hover {background-color: #025aa5;border-color: #01549b;}
+button[data-pressdo-button]:not([disabled]):active, 
+button[data-pressdo-button]:not([disabled]):hover {background-color: #e6e6e6;border-color: #adadad;text-decoration: none;}
+button[data-pressdo-button-sizeup]{padding: .75rem 1.25rem;}
+button[data-pressdo-button-wideright]{width: 8rem;float: right;}
+button[data-pressdo-button-editor-submit]{width:100px;margin-bottom:2rem;float:right;}
+div.a.e[data-pressdo-alert-box]{color: #a94442;background-color: #f2dede;border-color: #ebcccc;}
+div.a[data-pressdo-alert-box]{margin-bottom: 1.4rem;padding: .5rem .8rem;border-radius: .25rem;font-size: .9rem;color: #31708f;background-color: #d9edf7;border: 1px solid #bcdff1;}
+#dr_e.i{color:red!important;}
+
+/* Diff Lib */
+table[data-pressdo-diff]{border-collapse: collapse;border: 1px solid #a9a9a9;white-space: pre-wrap;font-size: .9rem;}
+table[data-pressdo-diff] thead{border-bottom: 1px solid #bbc;background: #efefef;font-family: Verdana;}
+table[data-pressdo-diff] tbody th{word-break: normal; background: #eed;font-weight: 400;border: 1px solid #bbc;color: #886;padding: .3em .5em .1em 2em;text-align: right;vertical-align: top;font-size: 11px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+table[data-pressdo-diff] .delete{background-color: #fdd;}
+table[data-pressdo-diff] .insert{background-color: #cfc;}
+table[data-pressdo-diff] tbody td{padding: .4em .4em 0;vertical-align: top;}
+table[data-pressdo-diff] div{word-wrap: break-word;word-break: break-all;}
+table[data-pressdo-diff] del.diff{background-color: #fff;color: #999;text-decoration: line-through;}
+table[data-pressdo-diff] ins.diff{background-color: #50ff50;text-decoration: none;}
+th[data-pressdo-diff-title]{text-align:left;}
+
+/* NamuMark */
+h1{font-size: 2rem;}
+h2{font-size: 1.8rem;}
+h3{font-size: 1.6rem;}
+h4{font-size: 1.5rem;}
+h5{font-size: 1.3rem;}
+h6{font-size: 1.1rem;}
+h1.wiki-heading{font-size: 2em;}
+h2.wiki-heading{font-size: 1.8em;}
+h3.wiki-heading{font-size: 1.6em;}
+h4.wiki-heading{font-size: 1.5em;}
+h5.wiki-heading{font-size: 1.3em;}
+h6.wiki-heading{font-size: 1.1em;}
+h1.wiki-heading, h2.wiki-heading, h3.wiki-heading, h4.wiki-heading, h5.wiki-heading, h6.wiki-heading {margin: 1.2em 0 .8em;border-bottom: 1px solid #ccc;padding-bottom: 5px;font-weight:500;line-height:1.1;color:inherit;}
+
+div[data-pressdo-doc-content] { border-left: 1px solid #e1e8ed;border-right: 1px solid #e1e8ed;background-color: #fff;padding: 1rem;overflow: hidden;line-height: 1.6rem;}
+div[data-pressdo-doc-category] { border: 1px solid #ccc;padding: 3px 3px 3px 5px;margin-bottom: 1em;border-radius: 4px;font-size: .9rem;}
+div[data-pressdo-doc-category]>h2 {display: inline-block;border: 0;padding: 0;margin: 0;font-weight: 400;font-size: inherit;}
+div[data-pressdo-doc-category]>h2:after {content: ":";}   
+div[data-pressdo-doc-category]>ul {margin-bottom: 0;padding-left: 0;margin-top: 0;display: inline-block;}
+div.wiki-heading-content{margin-bottom:1rem;}
+div.wiki-heading-content:last-of-type{margin-bottom:0;}
+div[data-pressdo-doc-tablewrap]{display:block;max-width:100%;overflow-x:auto;margin:10px 0;}
+div#_toc {border: 1px solid #ccc;display: inline-block;padding: 12px 20px 18px 0;margin-left: 5px;}
+div#_toc:before {content: "목차";font-size: 1.25em;margin-left: 14px;}
+div#_toc>div._toc_ln:first-of-type {margin-top: 12px;}
+div._toc_ln {padding-left: 20px;}    
+li[data-pressdo-doc-category]::marker{content: "";}
+li[data-pressdo-doc-category] {display: inline;}
+li[data-pressdo-doc-category]:not(:last-of-type):after {content: "|";padding-left: 5px;padding-right: 5px;}
+span[_toc-item] {display: block;}    
+iframe{display: block;max-width: 100%;}
+.wiki-heading{cursor:pointer;}
+.wiki-heading:before {float: left;font-family: Ionicons;font-weight: 400;font-size: .8em;line-height: 1.8em;text-align: center; margin: 0 .5rem 0 .2rem; width: .9em;color: #666;content: "";}
+span.wiki-edit-section {float: right;font-size: .8rem;}    
+[data-pressdo-navfunc][data-pressdo-toc-fold=hide]{display:none;}
+.wiki-heading[data-pressdo-toc-fold=hide]{opacity:.5;}
+.wiki-heading[data-pressdo-toc-fold=hide]:before{content: "";;}
+div.wiki-heading-content[data-pressdo-toc-fold=hide]{display:none;}
+
+code,kbd,pre,samp{font-family:Menlo,Monaco,Consolas,Courier New,monospace;font-size:1em;}
+#cont_ent code{background-color:#f7f7f9;border-radius:.25rem;}
+#cont_ent code,kbd{padding:.2rem .4rem; font-size:90%!important;}
+#cont_ent code[data-pressdo-nowiki]{padding:2px;background-color:transparent;border:none;border-radius:0;}
+#cont_ent table{background-color:transparent;border-spacing:0;border-collapse:collapse;}
+#cont_ent table.wiki-table{background-color:#f5f5f5;border-collapse:collapse;}
+#cont_ent table.wiki-table td{padding: 5px 10px;border: 1px solid #ddd;}
+#cont_ent blockquote[data-pressdo-blockquote]{padding: 1em calc(2em + 25px) 1em 1em;margin: 1em 0;background: #eee;display: table;border: 2px dashed #ccc;border-left: 5px solid #71bc6d;}
+
+#cont_ent pre{padding: 7px;background-color: #eee;border: 1px solid #ddd;border-radius: 3px;overflow-x: auto;}
+#cont_ent hr{margin: .5em 0;height: 0;box-sizing: content-box;border: 0;border-top: .0625rem solid #ccc;}
+#cont_ent .wiki-fn-content {white-space: nowrap;font-size: .8em;vertical-align: super;}

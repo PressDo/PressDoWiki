@@ -21,11 +21,12 @@ case 'db2':
     $dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE='.$conf['DBName'].';HOSTNAME='.$conf['DBHost'].';PORT='.$conf['DBPort'].';PROTOCOL=TCPIP;UID='.$conf['DBUser'].';PWD='.$conf['DBPass'];
     break;
 case 'sqlite':
-    $dsn = 'sqlite:'.$conf['DBHost'];
+    $dsn = 'sqlite:'.$conf['DBName'];
     break;
 default:
     break;
 }
     ($conf['DBType'] !== 'db2')? $db = new PDO($dsn, $conf['DBUser'], $conf['DBPass']): $db = new PDO($dsn, '', '');
     if(!$db) return false;
-$_DB_pINT = PDO::PARAM_INT;
+$DB_ASSOC = PDO::FETCH_ASSOC;
+$DB_COLUMN = PDO::FETCH_NUM;

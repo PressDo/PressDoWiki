@@ -1,5 +1,5 @@
 <?php
-function loadMarkUp($title, $content){
+function loadMarkUp($content, $uri, array $options){
     require 'Parsedown.php';
     $Parsedown = new Parsedown();
     

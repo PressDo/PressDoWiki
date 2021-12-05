@@ -1,5 +1,5 @@
 <?php
-function loadMarkUp($title, $content){
+function loadMarkUp($content, $uri, array $options){
     require "Parser.php";
     $parser = new JBBCode\Parser();
     $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
