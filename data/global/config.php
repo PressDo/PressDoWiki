@@ -16,6 +16,7 @@ $conf = array(
     'Description' => "",
     'CopyRightText' => "",
     'EditAgreeText' => "",
+    'FileUploadText' => '',
     'PageFooter' => "",
     'CopyRightURL' => "",
     'CannonicalURL' => "",
@@ -34,6 +35,9 @@ $conf = array(
     'PublicLevel' => 0,
     "AllowJoin" => true,
     "DefaultSkin" => "liberty",
+    'CustomSidebar' => [
+        ['url' => 'http://github.com/PressDo/PressDoWiki','name' => 'GitHub', 'icon' => '']
+    ],
     'Mark' => 'NamuMark',
     "TitleText" => "",
     "LogoWidth" => "6.6rem",
@@ -63,16 +67,16 @@ $conf = array(
 );
 require 'data/language/'.$conf['Language'].'.php';
 $_ns = array(
-     'wiki' => $lang['ns:wiki'],
-     'file' => $lang['ns:file'],
-     'template' => $lang['ns:template'],
-     'category' => $lang['ns:category'],
-     'trash' => $lang['ns:trash'],
-     'document' => $lang['ns:document'],
-     'user' => $lang['ns:user'],
-     'specialfunction' => $lang['ns:specialfunction'],
-     'vote' => $lang['ns:vote'],
-     'discussion' => $lang['ns:discussion']
+    'document' => $lang['ns:document'],
+    'template' => $lang['ns:template'],
+    'category' => $lang['ns:category'],
+    'file' => $lang['ns:file'],
+    'user' => $lang['ns:user'],
+    'specialfunction' => $lang['ns:specialfunction'],
+    'wiki' => $lang['ns:wiki'],
+    'discussion' => $lang['ns:discussion'],
+    'trash' => $lang['ns:trash'],
+    'vote' => $lang['ns:vote']
  );
 $icon = array(
     'aclgroup' => 'ion-md-color-wand'
