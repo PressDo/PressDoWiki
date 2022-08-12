@@ -1,25 +1,62 @@
-# PressDoWiki - Fast & Light PHP Wiki Engine
+# URL STRUCTURE
 
-[![Issues](https://img.shields.io/github/issues/aaei924/PressDoWiki?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
-[![Forks](https://img.shields.io/github/forks/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
-[![Stars](https://img.shields.io/github/stars/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
-[![License](https://img.shields.io/github/license/aaei924/PressDoWiki.svg?style=for-the-badge)](https://github.com/aaei924/PressDoWiki)
+/:page/:title
 
--------------------------
-### 이 위키는 현재 제작 중입니다.
-### Currently in development.
--------------------------
+# Class Structure
+```js
+class WikiCore {
+    __construct()
+    db_connect()
+    show_error()
+    latte_init()
+    get_inner_layout()
+    get_page()
 
-- 나무위키의 문법인 나무마크를 이용할 수 있는 PHP를 이용한 위키입니다.
-- 오픈나무와 다르게 PHP로 만들어져 웹서버에서도 이용할 수 있습니다.
-- 미디어위키와 다르게 매우 빠릅니다.
+    namespaces,
+    config,
+    lang,
+    uri
+    
+    error: {
+        code: str
+        message: str
+        errbox: bool
+    }
 
-### 요구 사항 (Requirements)
-- PHP 7.4 이상
-- MariaDB 10.3.25 이상
+    page: {
+        name: viewName,
+        title: 문서명,
+        namespace: 이름공간,
+        data: 
+    }
 
-### 지원 스킨 (Supported Skins)
-- ~~senkawa~~ (저작권 문제로 배포하지 않습니다.)
-- liberty (예정)
-- vector (예정)
-- buma (예정)
+    GET: {
+        ...
+    }
+    POST: {
+        ...
+    }
+
+    session: {
+        menus: []
+        member: {
+            user_document_discuss
+            username
+            gravatar_url
+        }
+        ip
+    }
+}
+
+
+class WikiSkin extends WikiCore {
+
+}
+```
+
+# Backend Parameter
+```js
+wiki: {
+    title, namespace
+}
+```

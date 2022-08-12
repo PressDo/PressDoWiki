@@ -1,0 +1,62 @@
+<div data-pressdo-content-header>
+    <div class="c-t">
+        <div class="bt-g">
+            <a class="sb" data-pressdo-toolbar-link title="backlink" href="/backlink/{rawurlencode($wiki->uri_data->title)}">{$wiki->lang->btn->backlink}?></a>
+            <a class="sb" data-pressdo-toolbar-link title="discuss" href="/discuss/{rawurlencode($wiki->uri_data->title)}">{$wiki->lang->btn->discuss}?></a>
+            <a class="sb" data-pressdo-toolbar-link title="edit" href="/edit/{rawurlencode($wiki->uri_data->title)}">{$wiki->lang->btn->edit}?></a>
+            <a class="sb" data-pressdo-toolbar-link title="history" href="/history/{rawurlencode($wiki->uri_data->title)}">{$wiki->lang->btn->history}?></a>
+            <a class="sb" data-pressdo-toolbar-link title="ACL" href="/acl/{rawurlencode($wiki->uri_data->title)}">{$wiki->lang->btn->ACL}?></a>
+        </div>
+    </div>
+    <h1 data-pressdo-doc-title><a href="/w/{rawurlencode($wiki->uri_data->title)}"><span data-pressdo-title-namespace>{$wiki->page->data->document->namespace}</span>{$wiki->page->data->document->title}</a>
+        <small n:if="$wiki->page->data->rev !== null" data-pressdo-doc-action>({$wiki->lang->rev|replace '@1@', $wiki->page->data->rev})</small>
+    </h1>
+</div>
+<div class="wiki-content">
+    {if $err['errbox']}
+    <div class="a e">
+        <strong>{$wiki->lang->msg->error}</strong>
+        <span><{$err['errbox']}</span>
+    </div>
+    {/if}
+    <div>
+        <div id="categoryspace_top"></div>
+        <div class="w">
+            <div><?php 
+            if($isAdmin === true){ ?>
+                <div onmouseover="this.style.borderTopColor='red';" onmouseout="this.style.borderTopColor='orange';" style="border-width: 5px 1px 1px; border-style: solid; border-color: orange gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
+                    <span><?=$lang['msg:this_is_admin']?></span>
+                </div><?php
+            } 
+            if($isBlocked['block'] === true){
+                if($isBlocked['until'] == 0)
+                    $un_til = $lang['forever'];
+                else
+                    $un_til = $isBlocked['until'].$lang['until'];
+                ?>
+                <div onmouseover="this.style.borderTopColor='blue';" onmouseout="this.style.borderTopColor='red';" style="border-width: 5px 1px 1px; border-style: solid; border-color: red gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
+                    <span><?=$lang['msg:this_is_blocked']?> (#<?=$isBlocked['seq']?>)</span>
+                    <br><br>
+                    <?=str_replace(['@1@', '@2@'], ['<time datetime='.$isBlocked['dt_html'].'>'.$isBlocked['datetime'].'</time>', $un_til], $lang['msg:this_is_blocked_user'])?>
+                    <br>
+                    <?=$lang['blocked_reason']?>: <?=$isBlocked['memo']?>
+                </div>
+            <?php } ?>
+            </div><?php
+            if($err['error'] !== null){ 
+                <h2><?=$err['error']?></h2><?php
+            }elseif($content === null && $err['error'] == null){ 
+                if($mode == 'diff'){ 
+                <span><?=$lang['msg:no_revision']?></span><?php
+                }else{
+                <span><?=$lang['msg:document_not_found']?></span><br>
+                <p><a href="<?=$uri['edit'].$Doc?>">[<?=$lang['create_document']?>]</a></p><?php 
+                }
+            }elseif($mode == 'raw' || $mode == 'disabled'){ ?>
+                <textarea readonly="readonly" class="editor"><?=$content?></textarea><?php
+            }else{ ?>
+                <?=$content?><?php 
+            } ?>
+        </div>
+    </div>
+</div>

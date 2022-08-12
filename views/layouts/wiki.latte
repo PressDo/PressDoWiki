@@ -1,0 +1,39 @@
+<div class="wiki-content">
+    <div n:if="$error['errbox']" class="a e">
+        <strong>{$lang['msg']['error']}</strong>
+        <span><{$error['message']}</span>
+    </div>
+    <div n:if="$wiki->alert->alertbox" class="a">
+        <strong>{$lang['msg']['alert']}</strong>
+        <span><{$wiki['alert']['message']}</span>
+    </div>
+    <div>
+        <div id="categoryspace_top"></div>
+        <div class="w">
+            <div>
+            {if $wiki['page']['data']['user'] !== false} 
+                <div n:if="$wiki['page']['data']['user']['admin'] === true" onmouseover="this.style.borderTopColor='red';" onmouseout="this.style.borderTopColor='orange';" style="border-width: 5px 1px 1px; border-style: solid; border-color: orange gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
+                    <span>{$lang['msg']['this_is_admin']}</span>
+                </div>
+                {if $wiki['page']['data']['user']['block']['blocked'] === true}
+
+                    {if $wiki['page']['data']['user']['block']['until'] == 0}
+                        {var $until = $lang['acl']['forever']}
+                    {else}
+                        {var $until = ($lang['until']|replace: '@1@', $wiki['page']['data']['user']['block']['until'])}
+                    {/if}
+
+                    <div onmouseover="this.style.borderTopColor='blue';" onmouseout="this.style.borderTopColor='red';" style="border-width: 5px 1px 1px; border-style: solid; border-color: red gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
+                        <span>{$lang['msg']['this_is_blocked']} (#{$wiki['page']['data']['user']['block']['seq']})</span>
+                        <br><br>
+                        {$lang['msg']['this_is_blocked_user']|replace: ['@1@' => '<time datetime="'.$wiki['page']['data']['user']['block']['dt_html'].'">'.$wiki['page']['data']['user']['block']['datetime'].'</time>', '@2@' => $wiki['page']['data']['user']['block']['until']]}
+                        <br>
+                        {$lang['blocked_reason']}: {$wiki['page']['data']['user']['block']['memo']}
+                    </div>
+                {/if}
+            {/if}
+            </div>
+            {htmlspecialchars_decode($wiki['page']['data']['document']['content'])|noescape}
+        </div>
+    </div>
+</div>

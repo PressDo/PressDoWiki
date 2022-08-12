@@ -1,0 +1,24 @@
+<div class="wiki-content" >
+    <div n:if="$error['errbox']" class="a e">
+        <strong>{$lang['msg']['error']}</strong>
+        <span><{$error['message']}</span>
+    </div>
+    <div n:if="$wiki['alert']['alertbox']" class="a">
+        <strong>{$lang['msg']['alert']}</strong>
+        <span><{$wiki['alert']['message']}</span>
+    </div>
+    <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
+        <div data-pressdo-loginform class="c comment">
+            <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
+            <input data-pressdo-edit-summary type="text" name="summary" id="logInput">
+        </div>
+        <label data-pressdo-pagelist><input type="checkbox" name="agree" id="agree"> {$lang['msg']['ThisIsNotMove']}</label>
+        <p data-pressdo-delete><b>{str_replace('@1@', '/move/'.rawurlencode($wiki['page']['full_title']), $lang['msg']['PleaseDontMove'])}</b></p>
+        {if !$wiki['session']['member']['username']}
+            <p data-pressdo-delete data-pressdo-warning-unlogined>{str_replace('@1@', $wiki['session']['ip'], $lang['msg']['unlogined_edit'])}</p>
+        {/if}
+        <div class="btn-area">
+            <button class="btn btn-red" editor-msg="{$lang['msg']['CheckDelMsg']}" type="button" id="delb">{$lang['page']['delete']}</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,73 @@
+<div class="wiki-content">
+    <div n:if="$wiki['page']['data']['error']" class="a e">
+        <strong>{$lang['msg']['error']}</strong>
+        <span>{$lang['msg'][$wiki['page']['data']['error']]}></span>
+    </div>
+    {if $mode === 0 || empty($mode)}
+        {* 초기화면 *}
+        {$_SESSION['MAIL_CHECK'] = true}
+        <form data-pressdo-register method="POST" id="regform" name="regform" action="/member/signup">
+            <div data-pressdo-loginform class="c">
+                <label data-pressdo-loginform for="email">{$lang['auth']['email']}</label>
+                <input data-pressdo-formdata type="email" id="email" name="email">
+                <p id="errmail" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['email']}</p>
+                {if $config['use_mail_whitelist'] === true}
+                    <p>{$lang['msg:use_email_whitelist']}</p>
+                    <ul data-pressdo-mail-whitelist>
+                        <li n:foreach="$config['mail_whitelist'] as $wl" data-pressdo-mail-whitelist>{$wl}</li>
+                    </ul>
+                {/if}
+            </div>
+            <b>{$lang['msg']['cannot_delete_account']}</b>
+            <button type="button" class="btn-blue btn" id="chkmail">{$lang['auth']['signup_submit']}</button>
+            <div style="clear: both;">
+                <div class="grecaptcha-badge" data-style="inline" style="width: 256px; height: 60px; box-shadow: gray 0px 0px 5px;">
+                    <div class="grecaptcha-logo">
+                        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&k=6Le0YCgUAAAAAPuP955bk3npzh_ymfSd53DpI74j&co=aHR0cHM6Ly90aGVzZWVkLmlvOjQ0Mw..&hl=ko&v=6OAif-f8nYV0qSFmq-D6Qssr&size=invisible&badge=inline&cb=8wsokgsumi1k" width="256" height="60" role="presentation" name="a-p1qimm5s15r" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox">
+                        </iframe>
+                    </div>
+                    <div class="grecaptcha-error">
+                    </div>
+                    <textarea id="g-recaptcha-response-4" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;">
+                    </textarea>
+                </div>
+                <iframe style="display: none;">
+                </iframe>
+            </div>
+        </form>
+    
+    {elseif $mode === 1}
+        {* 이메일 인증대기 *}
+        <p>{=$lang['msg']['sent_email']|replace '@1@', $_POST['email']}</p>
+        <ul>
+            <li>{$lang['msg:check_spam']}</li>
+            <li>{$lang['msg:email_expiry']}</li>
+        </ul>
+    {elseif $mode === 3}
+        {* 계정생성 완료 *}
+        {*unset($_SESSION['MAIL_CHECK'])*}
+        <p>{=$lang['msg']['welcome']|replace '@1@', $_POST['username']|noescape}</p>
+    {elseif $mode === 2}
+        {* 메일인증 완료 *}
+        <form data-pressdo-register id="signupform" name="signupform" method="POST" action="/member/signup">
+            <div data-pressdo-loginform class="c">
+                <label data-pressdo-loginform for="username">{$lang['auth']['username']}</label>
+                <input data-pressdo-formdata type="text" id="username" name="username">
+                <p id="erruser1" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['username']}</p><p id="erruser2" class="errmsg" v="none">{$lang['msg']['err_username_exists']}</p><p id="erruser3" class="errmsg" v="none">{$lang['msg']['err_username_format']}</p>
+            </div>
+            <div data-pressdo-loginform class="c">
+                <label data-pressdo-loginform for="password">{$lang['auth']['password']}</label>
+                <input data-pressdo-formdata type="password" id="password" name="password">
+                <p id="errpwd" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['password']}</p>
+            </div>
+            <div data-pressdo-loginform class="c">
+                <label data-pressdo-loginform for="password2">{$lang['auth']['password2']}</label>
+                <input data-pressdo-formdata type="password" id="password2" name="password2">
+                <p id="errpwd21" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['password2']}</p><p id="errpwd22" class="errmsg" v="none">{$lang['msg']['err_wrong_password2']}</p>
+            </div>
+            <b>{$lang['msg']['cannot_delete_account']}</b>
+            <button type="button" class="btn-blue btn" id="signup">{$lang['auth']['signup_submit']}</button>
+        </form>
+    
+    {/if}
+</div>

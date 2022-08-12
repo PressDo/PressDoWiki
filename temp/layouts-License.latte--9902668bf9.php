@@ -1,0 +1,69 @@
+<?php
+
+use Latte\Runtime as LR;
+
+/** source: views/layouts/License.latte */
+final class Template9902668bf9 extends Latte\Runtime\Template
+{
+
+	public function main(): array
+	{
+		extract($this->params);
+		echo '
+            <div class="wiki-content">
+                <div>
+                    <h2>PressDo</h2>
+                    <p>v';
+		echo LR\Filters::escapeHtmlText($wiki['page']['data']['version']) /* line 5 */;
+		echo ' (';
+		echo LR\Filters::escapeHtmlText($wiki['page']['data']['hash']) /* line 5 */;
+		echo ') </p>
+                    <p>';
+		echo LR\Filters::escapeHtmlText($wiki['page']['data']['updated']) /* line 6 */;
+		echo '</p>
+                    <p>Author: <a href="https://github.com/aaei924">PRASEOD-</a><br>
+                    PressDo is licensed under the <a rel="license" href="https://github.com/PressDo/PressDoWiki/blob/dev/LICENSE" target="_blank">GNU Affero General Public License v3.0</a>.</p>
+                    <h3>Contributors</h3>
+                    <ul>
+                        <li>admin@prws.kr (backend & frontend)</li>
+                        <li>issac4892@prws.kr (readme)</li>
+                    </ul>
+                    <h3>Open source license</h3>
+                    <ul>
+                        <li>
+                            <a href="https://github.com/HyungJu/readable-url" target="_blank">readable-url</a><br>
+                            Author : <a href="https://github.com/HyungJu" target="_blank">Jude</a><br>
+                            readable-url is licensed under the <a rel="license" href="https://github.com/HyungJu/readable-url/blob/master/LICENSE" target="_blank">MIT License</a>.
+                        </li>
+                        <li>
+                            <a href="https://github.com/chrisboulton/php-diff" target="_blank">php-diff</a><br>
+                            Author : <a href="https://github.com/chrisboulton" target="_blank">Chris Boulton</a><br>
+                            php-diff is licensed under the <a rel="license" href="https://github.com/aaei924/php-diff-theseed/blob/master/LICENSE" target="_blank">BSD 3-Clause "New" or "Revised" License</a>.
+                        </li>
+                        <li>
+                            <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a><br>
+                            Author : <a href="https://github.com/Synchro" target="_blank">Marcus Bointon</a><br>
+                            PHPMailer is licensed under the <a rel="license" href="https://github.com/PHPMailer/PHPMailer/blob/master/LICENSE" target="_blank">GNU Lesser General Public License v2.1</a>.
+                        </li>
+                        <li>
+                            <a href="https://github.com/erusev/parsedown" target="_blank">Parsedown</a><br>
+                            Author : <a href="https://github.com/erusev" target="_blank">Emanuil Rusev</a><br>
+                            Parsedown is licensed under the <a rel="license" href="https://github.com/PHPMailer/PHPMailer/blob/master/LICENSE" target="_blank">MIT License</a>.
+                        </li>
+                        <li>
+                            <a href="https://github.com/jbowens/jBBCode" target="_blank">jBBCode</a><br>
+                            Author : <a href="https://github.com/jbowens" target="_blank">Jackson Owens</a><br>
+                            jBBCode is licensed under the <a rel="license" href="https://github.com/jbowens/jBBCode/blob/master/LICENSE.md" target="_blank">MIT License</a>.
+                        </li>
+                        <li>
+                            <a href="https://github.com/mike42/wikitext" target="_blank">Wikitext</a><br>
+                            Author : <a href="https://github.com/mike42" target="_blank">Michael Billington</a><br>
+                            Wikitext is licensed under the <a rel="license" href="https://github.com/mike42/wikitext/blob/master/LICENSE.md" target="_blank">MIT License</a>.
+                        </li>
+                    </ul>
+                </div>
+            </div>';
+		return get_defined_vars();
+	}
+
+}

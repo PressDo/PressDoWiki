@@ -1,0 +1,38 @@
+<div class="wiki-content">
+    <div>
+        <ol data-pressdo-recentmenu>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=normal_thread">[열린 토론]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=old_thread">[오래된 토론]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=closed_thread">[닫힌 토론]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=open_editrequest">[열린 편집 요청]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=accepted_editrequest">[승인된 편집 요청]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=closed_editrequest">[닫힌 편집 요청]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentDiscuss?logtype=old_editrequest">[오래된 편집 요청]</a></li>
+        </ol>
+        <table data-pressdo-recent-changes>
+            <colgroup>
+                <col>
+                <col style="width: 22%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th data-pressdo-recent-changes>항목</th>
+                    <th data-pressdo-recent-changes>수정 시간</th>
+                </tr>
+            </thead>
+            <tbody n:inner-foreach="$h as $he">
+                {if $he['document']['namespace'] == $_ns['document'] && $config['ForceShowNameSpace'] === false}
+                    {$ns = ''}
+                {else}
+                    {$ns = $he['document']['namespace'].':'}
+                {/if}
+                <tr data-pressdo-recent-changes class="n">
+                    <td data-pressdo-recent-changes>
+                        <a href="/thread/{$he['slug']}">{$he['topic']}</a> (<a href="/discuss/{$ns.$he['document']['title']}">{$ns.$he['document']['title']}</a>)
+                    </td>
+                    <td data-pressdo-recent-changes><time datetime="{date('Y-m-d\TH:i:s', $he['date']-32400)}">{date('Y-m-d H:i:s', $he['date'])}</time></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+{
+    "name": "hyungju/readable-url",
+    "description": "Generate readable random phrases for URLs",
+    "keywords": ["php"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "HyungJu Sung",
+            "email": "sungkisa@naver.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+		"php": ">=7.3"
+    },
+    "require-dev": {
+		"phpunit/phpunit": "9.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "HyungJu\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HyungJu\\Tests\\": "test"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --colors=always --configuration phpunit.xml.dist --coverage-clover coverage.xml"
+    }
+}

@@ -1,0 +1,65 @@
+<div class="wiki-content">
+                <div>
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="file" id="fileInput" ns="{$namespace['file']}" accept="image/*" name="file" hidden="hidden">
+                        <div class="g" data-pressdo-uploader>
+                            <label data-pressdo-uploader for="fakeFileInput">{$lang['file_select']}</label>
+                            <div class="ig">
+                                <input data-pressdo-uploader id="fakeFileInput" type="text" readonly="readonly">
+                                <span><button id="fubtn" type="button" class="btn">Select</button></span>
+                            </div>
+                        </div>
+                        <div class="g" data-pressdo-uploader>
+                            <label data-pressdo-uploader for="documentInput">{$lang['file_name']}</label>
+                            <input data-pressdo-thread id="documentInput" type="text" name="document">
+                        </div>
+                        <textarea data-pressdo-uploader name="text" wrap="soft">{$config['FileUploadText']}</textarea>
+                        <div class="g" data-pressdo-uploader>
+                            <label data-pressdo-uploader for="licenseSelect">{$lang['file_license']}</label>
+                            <div dir="auto" dropdown-selector>
+                                <div dropdown-toggle="arrow_l">
+                                    <div dropdown-options>
+                                    <span dropdown-selected="l"></span>
+                                        <input dropdown-input="arrow_l" placeholder="{$lang['select']}" id="licenseSelect" type="search" autocomplete="off">
+                                    </div>
+                                    <div dropdown-action="arrow_l">
+                                        <button type="button" title="Clear Selection" v="none" dropdown-toggle-clear><svg dropdown-arrow xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path></svg></button>
+                                        <svg id="arrow_l" xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation" dropdown-toggle-open><path d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"></path></svg>
+                                    </div>
+                                </div>
+                                <ul dropdown-name="arrow_l" role="listbox" data-pressdo-toc-fold=hide id="list-dropdown-menu">
+                                    <li n:foreach="$Licenses as $c" role="option" dropdown-option="l">{$c['name']}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p data-pressdo-uploader>{$config['FileUploadWarning']}</p>
+                        <div class="g" data-pressdo-uploader>
+                            <label data-pressdo-uploader for="categorySelect">{$lang['file_category']}</label>
+                            <div dir="auto" dropdown-selector>
+                                <div dropdown-toggle="arrow_c">
+                                    <div dropdown-options>
+                                        <span dropdown-selected="c"></span>
+                                        <input dropdown-input="arrow_c" placeholder="{$lang['select']}" id="categorySelect" type="search" autocomplete="off">
+                                    </div>
+                                    <div dropdown-action="arrow_c">
+                                        <button type="button" title="Clear Selection" v="none" dropdown-toggle-clear><svg dropdown-arrow xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path></svg></button>
+                                        <svg id="arrow_c" xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation" dropdown-toggle-open><path d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"></path></svg>
+                                    </div>
+                                </div>
+                                <ul dropdown-name="arrow_c" role="listbox" data-pressdo-toc-fold=hide id="list-dropdown-menu">
+                                    <li n:foreach="$Categories as $c" role="option" dropdown-option="c">{$c['name']}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
+                            <input data-pressdo-edit-summary type="text" name="summary" id="logInput">
+                        </div>
+                        <span>{stripslashes($config['EditAgreeText'])}</span>
+                        {if !$_SESSION['member']['username']}
+                            <br><p data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace '@1@', $ip}</p>
+                        {/if}
+                        <button class="editor btn-wideright btn-blue btn" type="button">{$lang['Upload']}</button>
+                    </form>
+                </div>
+            </div>

@@ -1,0 +1,119 @@
+<form method="POST" id="rf" action="{$_SERVER['REQUEST_URI']}">
+    <input type="hidden" id="rft" name="target" value>
+</form>
+<div class="wiki-content">
+    {var $acls = ['doc' => $wiki['page']['data']['docACL']['acls'], 'ns' => $wiki['page']['data']['nsACL']['acls']]}
+    {var $types = ['doc', 'ns']}
+    <div n:foreach="$types as $a" data-pressdo-acl-partarea>
+        <h2 data-pressdo-acl-title>{$lang['acl'][$a.'acl']}</h2>
+        {foreach $wiki['page']['data']['ACLTypes'] as $A}
+            <h4 data-pressdo-acl-type>{$lang['acl'][$A]}</h4>
+            <div data-pressdo-acl-part>
+                <table data-pressdo-acl-part>
+                    <colgroup data-pressdo-acl-part>
+                        <col data-pressdo-acl-part style="width:60px;">
+                        <col data-pressdo-acl-part>
+                        <col data-pressdo-acl-part style="width:80px;">
+                        <col data-pressdo-acl-part style="width:200px;">
+                        <col data-pressdo-acl-part style="width:60px;">
+                    </colgroup>
+                    <thead data-pressdo-acl-part>
+                        <tr data-pressdo-acl-part>
+                            <th data-pressdo-acl-part>No</th>
+                            <th data-pressdo-acl-part>Condition</th>
+                            <th data-pressdo-acl-part>Action</th>
+                            <th data-pressdo-acl-part>Expiration</th>
+                            <th data-pressdo-acl-part></th>
+                        </tr>
+                    </thead>
+                    <tbody data-pressdo-acl-part>
+                        <tr n:if="!$acls[$a][$A][0]" data-pressdo-acl-part><td colspan="5" data-pressdo-acl-part>({$lang['msg']['empty_set_'.$a.'acl']})</td></tr>
+                        {var $aclcnt = count($acls[$a][$A])}
+                        {for $i=0; $i<$aclcnt; ++$i}
+                            {var $acls[$a][$A][$i]['expired'] = ($acls[$a][$A][$i]['expired'] === 0)? $lang['acl']['forever'] : date("Y-m-d H:i:s",$acls[$a][$A][$i]['expired'])}
+                            <tr data-pressdo-acl-part><td data-pressdo-acl-part>
+                                {$i+1}</td><td data-pressdo-acl-part>
+                                {$acls[$a][$A][$i]['condition']}</td><td data-pressdo-acl-part>
+                                {$lang['acl'][$acls[$a][$A][$i]['action']]}</td><td data-pressdo-acl-part>
+                                {$acls[$a][$A][$i]['expired']}</td><td data-pressdo-acl-part>
+                                <button n:if="$allow[$a] === true" delete-info="{$a}.{$acls[$a][$A][$i]['id']}" msg="{$lang['msg']['acl_delete_confirm']}" type="button" class="btn btn-red d">{$lang['acl']['delete']}</button></td>
+                            </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+            <form n:if="$allow[$a] === true" data-pressdo-acl-change method="post">
+                <input type="hidden" name="acl_target" value="{$a.'.'.$A}">
+                <div data-pressdo-acl-change class="g">
+                    <label data-pressdo-acl-change>Condition</label> 
+                    <div data-pressdo-acl-change>
+                        <select id="cs" i="{$a.'-'.$A}" name="target_type" data-pressdo-acl-change>
+                            <option data-pressdo-acl-change value="perm">{$lang['perm']}</option> 
+                            <option data-pressdo-acl-change value="member">{$lang['member']}</option> 
+                            <option data-pressdo-acl-change value="ip">{$lang['ip']}</option> 
+                            <option data-pressdo-acl-change value="geoip">{$lang['geoip']}</option> 
+                            <option data-pressdo-acl-change value="aclgroup">{$lang['aclgroup']}</option>
+                        </select> 
+                        <select id="ct" i="{$a.'-'.$A}" name="target_name" v="inilne-block" data-pressdo-acl-change>
+                            <option data-pressdo-acl-change value="any">{$lang['perm']['any']}</option> 
+                            <option data-pressdo-acl-change value="member">{$lang['perm']['member']}</option> 
+                            <option data-pressdo-acl-change value="admin">{$lang['perm']['admin']}</option> 
+                            <option data-pressdo-acl-change value="member_signup_15days_ago">{$lang['perm']['member_singup_15days_ago']}</option> 
+                            <option data-pressdo-acl-change value="document_contributor">{$lang['perm']['document_contributor']}</option> 
+                            <option data-pressdo-acl-change value="contributor">{$lang['perm']['contributor']}</option> 
+                            <option data-pressdo-acl-change value="match_username_and_document_title">{$lang['perm']['match_username_and_document_title']}</option>
+                        </select>
+                        <input id="ct_r" i="{$a.'-'.$A}" name="" type="hidden" data-pressdo-acl-span data-pressdo-acl-change>
+                    </div>
+                </div> 
+                <div data-pressdo-acl-change class="g">
+                    <label data-pressdo-acl-change>Action :</label> 
+                    <div data-pressdo-acl-change>
+                        <select name="action" data-pressdo-acl-change>
+                            <option data-pressdo-acl-change value="allow">{$lang['acl']['allow']}</option> 
+                            <option data-pressdo-acl-change value="deny">{$lang['acl']['deny']}</option> 
+                            <option data-pressdo-acl-change value="gotons">{$lang['acl']['gotons']}</option>
+                        </select>
+                    </div>
+                </div> 
+                <div data-pressdo-acl-change class="g">
+                    <label data-pressdo-acl-change>Duration :</label> 
+                    <div data-pressdo-acl-change>
+                        <span data-pressdo-acl-span data-pressdo-acl-change>
+                            <input id="dr" name="duration_raw" data-pressdo-acl-span type="hidden" name="0" value="0" i="{$a.'-'.$A}">
+                            <select id="duration" data-pressdo-acl-span i="{$a.'-'.$A}">
+                                <option data-pressdo-acl-span value="0">{$lang['acl']['forever']}</option>
+                                <option data-pressdo-acl-span value="300">{$lang['acl']['300s']}</option>
+                                <option data-pressdo-acl-span value="600">{$lang['acl']['600s']}</option>
+                                <option data-pressdo-acl-span value="1800">{$lang['acl']['1800s']}</option>
+                                <option data-pressdo-acl-span value="3600">{$lang['acl']['3600s']}</option>
+                                <option data-pressdo-acl-span value="7200">{$lang['acl']['7200s']}</option>
+                                <option data-pressdo-acl-span value="86400">{$lang['acl']['86400s']}</option>
+                                <option data-pressdo-acl-span value="259200">{$lang['acl']['259200s']}</option>
+                                <option data-pressdo-acl-span value="432000">{$lang['acl']['432000s']}</option>
+                                <option data-pressdo-acl-span value="604800">{$lang['acl']['604800s']}</option>
+                                <option data-pressdo-acl-span value="1209600">{$lang['acl']['1209600s']}</option>
+                                <option data-pressdo-acl-span value="1814400">{$lang['acl']['1814400s']}</option>
+                                <option data-pressdo-acl-span value="2419200">{$lang['acl']['2419200s']}</option>
+                                <option data-pressdo-acl-span value="4838400">{$lang['acl']['4838400s']}</option>
+                                <option data-pressdo-acl-span value="7257600">{$lang['acl']['7257600s']}</option>
+                                <option data-pressdo-acl-span value="14515200">{$lang['acl']['14515200s']}</option>
+                                <option data-pressdo-acl-span value="29030400">{$lang['acl']['29030400s']}</option> 
+                                <option data-pressdo-acl-span value="raw">{$lang['acl']['raw']}</option>
+                            </select>
+                            <input id="dr_e" data-pressdo-acl-span type="hidden" name="0" value="0" i="{$a.'-'.$A}">
+                            <select id="du" data-pressdo-acl-span v="none" i="{$a.'-'.$A}">
+                                <option data-pressdo-acl-span value="1">{$lang['acl']['second']}</option>
+                                <option data-pressdo-acl-span value="60">{$lang['acl']['minute']}</option>
+                                <option data-pressdo-acl-span value="3600">{$lang['acl']['hour']}</option>
+                                <option data-pressdo-acl-span value="86400">{$lang['acl']['day']}</option>
+                                <option data-pressdo-acl-span value="604800">{$lang['acl']['week']}</option>
+                            </select>
+                        </span>
+                    </div>
+                </div>
+                <button type="submit" class="s btn btn-blue">{$lang['acl']['add']}</button>
+            </form>
+        {/foreach}
+    </div>
+</div>

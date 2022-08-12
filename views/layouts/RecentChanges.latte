@@ -1,0 +1,81 @@
+<div class="wiki-content">
+    <div>
+        <ol data-pressdo-recentmenu>
+            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=all">[전체]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=create">[새 문서]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=delete">[삭제]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=move">[이동]</a></li>
+            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=revert">[되돌림]</a></li>
+        </ol>
+        <table data-pressdo-recent-changes>
+            <colgroup>
+                <col>
+                <col style="width: 25%;">
+                <col style="width: 22%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th data-pressdo-recent-changes>항목</th>
+                    <th data-pressdo-recent-changes>수정자</th>
+                    <th data-pressdo-recent-changes>수정 시간</th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach $wiki['page']['data']['content'] as $he}
+                    {if $he['document']['namespace'] == $namespace['document'] && $config['force_show_namespace'] === false}
+                        {var $ns = ''}
+                    {else}
+                        {var $ns = $he['document']['namespace'].':'}
+                    {/if}
+
+                    {var $title = $ns.$he['document']['title']}
+                    {var $Diff = $he['count']}
+                    
+                    {if $Diff > 0}
+                        {var $color = 'green'}
+                        {var $flag = '+'}
+                    {elseif $Diff == 0}
+                        {var $color = 'gray'}
+                        {var $flag = ''}
+                    {elseif $Diff < 0}
+                        {var $color = 'red'}
+                        {var $flag = ''}
+                    {/if}
+
+                    <tr data-pressdo-recent-changes class="n">
+                        <td data-pressdo-recent-changes>
+                            <a href="/w/{$title|escapeUrl}">{$title}</a> 
+                            <a href="/history/{$title|escapeUrl}">[역사]</a>
+                            <a n:if="$he['logtype'] !== 'create'" href="/diff/{$title|escapeUrl}?rev={$he['rev']}">[비교]</a>
+                            <a href="/discuss/{$title|escapeUrl}">[토론]</a>
+                            <span>(<span data-pressdo-history-{$color}>{$flag.$Diff}</span>)</span>
+                        </td>
+                        <td data-pressdo-recent-changes><div data-pressdo-popoever>
+                        {if $he['author'] === null}
+                            <a data-pressdo-recent-user style="{$he['style']}" data-pressdo-user-ip>{$he['ip']}</a>
+                        {else}
+                            <a data-pressdo-recent-user style="{$he['style']}" data-pressdo-user-member>{$he['author']}</a>
+                        {/if}
+                        </div></td>
+                        <td data-pressdo-recent-changes><time datetime="{date('Y-m-d\TH:i:s', $he['date']-32400)}">{date('Y-m-d H:i:s', $he['date'])}</time></td>
+                    </tr>
+                    <tr n:if="strlen($he['log']) > 0 || $he['logtype'] !== 'modify'" data-pressdo-recent-changes>
+                        <td data-pressdo-recent-changes colspan="3">
+                            <span data-pressdo-recent-changes>{$he['log']}</span>
+                            <i>
+                            {switch $he['logtype']}
+                                {case 'revert'}
+                                    ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})
+                                {case 'delete', 'create'}
+                                    ({$lang['log'][$he['logtype']]})
+                                {case 'move'}
+                                    ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
+                            {/switch}
+                            </i>
+                        </td>
+                    </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>

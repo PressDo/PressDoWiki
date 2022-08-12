@@ -1,0 +1,37 @@
+{
+    "override_views": [
+	],
+	"auto_js_targets": {
+		"*": [
+			{
+				"path": "js/jquery-2.2.4.min.js"
+			},
+			{
+				"path": "js/tether.min.js"
+			},
+			{
+				"path": "bootstrap/js/bootstrap.min.js"
+			},
+			{
+				"path": "js/layout.js"
+			}
+		]
+	},
+	"auto_css_targets": {
+		"*": [
+			"css/layout.css",
+			"css/jquery-ui.min.css",
+			"css/ionicons.css",
+			"bootstrap/css/bootstrap.min.css"
+		]
+	},
+	"manual_file_targets": {
+	},
+	"body_classes": [
+		"senkawa"
+	],
+	"additional_heads": [
+		"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">",
+		"<style type=\"text/css\" n:syntax=\"off\">.resize-observer{position:absolute;top:0;left:0;z-index:-1;width:100%;height:100%;border:none;background-color:transparent;pointer-events:none;display:block;overflow:hidden;opacity:0}.resize-observer[data-v-b329ee4c] object{display:block;position:absolute;top:0;left:0;height:100%;width:100%;overflow:hidden;pointer-events:none;z-index:-1}</style>"
+	]
+}

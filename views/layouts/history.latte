@@ -1,0 +1,75 @@
+<div class="wiki-content">
+    <form action="/diff/{$wiki['page']['full_title']}" method="GET">
+        {if !$wiki['page']['data']['prev_ver']}
+            {var $_p = 'data-pressdo-history-null'}
+        {else}
+            {var $_p = 'href="/history/'.$wiki['page']['full_title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
+        {/if}
+        
+        {if !$wiki['page']['data']['next_ver']}
+            {var $_f = 'data-pressdo-history-null'}
+        {else}
+            {var $_f = 'href="/history/'.$wiki['page']['full_title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
+        {/if}
+        <p><button class="btn bt-white" type="submit">{$lang['history']['compare_revision']}</button></p>
+        <div class="bt-g">
+            <a {$_p|noescape} data-pressdo-history-mv>
+                <span ionicon ion-arrow-back></span> Prev
+            </a>
+            <a {$_f|noescape} data-pressdo-history-mv>
+                Next <span ionicon ion-arrow-forward></span>
+            </a>
+        </div>
+        <ul data-pressdo-history>
+            {foreach $wiki['page']['data']['history'] as $d}
+
+                {if $d['count'] > 0}
+                    {var $color = 'green'}
+                    {var $flag = '+'}
+                {elseif $d['count'] == 0}
+                    {var $color = 'gray'}
+                    {var $flag = ''}
+                {elseif $d['count'] < 0}
+                    {var $color = 'red'}
+                    {var $flag = ''}
+                {/if}
+                <li data-pressdo-history><time datetime="{date('Y-m-d\TH:i:s',$d['date']-32400).'.000Z'}">{date('Y-m-d H:i:s',$d['date'])}</time> 
+                    <span data-pressdo-history-menu>(<a href="/w/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['view']}</a> | 
+                    <a href="/raw/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">RAW</a> | 
+                    {*<a href="<?=$uri['blame'].$Doc.$uri['prefix'].'rev={$d['rev']}">Blame</a> | *}
+                    <a href="/revert/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['revert']}</a> | 
+                    <a href="/diff/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['diff']}</a>{if !empty($d['ip']) && $d['ip'] == $wiki['session']['ip'] && !empty($wiki['session']['member']['username'])} | 
+                    <a href="/move_ip/{$wiki['page']['full_title']|escapeUrl}?dt={$d['date']}">{$lang['history']['move_ip']}</a>{/if}
+                    {*if(Data::inACLgroup($user['typename'], 'admin')){
+                    ?> | 
+                            <a href="<?=$uri['hide'].$Doc.'?rev='.$d['rev']?>">숨기기</a>
+                    }*})
+                    </span>
+                    <input data-pressdo-history-radio type="radio" name="oldrev" value="{$d['rev']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="rev" value="{$d['rev']}"  v="inline-block">
+                    <i>{switch $d['logtype']}
+                        {case 'revert'}
+                            ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})
+                        {case 'delete', 'create'}
+                            ({$lang['log'][$d['logtype']]})
+                        {case 'move'}
+                            ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
+                    {/switch}</i>
+                    <strong>r{$d['rev']}</strong> <span>(<span data-pressdo-history-{$color}>{$flag.$d['count']}</span>)</span>
+                    <div data-pressdo-history-menu style="display:inline;">
+                            <span n:if="$d['author'] === null" style="{$d['style']}" data-pressdo-user-ip>{$d['ip']}</span>
+                            <span n:if="$d['author'] !== null" style="{$d['style']}" data-pressdo-user-member>{$d['author']}</span>
+                    </div>
+                    (<span data-pressdo-history-gray>{$d['log']}</span>)
+                </li>
+            {/foreach}
+        </ul>
+        <div class="bt-g">
+            <a {$_p|noescape} data-pressdo-history-mv>
+                <span ionicon ion-arrow-back></span> Prev
+            </a>
+            <a {$_f|noescape} data-pressdo-history-mv>
+                Next <span ionicon ion-arrow-forward></span>
+            </a>
+        </div>
+    </form>
+</div>
