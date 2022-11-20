@@ -288,7 +288,14 @@ class baseModels {
             return true;
     }
     
-    public static function get_version(string $rawns, string $title) : string
+    /**
+     * Get the number of latest revision.
+     * 
+     * @param string $rawns
+     * @param string $title
+     * @return int
+     */
+    public static function get_version(string $rawns, string $title) : int
     {
         $db = self::db();
         $id = self::get_doc_id($rawns, $title);
@@ -298,7 +305,7 @@ class baseModels {
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 버전 조회 중 오류 발생');
         }
-        return $d->fetch(PDO::FETCH_ASSOC)['rev'];
+        return intval($d->fetch(PDO::FETCH_ASSOC)['rev']);
     }
 
     public static function exist(string $rawns, string $title) : bool

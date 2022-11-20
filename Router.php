@@ -9,7 +9,7 @@ class Router {
     public static function handle_uri($request_uri, $query_string) : object
     {   
         if($request_uri == '/')
-            Header('Location: /w/'.Config::get('frontpage'));
+            Header('Location: /w/'.rawurlencode(Config::get('frontpage')));
 
         $uriset = explode('/', explode('?', $request_uri)[0]);
         $uri_data = (object) [

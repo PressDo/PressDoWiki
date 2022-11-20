@@ -3,7 +3,7 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'controllers/WikiACL.php';
-require 'models/acl.php';
+require 'models/blank.php';
 
 use PressDo\Models;
 use PressDo\WikiACL;

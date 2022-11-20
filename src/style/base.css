@@ -75,6 +75,7 @@ table.diff thead{border-bottom: 1px solid #bbc;background: #efefef;font-family: 
 table.diff tbody th{word-break: normal; background: #eed;font-weight: 400;border: 1px solid #bbc;color: #886;padding: .3em .5em .1em 2em;text-align: right;vertical-align: top;font-size: 11px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
 table.diff .delete{background-color: #fdd;}
 table.diff .insert{background-color: #cfc;}
+table.diff .skip{background-color: #efefef;border: 1px solid #aaa;border-right-color: #bbc;}
 table.diff tbody td{padding: .4em .4em 0;vertical-align: top;}
 table.diff div{word-wrap: break-word;word-break: break-all;}
 table.diff del.diff{background-color: #fff;color: #999;text-decoration: line-through;}

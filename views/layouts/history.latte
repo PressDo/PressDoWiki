@@ -1,15 +1,15 @@
 <div class="wiki-content">
-    <form action="/diff/{$wiki['page']['full_title']}" method="GET">
+    <form action="/diff/{$uri_data['title']}" method="GET">
         {if !$wiki['page']['data']['prev_ver']}
             {var $_p = 'data-pressdo-history-null'}
         {else}
-            {var $_p = 'href="/history/'.$wiki['page']['full_title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
+            {var $_p = 'href="/history/'.$uri_data['title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
         {/if}
         
         {if !$wiki['page']['data']['next_ver']}
             {var $_f = 'data-pressdo-history-null'}
         {else}
-            {var $_f = 'href="/history/'.$wiki['page']['full_title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
+            {var $_f = 'href="/history/'.$uri_data['title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
         {/if}
         <p><button class="btn bt-white" type="submit">{$lang['history']['compare_revision']}</button></p>
         <div class="bt-g">
@@ -34,12 +34,12 @@
                     {var $flag = ''}
                 {/if}
                 <li data-pressdo-history><time datetime="{date('Y-m-d\TH:i:s',$d['date']-32400).'.000Z'}">{date('Y-m-d H:i:s',$d['date'])}</time> 
-                    <span data-pressdo-history-menu>(<a href="/w/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['view']}</a> | 
-                    <a href="/raw/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">RAW</a> | 
+                    <span data-pressdo-history-menu>(<a href="/w/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['view']}</a> | 
+                    <a href="/raw/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">RAW</a> | 
                     {*<a href="<?=$uri['blame'].$Doc.$uri['prefix'].'rev={$d['rev']}">Blame</a> | *}
-                    <a href="/revert/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['revert']}</a> | 
-                    <a href="/diff/{$wiki['page']['full_title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['diff']}</a>{if !empty($d['ip']) && $d['ip'] == $wiki['session']['ip'] && !empty($wiki['session']['member']['username'])} | 
-                    <a href="/move_ip/{$wiki['page']['full_title']|escapeUrl}?dt={$d['date']}">{$lang['history']['move_ip']}</a>{/if}
+                    <a href="/revert/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['revert']}</a>{if $d['rev'] > 1} | 
+                    <a href="/diff/{$uri_data['title']|escapeUrl}?rev={$d['rev']}&oldrev={=$d['rev'] - 1}">{$lang['history']['diff']}</a>{/if}{if !empty($d['ip']) && $d['ip'] == $wiki['session']['ip'] && !empty($wiki['session']['member']['username'])} | 
+                    <a href="/move_ip/{$uri_data['title']|escapeUrl}?dt={$d['date']}">{$lang['history']['move_ip']}</a>{/if}
                     {*if(Data::inACLgroup($user['typename'], 'admin')){
                     ?> | 
                             <a href="<?=$uri['hide'].$Doc.'?rev='.$d['rev']?>">숨기기</a>

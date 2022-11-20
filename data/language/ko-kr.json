@@ -230,6 +230,7 @@
         "delete": "삭제",
         "move": "이동",
         "acl": "ACL",
+        "diff": "비교",
         "document_history": "문서 역사",
         "discuss": "토론",
         "mypage": "내 정보",

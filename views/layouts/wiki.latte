@@ -3,7 +3,7 @@
         <strong>{$lang['msg']['error']}</strong>
         <span><{$error['message']}</span>
     </div>
-    <div n:if="$wiki->alert->alertbox" class="a">
+    <div n:if="$wiki['alert']['alertbox']" class="a">
         <strong>{$lang['msg']['alert']}</strong>
         <span><{$wiki['alert']['message']}</span>
     </div>

@@ -1,4 +1,4 @@
-<?php namespace PressDo;
+<?php
 /**
  * Inline HTML diff generator for PHP DiffLib.
  *
@@ -67,20 +67,16 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 		$html .= '</tr>';
 		$html .= '</thead>';
 		foreach($changes as $i => $blocks) {
-			// If this is a separate block, we're condensing code so output ...,
-			// indicating a significant portion of the code has been collapsed as
-			// it is the same
-			if($i > 0) {
-				$html .= '<tbody class="Skipped">';
-				$html .= '<th>&hellip;</th>';
-				$html .= '<th>&hellip;</th>';
-				$html .= '<td>&nbsp;</td>';
-				$html .= '</tbody>';
+			// Skipped line before and between changes.
+			if($i > 0 || ($i === 0 && $blocks[0]['base']['offset'] > 0)) {
+				$html .= '<tr>';
+				$html .= '<th>...</th>';
+				$html .= '<th>...</th>';
+				$html .= '<td class="skip"></td>';
+				$html .= '</tr>';
 			}
 
 			foreach($blocks as $change) {
-				//$html .= '<tbody class="Change'.ucfirst($change['tag']).'">';
-				// Equal changes should be shown on both sides of the diff
 				if($change['tag'] == 'equal') {
 					foreach($change['base']['lines'] as $no => $line) {
 						$fromLine = $change['base']['offset'] + $no + 1;
@@ -134,7 +130,17 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 						$html .= '</tr>';
 					}
 				}
-				//$html .= '</tbody>';
+			}
+
+			// Skipped lines after changes.
+			$x = count($changes) -1;
+			if($i === $x && $blocks[$x]['base']['offset'] + count($blocks[$x]['base']['lines']) + 1 < $this->linecnt[0] && 
+							$blocks[$x]['changed']['offset'] + count($blocks[$x]['changed']['lines']) + 1 < $this->linecnt[1]) {
+				$html .= '<tr>';
+				$html .= '<th>...</th>';
+				$html .= '<th>...</th>';
+				$html .= '<td class="skip"></td>';
+				$html .= '</tr>';
 			}
 		}
 		$html .= '</table>';

@@ -2,7 +2,7 @@
 namespace PressDo;
 
 require 'controllers/common.php';
-require 'models/License.php';
+require 'models/blank.php';
 
 use PressDo\Models;
 class WikiPage extends WikiCore

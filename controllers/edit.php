@@ -2,7 +2,7 @@
 namespace PressDo;
 
 require 'controllers/common.php';
-require 'models/edit.php';
+require 'models/blank.php';
 require 'controllers/WikiACL.php';
 
 use PressDo\Models;

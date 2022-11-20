@@ -1,13 +1,13 @@
 <?php
 namespace PressDo;
-if(!session_id()){
-session_start();
-}
-error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-
-require 'Router.php';
 use PressDo\WikiPage;
 use PressDo\Router;
+
+require 'Router.php';
+
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+if(!session_id())
+    session_start();
 
 $uri = Router::handle_uri($_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']);
 

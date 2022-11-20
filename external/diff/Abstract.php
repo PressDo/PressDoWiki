@@ -1,4 +1,4 @@
-<?php namespace PressDo;
+<?php
 /**
  * Abstract class for diff renderers in PHP DiffLib.
  *

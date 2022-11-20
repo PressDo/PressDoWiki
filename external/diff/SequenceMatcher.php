@@ -1,4 +1,4 @@
-<?php namespace PressDo;
+<?php
 /**
  * Sequence matcher for Diff
  *

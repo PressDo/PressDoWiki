@@ -22,9 +22,9 @@
             </thead>
             <tbody n:inner-foreach="$h as $he">
                 {if $he['document']['namespace'] == $_ns['document'] && $config['ForceShowNameSpace'] === false}
-                    {$ns = ''}
+                    {var $ns = ''}
                 {else}
-                    {$ns = $he['document']['namespace'].':'}
+                    {var $ns = $he['document']['namespace'].':'}
                 {/if}
                 <tr data-pressdo-recent-changes class="n">
                     <td data-pressdo-recent-changes>
