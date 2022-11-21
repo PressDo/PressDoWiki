@@ -7,19 +7,26 @@
         <strong>{$lang['msg']['alert']}</strong>
         <span><{$wiki['alert']['message']}</span>
     </div>
+    {if strpos($wiki['session']['ua'], 'Mobile') !== false || strpos($wiki['session']['ua'], 'Android') !== false}
+        {var $mobile = true}
+        {var $toolbarinit = 'v="none"'}
+    {else}
+        {var $mobile = false}
+        {var $toolbarinit = ''}
+    {/if}
     <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
         <input type="hidden" name="token" value="{$wiki['page']['data']['token']}">
         <ul class="editor top">
             <li class="editor top">
-                <button id="m" class="a e tr editor top" type="button" class="a">{$lang['editor']['monaco']}</button>
+                <button n:class="!$mobile ? a, e, tr, editor, top" id="m" type="button">{$lang['editor']['monaco']}</button>
             </li>
             <li class="editor top">
-                <button id="r" class="e editor top" type="button">{$lang['editor']['raw']}</button>
+                <button n:class="$mobile ? a, e, editor, top" id="r" type="button">{$lang['editor']['raw']}</button>
             </li>
             <li class="editor top">
                 <button id="p" class="e editor top" type="button">{$lang['editor']['preview']}</button>
             </li>
-            <li class="t editor top">
+            <li class="t editor top" {$toolbarinit|noescape}>
                 <div class="editor top">
                     <button id="btn-bold" class="editor top" type="button">{$lang['editor']['bold']}</button>
                 </div><div class="editor top">
@@ -38,10 +45,10 @@
             </li>
         </ul>
         <div class="c editor">
-            <div id="m" class="a editor">
+            <div n:class="!$mobile ? a, editor" id="m">
                 <div id="monaco" class="editor showUnused"></div>
-            </div><div id="r" class="editor">
-                <textarea class="editor" id="pressdo-anchor" name="content">{$wiki['page']['data']['editor']['raw']}</textarea>
+            </div><div n:class="$mobile ? a, editor" id="r">
+                <textarea class="editor" id="pressdo-anchor" name="content">{$wiki['page']['data']['editor']['raw']|noescape}</textarea>
             </div><div id="p" class="p editor"></div>
         </div>
         <div class="g comment">

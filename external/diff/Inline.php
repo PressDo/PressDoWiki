@@ -93,9 +93,9 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 					foreach($change['changed']['lines'] as $no => $line) {
 						$toLine = $change['changed']['offset'] + $no + 1;
 						$html .= '<tr>';
-						$html .= '<th>&nbsp;</th>';
+						$html .= '<th></th>';
 						$html .= '<th>'.$toLine.'</th>';
-						$html .= '<td class="insert"><div>'.$line.'&nbsp;</div></td>';
+						$html .= '<td class="insert"><div>'.$line.'</div></td>';
 						$html .= '</tr>';
 					}
 				}
@@ -105,8 +105,8 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 						$fromLine = $change['base']['offset'] + $no + 1;
 						$html .= '<tr>';
 						$html .= '<th>'.$fromLine.'</th>';
-						$html .= '<th>&nbsp;</th>';
-						$html .= '<td class="delete"><div>'.$line.'&nbsp;</div></td>';
+						$html .= '<th></th>';
+						$html .= '<td class="delete"><div>'.$line.'</div></td>';
 						$html .= '</tr>';
 					}
 				}

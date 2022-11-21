@@ -17,7 +17,8 @@ class WikiCore
         $this->session = (object) [
             'menus' => [],
             'member' => null,
-            'ip' => self::get_ip()
+            'ip' => self::get_ip(),
+            'ua' => $_SERVER['HTTP_USER_AGENT']
         ];
 
         $this->api_config = [
