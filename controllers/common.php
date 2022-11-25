@@ -93,7 +93,7 @@ class WikiCore
             'skinConfig' => $this->skin->config,
             'skinName' => $this->skin->name,
             'uri_data' => (array) $this->uri_data,
-            'request_uri' => base64_encode($this->server->REQUEST_URI),
+            'request_uri' => $this->server->REQUEST_URI,
             'post' => (array) $this->post,
             'error' => (array) $this->error,
             'alert' => (array) $this->alert
@@ -105,7 +105,7 @@ class WikiCore
                 $innerLayout = $this->latte->renderToString('views/layouts/'.$this->uri_data->page.'/'.$this->uri_data->title.'.latte', $paramSet);
                 break;
             default:
-                $innerLayout = $this->latte->renderToString('views/layouts/'.$this->uri_data->page.'.latte', $paramSet);
+                $innerLayout = $this->latte->renderToString('views/layouts/'.$this->dataset['page']['view_name'].'.latte', $paramSet);
         }
 
         

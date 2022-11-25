@@ -38,7 +38,7 @@ class WikiPage extends WikiCore
                 
                 // 로그인 성공
                 if(!empty($this->uri_data->query->redirect))
-                    Header('Location: '.base64_decode($this->uri_data->query->redirect));
+                    Header('Location: '.$this->uri_data->query->redirect);
                 else
                     Header('Location: /');
             }
@@ -51,7 +51,7 @@ class WikiPage extends WikiCore
             'title' => Lang::get('page')['login'],
             'data' => [
                 'error' => $error,
-                'redirect' => base64_decode($this->uri_data->query->redirect)
+                'redirect' => $this->uri_data->query->redirect
             ],
             'menus' => [],
             'customData' => []

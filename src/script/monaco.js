@@ -384,10 +384,16 @@
                     if(!TargetEditor) throw new Error('Invalid target element');
                 }
             namumark_register(monaco);
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+                ThisTheme = 'vs-dark'
+            else
+                ThisTheme = 'vs'
+                
             window.monaco_namu = monaco.editor.create(target, {
                 language: 'namumark',
                 automaticLayout: true,
                 wordWrap: true,
+                theme: ThisTheme,
                 renderWhitespace: 'all',
                 minimap: { enabled: false },
                 fontFamily: 'D2Coding, Consolas, "나눔고딕코딩", "Courier New", monospace',

@@ -32,6 +32,11 @@ class WikiPage extends WikiCore
         ];
 
         if ($this->error->code == 'permission_read'){
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => $this->error
+            ];
             return $page;
         }
 
@@ -52,8 +57,16 @@ class WikiPage extends WikiCore
             $page['data']['rev'] = $rev;
             $page['data']['diff'] = self::load_diff($old, $new, $oldrev, $rev);
             //'debug' => $this->uri_data
+            return $page;
+        }else{
+            $this->error = (object) ['code' => 'no_such_revision'];
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
+            return $page;
         }
-        return $page;
     }
 
     public static function load_diff(string $old, string $new, int $ov, int $nv): string

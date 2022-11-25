@@ -34,23 +34,22 @@ class WikiPage extends WikiCore
             'menus' => [],
             'customData' => []
         ];
-        
+
         if ($this->error->code == 'permission_read'){
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
             return $page;
         }
 
-        $doc = Models::load($rawns, $title, $this->uri_data->rev);
-
         # If Not Found
-        if($doc === null){
+        if(!Models::exist($rawns,$title)){
             $page = [
                 'view_name' => 'notfound',
-                'full_title' => $this->uri_data->title,
+                'title' => $this->uri_data->title,
                 'data' => [
-                    'document' => [
-                        'namespace' => $namespace,
-                        'title' => $title,
-                    ],
                     'discuss_progress' => false,
                     'user' => ($namespace == Namespaces::get('user')),
                     'menus' => [],
@@ -65,15 +64,28 @@ class WikiPage extends WikiCore
         }else{
             # If found
             $discussions = Models::get_doc_thread($rawns,$title);
-            $docid = Models::get_doc_id($rawns, $title);
+            $docid = Models::get_doc_id($rawns,$title);
+            $lver = Models::get_version($rawns,$title);
+
+            if(isset($_GET['rev'])){
+                if(!is_numeric($_GET['rev']) || $_GET['rev'] > $lver || $_GET['rev'] < 1){
+                    $this->error->code = 'no_such_revision';
+                    return $page;
+                }
+                $rev = $_GET['rev'];
+                $page['title'] .= ' (r'.$_GET['rev'].' 판)';
+            }else
+                $rev = $lver;
+
+            $doc = Models::load($rawns, $title, $rev);
 
             $content = $this::readSyntax($doc['content'], Config::get('mark'), [
-                'title' => $this->page->title, 
+                'title' => $this->page->title,
                 'noredirect' => $this->uri_data->query->noredirect,
                 'db' => DB::getInstance(),
                 'namespace' => $this->namespaces
             ]);
-            
+
             $page['data'] = [
                 'starred' => $this->session->member?Models::if_starred($docid,$this->session->member->username):false,
                 'star_count' => Models::count_stars($docid),
@@ -85,7 +97,7 @@ class WikiPage extends WikiCore
                 ],
                 'discuss_progress' => (isset($discussions[0])),
                 'date' => $doc['datetime'],
-                'rev' => isset($this->uri_data->rev)?$this->uri_data->rev:null,
+                'rev' => isset($_GET['rev'])?$_GET['rev']:null,
                 'user' => ($namespace == Namespaces::get('user')),
                 'userData' => ($namespace == Namespaces::get('user'))?[
                     'admin' => WikiACL::check_perms('admin', $this->session, $title),

@@ -24,6 +24,16 @@ v = {
     h: (e) => SH(g(e),'hidden'),
     n: (e) => SH(g(e),'none')
 }
+getdoctitle = () => {
+    var u = new URL(document.URL)
+    var s = u.pathname.split('/')
+    return s.slice(2).join('/')
+}
+
+// Dark Mode
+if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    q('body').classList.add("pressdo-dark-mode")
+}
 
 before = 0
 Ctrl = Alt = false
@@ -68,6 +78,7 @@ document.onkeydown = (e) => {
     }
 }
 
+// 목차접힘
 qa('.hidden-trigger').forEach(h => {
     e(h,'click', () => {
         var at = a.g(h,'id')
@@ -158,7 +169,7 @@ if(g('ef')){
             q('div#r textarea.editor').value = window.monaco_namu.getValue()
         }
 
-        f.action = a.g(ee,'editor-uri')
+        f.action = '/edit/'+getdoctitle() //a.g(ee,)
         f.submit()
     })
 }

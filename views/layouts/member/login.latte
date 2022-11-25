@@ -3,7 +3,7 @@
         <strong>{$lang['msg']['error']}</strong>
         <span>{$lang['msg'][$wiki['page']['data']['error']]}</span>
     </div>
-    <form data-pressdo-register id="loginform" name="loginform" method="POST" action="/member/login?redirect={$redirect|escapeUrl}">
+    <form data-pressdo-register id="loginform" name="loginform" method="POST" action="/member/login?redirect={$wiki['page']['data']['redirect']|escapeUrl}">
         <div data-pressdo-loginform class="c">
             <label data-pressdo-loginform for="username">Username</label>
             <input data-pressdo-formdata type="text" id="username" name="username" required>

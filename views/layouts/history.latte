@@ -1,5 +1,5 @@
 <div class="wiki-content">
-    <form action="/diff/{$uri_data['title']}" method="GET">
+    <form action="/diff/{$uri_data['title']|escapeUrl}" method="GET">
         {if !$wiki['page']['data']['prev_ver']}
             {var $_p = 'data-pressdo-history-null'}
         {else}

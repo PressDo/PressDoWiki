@@ -1,0 +1,10 @@
+<div class="wiki-content">
+    <div n:if="$wiki['alert']['alertbox']" class="a">
+        <strong>{$lang['msg']['alert']}</strong>
+        <span><{$wiki['alert']['message']}</span>
+    </div>
+    <p>{$lang['msg']['document_not_found']}</p>
+    <p>
+        <a href="/edit/{$uri_data['title']}">[{$lang['document']['create_document']}]</a>
+    </p>
+</div>

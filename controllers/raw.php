@@ -31,6 +31,11 @@ class WikiPage extends WikiCore
         ];
 
         if ($this->error->code == 'permission_read'){
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => $this->error
+            ];
             return $page;
         }
 
@@ -41,8 +46,13 @@ class WikiPage extends WikiCore
             else
                 $rev = $_GET['rev'];
 
-            if(!is_numeric($rev) || $rev > $lver){
-                $this->error->code = 'no_such_revision';
+            if(!is_numeric($rev) || $rev > $lver || $rev < 1){
+                $this->error = (object) ['code' => 'no_such_revision'];
+                $page = [
+                    'view_name' => 'error',
+                    'title' => Lang::get('page')['error'],
+                    'data' => (array) $this->error
+                ];
                 return $page;
             }
 

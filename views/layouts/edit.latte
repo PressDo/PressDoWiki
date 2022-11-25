@@ -53,7 +53,7 @@
         </div>
         <div class="g comment">
             <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
-            <input data-pressdo-edit-summary type="text" name="summary" id="logInput">
+            <input data-pressdo-edit-summary type="text" name="comment" id="logInput">
         </div>
         <label><input type="checkbox" name="agree" id="agree"> <span>{stripslashes($config['edit_agree_text'])|noescape}</span></label>
         {if !$wiki['session']['member']['username']}

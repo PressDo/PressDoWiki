@@ -13,7 +13,7 @@ class WikiPage extends WikiCore
         $dataset = Models::get_upload_info();
             
         $page = [
-            'view_name' => '',
+            'view_name' => 'Upload',
             'title' => Lang::get('page')['Upload'],
             'data' => [
                 'Licenses' => $dataset['License'],

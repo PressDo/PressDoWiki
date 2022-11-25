@@ -52,16 +52,20 @@ form ul.editor.top {height: 36px;padding-left: 0;margin-bottom: 0;list-style: no
 form ul.editor.top:after, form ul.editor.top:before {display:table; content: " ";}
 form li.editor.top {float:left; margin-bottom: -1px;}
 form li button.a.editor.top {color: #55595c; background-color:#fff; border-color: #ddd #ddd transparent;}
+.pressdo-dark-mode form li button.a.editor.top{background-color: #383b40;}
 form li button.editor.top {background: 0 0;cursor: pointer;font-size: .9rem;display: block;padding: 0.5em 1em;border: 1px solid transparent;border-radius: 0.25rem 0.25rem 0 0;}
+.pressdo-dark-mode form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
 form li.t.editor.top {float:right;}
 form li+li.editor.top {margin-left:0.2rem;}
 form li.t>div.editor.top {display:inline-block;}
 textarea.editor {border:none;font-family: inherit;color: #55595c;font-size: .9rem;margin: 0;border-radius: 0;padding: .25rem .5rem;width: 100%;height: 30rem;resize: vertical;}
 textarea {width: 100%;border: 1px solid #e1e8ed;padding: .5rem;resize: vertical;}
 form input[data-pressdo-edit-summary]{font-size: .9rem;border-radius: 0;padding: .25rem .5rem;width: 100%;line-height: 1.5;}
+.pressdo-dark-mode form input[data-pressdo-edit-summary], .pressdo-dark-mode form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
 input[type=text][data-pressdo-edit-summary]{ border-radius: 0;padding: .25rem .5rem; width: 100%; color: #55595c;background-color: #fff; background-image: none;border: .0625rem solid #ccc;}
 textarea[readonly]{border: .0625rem solid #ccc;background-color: #eceeef;opacity: 1;}
 form div.c.editor{border:1px solid #ddd; border-top:none;}
+.pressdo-dark-mode form div.c.editor, .pressdo-dark-mode form ul.editor.top {border-color: #383b40;}
 form div.g.comment{margin-top: 1rem; margin-bottom:15px;}
 form div.c>div.p.editor {height: 30rem; overflow: auto; padding: 10px;}
 form div.c>div.editor{display:none;}
@@ -181,12 +185,14 @@ form[data-pressdo-aclgroup-remove]{-webkit-box-flex: 1;flex: 1 0 auto;width: 100
 
 /* Recent */
 ol[data-pressdo-recentmenu]{padding: .4rem .8rem;display: inline-block;border-radius: 0;list-style: none;background-color: #eceeef;margin-bottom: 1rem;margin-top: 0;}
+.pressdo-dark-mode ol[data-pressdo-recentmenu]{background-color: #27292d;border-color: #383b40;}
 ol li[data-pressdo-recentmenu]{display: inline-block;}
 table[data-pressdo-recent-changes]{border-spacing: 0;border-collapse: collapse;background-color: transparent;margin-bottom: 1rem;width: 100%;max-width: 100%;word-break: break-all;}
 table td[data-pressdo-recent-changes], table th[data-pressdo-recent-changes]{padding: .5rem .7rem;line-height: 1.5;}
 table th[data-pressdo-recent-changes]{vertical-align: bottom;border-bottom: 2px solid #eceeef;text-align: left;}
 table td[data-pressdo-recent-changes]{vertical-align: top;border-top: 1px solid #eceeef;}
 table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #f5f5f5;}
+.pressdo-dark-mode table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #383b40;}
 a[data-pressdo-recent-user]{cursor:pointer;}
 div[data-pressdo-popover]{display: inline;}
 table tr:not(.n) td[data-pressdo-recent-changes]{border-top: 0;padding-top: 0;padding-left: 1.5rem;}

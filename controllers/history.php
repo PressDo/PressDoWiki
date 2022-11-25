@@ -30,6 +30,11 @@ class WikiPage extends WikiCore
         ];
         
         if ($this->error->code == 'permission_read'){
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
             return $page;//$this::make_error();
         }
 
@@ -65,6 +70,13 @@ class WikiPage extends WikiCore
             $page['data']['prev_ver'] = ($fetch[0]['rev'] == $ver)? null : $fetch[0]['rev'] + 1;
             $page['data']['next_ver'] = (end($fetch)['rev'] == 1)? null : end($fetch)['rev'] - 1;
             $page['data']['initial_date'] = $l;
+        }else{
+            $this->error = (object) ['code' => 'no_such_document'];
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
         }
         return $page;
     }

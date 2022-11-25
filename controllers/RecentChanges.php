@@ -10,7 +10,7 @@ class WikiPage extends WikiCore
     public function make_data()
     {
         $page = [
-            'view_name' => '',
+            'view_name' => 'RecentChanges',
             'title' => Lang::get('page')['RecentChanges'],
             'data' => [
                 'content' => []

@@ -16,7 +16,7 @@ class WikiPage extends WikiCore
             $updated = null;
             
         $page = [
-            'view_name' => '',
+            'view_name' => 'License',
             'title' => Lang::get('page')['License'],
             'data' => [
                 'version' => '2107a',
