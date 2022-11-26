@@ -42,10 +42,10 @@ class WikiPage extends WikiCore
 
         if(Models::exist($rawns,$title)){
             $lver = Models::get_version($rawns,$title);
-            $rev = $_GET['rev'];
-            $oldrev = $_GET['oldrev'];
+            $rev = $this->uri_data->query->rev;
+            $oldrev = $this->uri_data->query->oldrev;
 
-            if(!$_GET['rev'] || !$_GET['oldrev'] || !is_numeric($rev) || !is_numeric($oldrev) || $rev > $lver || $oldrev < 1 || $rev <= $oldrev){
+            if(!$this->uri_data->query->rev || !$this->uri_data->query->oldrev || !is_numeric($rev) || !is_numeric($oldrev) || $rev > $lver || $oldrev < 1 || $rev <= $oldrev){
                 $this->error->code = 'no_such_revision';
                 return $page;
             }

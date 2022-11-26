@@ -1,0 +1,74 @@
+{if !$wiki['page']['data']['prev_page']}
+    {var $p_ = 'data-pressdo-history-null'}
+{else}
+    {var $p_ = 'href=/BlockHistory?until='.$data['prev_page']}
+{/if}
+{if !$wiki['page']['data']['next_page']}
+    {var $f_ = 'data-pressdo-history-null'}
+{else}
+    {var $f_ = 'href=/BlockHistory?until='.$data['next_page']}
+{/if}
+<div class="wiki-content">
+    <div>
+        <form method="GET">
+            <input type="hidden" name="page" value="BlockHistory">
+            <select name="target">
+                <option value="text">{$lang['acl']['text']}</option>
+                <option value="author">{$lang['acl']['author']}</option>
+            </select>
+            <input type="text" name="query" placeholder="{$lang['search']}">
+            <input type="submit" value="{$lang['search']}">
+        </form>
+        <div class="bt-g">
+            <a {$p_|noescape} data-pressdo-history-mv>
+                <span ionicon ion-arrow-back></span> Prev
+            </a>
+            <a {$f_|noescape} data-pressdo-history-mv>
+                Next <span ionicon ion-arrow-forward></span>
+            </a>
+        </div>
+        <ul data-pressdo-blockhistory>
+            <li n:foreach="$wiki['page']['data']['history'] as $h">
+                <time datetime="{date('Y-m-d\TH:i:s', $h['datetime']-32400)}.000Z">{date("Y-m-d H:i:s", $h['datetime'])}</time>
+                {if $h['author'] === null}
+                    {var $subject = '<div v="inline"><div v="inline-block"><a data-pressdo-user-ip>'.$h['author_ip'].'</a></div></div>';}
+                {else}
+                    {var $subject = '<a data-pressdo-user-member>'.$h['author'].'</a>';}
+                {/if}
+                {=$lang['msg']['b_user']|replace: ['@1@' => $subject, '@2@' => $h['content']['ip'].$h['content']['member']]|noescape}
+                <i>
+                {switch $h['action']}
+                    {case aclgroup_add, aclgroup_remove}
+                        ({=$lang['msg']['b_'.$h['action']]|replace: '@1@', '<b>'.$h['content']['aclgroup'].'</b>'|noescape})
+                        {var $hid = '#'.$h['content']['target_id'].' '}
+                    {case login_history, grant}
+                        ({$lang['msg']['b_'.$h['action']]|noescape})
+                        {var $hid = ''}
+                {/switch}
+                </i>
+                {if $h['content']['duration'] == 'forever'}
+                    {$hid.$lang['msg']['b_forever']|noescape}
+                {elseif $h['content']['duration'] == null}
+                    {$hid}
+                {else}
+                    {var $timeSet = ''}
+                    {foreach array_keys($h['content']['duration']) as $t}
+                        {if $h['content']['duration'][$t] != 0}
+                            {var $timeSet .= ' '.$h['content']['duration'][$t].$lang['acl'][$t]}
+                        {/if}
+                    {/foreach}
+                    {=$hid.$lang['msg']['b_for']|replace: '@1@', $timeSet}
+                {/if}
+                {if $h['action'] !== 'login_history'}<span data-pressdo-history-gray data-pressdo-history-log>{$h['content']['memo'].$h['content']['granted']}</span>{/if}
+            </li>
+        </ul>
+        <div class="bt-g">
+            <a {$p_|noescape} data-pressdo-history-mv>
+                <span ionicon ion-arrow-back></span> Prev
+            </a>
+            <a {$f_|noescape} data-pressdo-history-mv>
+                Next <span ionicon ion-arrow-forward></span>
+            </a>
+        </div>
+    </div>
+</div>

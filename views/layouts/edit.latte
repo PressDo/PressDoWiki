@@ -1,7 +1,7 @@
 <div class="wiki-content">
     <div n:if="$error['errbox']" class="a e">
         <strong>{$lang['msg']['error']}</strong>
-        <span><{$error['message']}</span>
+        <span><{$error['message'].$error['code']|noescape}</span>
     </div>
     <div n:if="$wiki['alert']['alertbox']" class="a">
         <strong>{$lang['msg']['alert']}</strong>

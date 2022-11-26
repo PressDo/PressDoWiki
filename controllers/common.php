@@ -166,13 +166,13 @@ class WikiCore
      * @param string $title     title of document
      * @return string           formed title
      */
-    public static function make_title(string $rawNS, string $title): string
+    public static function make_title(string $rawns, string $title): string
     {
         global $lang, $_ns, $conf;
-        if($rawNS == 'document' && $conf['UseShortURI'] === false)
+        if($rawns == 'document' && $conf['UseShortURI'] === false)
             return $title;
         else 
-            return $lang['ns:'.$rawNS].$title;
+            return $lang['ns:'.$rawns].$title;
     }
 
     /**
@@ -197,6 +197,19 @@ class WikiCore
             $ipaddress = '0.0.0.0';
         
         return $ipaddress;
+    }
+
+    public static function formatTime(int $sec): array  
+    {
+        $week = floor($sec / 604800);
+        $sec -= $week * 604800;
+        $day = floor($sec / 86400);
+        $sec -= $day * 86400;
+        $hour = floor($sec / 3600);
+        $sec -= $hour * 3600;
+        $min = floor($sec / 60);
+        $sec -= $min * 60;
+        return ['week' => $week, 'day' => $day, 'hour' => $hour, 'minute' => $min, 'second' => $sec];
     }
 
     /**
@@ -233,7 +246,7 @@ class WikiCore
     /**
      * get country of location
      */
-    public static function geoip(string $ip) : string
+    public static function geoip(string $ip): string
     {
         return json_decode(file_get_contents('http://ip-api.com/json/'.$ip), true)['countryCode']; 
     }

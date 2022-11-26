@@ -41,10 +41,10 @@ class WikiPage extends WikiCore
 
         if(Models::exist($rawns,$title)){
             $lver = Models::get_version($rawns,$title);
-            if(!$_GET['rev'])
+            if(!$this->uri_data->query->rev)
                 $rev = $lver;
             else
-                $rev = $_GET['rev'];
+                $rev = $this->uri_data->query->rev;
 
             if(!is_numeric($rev) || $rev > $lver || $rev < 1){
                 $this->error = (object) ['code' => 'no_such_revision'];

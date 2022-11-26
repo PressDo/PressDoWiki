@@ -14,7 +14,7 @@ class baseModels {
      * Connect Database.
      * @return PDO
      */
-    public static function db() : PDO
+    public static function db(): PDO
     {
         if(!self::$db){
             self::$db = \PressDo\DB::getInstance();
@@ -108,7 +108,7 @@ class baseModels {
      * @param string $title     title of document
      * @return array            
      */
-    public static function get_doc_thread(string $rawns, string $title, $mode='normal') : array
+    public static function get_doc_thread(string $rawns, string $title, $mode='normal'): array
     {
         $db = self::db();
         try {
@@ -194,7 +194,7 @@ class baseModels {
      * @param string $access    type of action
      * @return array ACL set of document
      */
-    public static function fetch_doc_acl(int $docid, string $access=null) : array
+    public static function fetch_doc_acl(int $docid, string $access=null): array
     {
         $db = self::db();
         try {
@@ -215,7 +215,7 @@ class baseModels {
      * @param string $access    type of action
      * @return array ACL set of namespace
      */
-    public static function fetch_ns_acl(string $rawns, string $access=null) : array
+    public static function fetch_ns_acl(string $rawns, string $access=null): array
     {
         $db = self::db();
         try {
@@ -237,7 +237,7 @@ class baseModels {
      * @param string $aclgroup  name of aclgroup
      * @return bool             if this user is in aclgroup
      */
-    public static function in_aclgroup(object $session, string $aclgroup, $mode=null) : bool
+    public static function in_aclgroup(object $session, string $aclgroup, $mode=null): bool
     {
         $db = self::db();
         $username = ($session->member)? $session->member->username : null;
@@ -295,7 +295,7 @@ class baseModels {
      * @param string $title
      * @return int
      */
-    public static function get_version(string $rawns, string $title) : int
+    public static function get_version(string $rawns, string $title): int
     {
         $db = self::db();
         $id = self::get_doc_id($rawns, $title);
@@ -308,7 +308,7 @@ class baseModels {
         return intval($d->fetch(PDO::FETCH_ASSOC)['rev']);
     }
 
-    public static function exist(string $rawns, string $title) : bool
+    public static function exist(string $rawns, string $title): bool
     {
         $db = self::db();
         try {
@@ -323,7 +323,7 @@ class baseModels {
             return false;
     }
     
-    public static function special_perms(string $username) : array
+    public static function special_perms(string $username): array
     {
         $db = self::db();
         try {
