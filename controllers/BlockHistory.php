@@ -29,10 +29,10 @@ class WikiPage extends WikiCore
         $data = array_reverse(Models::get_block_history($type, $keyword, $from, $until));
         $dataset = [];
         foreach ($data as $d){
-            if($d['until'] == null)
+            if($d['until'] === null)
                 $dur = null;
             else
-                $dur = ($d['until'] === 0) ? 'forever' : self::formatTime($d['until'] - $d['datetime']);
+                $dur = ($d['until'] == '0') ? 'forever' : self::formatTime($d['until'] - $d['datetime']);
             
             $exc = explode(':',$d['executor']);
             if($exc[0] == 'm'){
