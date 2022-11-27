@@ -113,9 +113,9 @@ class baseModels {
         $db = self::db();
         try {
             if($mode === 'normal'){
-                $d = $db->prepare("SELECT urlstr,topic FROM `thread_list` WHERE BINARY `namespace`=? AND BINARY `title`=? AND (`status`='normal' OR `status`='pause')");
+                $d = $db->prepare("SELECT urlstr,topic FROM `thread` WHERE BINARY `namespace`=? AND BINARY `title`=? AND (`status`='normal' OR `status`='pause')");
             }elseif($mode === 'closed'){
-                $d = $db->prepare("SELECT urlstr,topic FROM `thread_list` WHERE BINARY `namespace`=? AND BINARY `title`=? AND `status`='close'");
+                $d = $db->prepare("SELECT urlstr,topic FROM `thread` WHERE BINARY `namespace`=? AND BINARY `title`=? AND `status`='close'");
             }
             $d->execute([$rawns, $title]);
         } catch (PDOException $err) {

@@ -1,0 +1,96 @@
+<div class="wiki-content">
+    <div n:if="$error['errbox']" class="a e">
+        <strong>{$lang['msg']['error']}</strong>
+        <span>{$error['message'].$error['code']|noescape}</span>
+    </div>
+    <div>
+        <h3 data-pressdo-discuss-type>{$lang['page']['edit_request']}</h3>
+        <ul data-pressdo-ul></ul>
+        <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
+        <h3 data-pressdo-discuss-type>{$lang['page']['discuss']}</h3>
+        <ul data-pressdo-ul>
+        {var $cnt = count($wiki['page']['data']['thread_list'])}
+            <li n:for="$i=0; $i < $cnt; ++$i">
+                <a href="#s-{$i+1}">{$i+1}</a>.
+                <a href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a>
+            </li>
+        </ul>
+        <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']}?state=close">[{$lang['show_closed_discuss']}]</a></p>
+            <div n:for="$i=0; $i<$cnt; ++$i">
+                <h2>{$i+1}. <a id="s-{$i+1}" href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a></h2>
+                <div n:inner-foreach="$wiki['page']['data']['thread_list'][$i]['discuss'] as $d" class="t">
+                    {if $d['admin']}
+                        {var $str = 'data-pressdo-user-member'}
+                    {else}
+                        {var $str = ''}
+                    {/if}
+                    {if $d['type'] == 'comment'}
+                        {$sta = ''}
+                    {else}
+                        {$sta = 's'}
+                    {/if}
+
+                    {if $d['id'] == $wiki['page']['data']['thread_list'][$i]['discuss'][1]['id'] && $d['id'] > 2}
+                        <a data-pressdo-thread-content href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}" class="m">more...</a>
+                    {/if}
+                    <div data-pressdo-thread-content class="r v">
+                        <div data-pressdo-thread-content class="c">
+                            <div data-pressdo-thread-content class="h">
+                                <span><a id="{$d['id']}">#{$d['id']}</a></span>
+                                <div v="inline">
+                                    <div v="inline-block">
+                                        <a {$str}>{$d['author'].$d['ip']}</a>
+                                    </div>
+                                </div>
+                                <span class="d"><time datetime="{date('Y-m-d\TH:i:s', $d['date']).'.000Z'}">{date('Y-m-d H:i:s', $d['date'])}</time></span>
+                            </div>
+                            <div data-pressdo-thread-content class="b {$sta}">
+                                <div>
+                                    <div data-pressdo-thread-content class="w">
+                                        <div data-pressdo-doc-paragraph>
+                                        {if $d['type'] == 'comment'}
+                                            {$d['text']}
+                                        {else}
+                                            {=$lang['msg']['changed_thread_'.$d['type']]|replace: '@1@', $d['text']}
+                                        {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <h3 data-pressdo-discuss-type>{$lang['thread']['create_thread']}</h3>
+        <div n:if="$uri_data['title'] == $config['frontpage']" class="a">
+            <strong>{$lang['msg']['warning']}</strong>
+            {=$lang['msg']['discuss_in_frontpage']|replace: '@1@', $config['frontpage']}
+        </div>
+        <form method="POST" action="{$request_uri|noescape}">
+            <div data-pressdo-loginform class="c">
+                <label data-pressdo-breakline for="topicInput">{$lang['thread']['topic']} :</label>
+                <input data-pressdo-thread data-pressdo-wideinput type="text" id="topicInput" name="topic">
+            </div>
+            <div data-pressdo-loginform class="c">
+                <label data-pressdo-breakline for="contentInput">{$lang['thread']['content']|noescape} :</label>
+                <textarea data-pressdo-thread name="text" id="contentInput" rows="5"></textarea>
+                <p n:if="!$wiki['session']['member']['username']" data-pressdo-warning-unlogined>{$lang['msg']['unlogined_create']|replace: '@1@', $wiki['session']['ip']}</p>
+            </div>
+            <button type="submit" class="btn btn-wideright btn-blue">{$lang['submit']}</button>
+            <div style="clear: both;">
+                <div class="grecaptcha-badge" data-style="inline" style="width: 256px; height: 60px; box-shadow: gray 0px 0px 5px;">
+                    <div class="grecaptcha-logo">
+                        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&k=6Le0YCgUAAAAAPuP955bk3npzh_ymfSd53DpI74j&co=aHR0cHM6Ly90aGVzZWVkLmlvOjQ0Mw..&hl=ko&v=6OAif-f8nYV0qSFmq-D6Qssr&size=invisible&badge=inline&cb=8wsokgsumi1k" width="256" height="60" role="presentation" name="a-p1qimm5s15r" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox">
+                        </iframe>
+                    </div>
+                    <div class="grecaptcha-error">
+                    </div>
+                    <textarea id="g-recaptcha-response-4" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;">
+                    </textarea>
+                </div>
+                <iframe style="display: none;">
+                </iframe>
+            </div>
+        </form method="POST">
+    </div>
+</div>

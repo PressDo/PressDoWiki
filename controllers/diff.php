@@ -69,7 +69,7 @@ class WikiPage extends WikiCore
         }
     }
 
-    public static function load_diff(string $old, string $new, int $ov, int $nv): string
+    private static function load_diff(string $old, string $new, int $ov, int $nv): string
     {
         require 'external/diff/Diff.php';
         require 'external/diff/Inline.php';

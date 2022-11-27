@@ -20,8 +20,8 @@
                     <th data-pressdo-recent-changes>수정 시간</th>
                 </tr>
             </thead>
-            <tbody n:inner-foreach="$h as $he">
-                {if $he['document']['namespace'] == $_ns['document'] && $config['ForceShowNameSpace'] === false}
+            <tbody n:inner-foreach="$wiki['page']['data']['content'] as $he">
+                {if $he['document']['namespace'] == $namespace['document'] && $config['ForceShowNameSpace'] === false}
                     {var $ns = ''}
                 {else}
                     {var $ns = $he['document']['namespace'].':'}

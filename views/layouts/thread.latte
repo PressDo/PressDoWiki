@@ -1,0 +1,145 @@
+list($ns, $title, $dat, $err) = $args;
+global $conf, $lang, $uri;
+$status = ['normal', 'pause', 'close'];
+
+($conf['UseShortURI'] === true)? $d='?':$d='&';?>
+<head>
+    <title> <?=$ns.$title?> (<?=$lang['discuss']?>) - <?=$dat['topic']?> - <?=$conf['SiteName']?> </title>
+</head>
+<div data-pressdo-content-header>
+    <h1 data-pressdo-doc-title><a href="<?=$uri['wiki'].$ns.$title?>"><span data-pressdo-title-namespace><?=$ns?></span><?=$title?></a>
+        <small data-pressdo-doc-action>(<?=$lang['discuss']?>)</small>
+    </h1>
+</div>
+<div class="wiki-content">
+<?php if($err){ 
+    if(is_array($err))
+        $err = str_replace(['@1@','@2@'], [$err[1], $err[2]], $lang['msg:'.$err[0]]);
+    else
+        $err = $lang['msg:'.$err];
+    ?>
+    <div class="a e">
+        <strong><?=$lang['msg:error']?></strong>
+        <span><?=$err?></span>
+    </div>
+    <?php } ?>
+    <div>
+        <form data-pressdo-thread-show method="POST" action="<?=$_SERVER['REQUEST_URI']?>" class="d">
+            <input type="checkbox" id="noDisplayHideAuthor"><label for="noDisplayHideAuthor"><?=$lang['msg:noDisplayHideAuthor']?></label>
+        </form>
+        <h2 data-pressdo-thread-topic><?=$dat['topic']?></h2>
+            <div>
+                <div class="t">
+                    <?php foreach ($dat['comments'] as $d){ 
+                        $str = ($d['admin'])? 'data-pressdo-user-member':''; 
+                        if($d['type'] == 'status'){
+                            $sta = 's';
+                            $con = str_replace('@1@', $d['text'], $lang['msg:changed_thread_status']);
+                        }elseif($d['type'] == 'document'){
+                            $sta = 's';
+                            $con = str_replace('@1@', $d['text'], $lang['msg:changed_thread_document']);
+                        }elseif($d['type'] == 'topic'){
+                            $sta = 's';
+                            $con = str_replace('@1@', $d['text'], $lang['msg:changed_thread_topic']);
+                        }else{
+                            $sta = '';
+                            $con = $d['text']; 
+                        }
+                        
+                        if($d['author'] == $dat['initial_author'] || $d['ip'] == $dat['initial_author'])
+                            $aut = 'f';
+                        else
+                            $aut = ''; ?>
+                        <div data-pressdo-thread-content class="r v">
+                            <div data-pressdo-thread-content class="c">
+                                <div data-pressdo-thread-content class="h <?=$aut?>">
+                                    <span><a id="<?=$d['id']?>">#<?=$d['id']?></a></span>
+                                    <div v="inline">
+                                        <div v="inline-block">
+                                            <a <?=$str?>><?=$d['author'].$d['ip']?></a>
+                                        </div>
+                                    </div>
+                                    <span class="d">
+                                        <time datetime="<?=date('Y-m-d\TH:i:s', $d['date']).'.000Z'?>"><?=date('Y-m-d H:i:s', $d['date'])?></time>
+                                        <div v="inline" class="p">
+                                            <div v="inline-block">
+                                                <button data-pressdo-thread-button class="btn"></button>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    <div data-pressdo-thread-content class="f"></div>
+                                </div>
+                                <div data-pressdo-thread-content class="b <?=$sta?>">
+                                    <div>
+                                        <div data-pressdo-thread-content class="w">
+                                            <div data-pressdo-doc-paragraph><?=$con?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        <h3 data-pressdo-discuss-type><?=$lang['write_thread_comment']?></h3><?php
+        if($dat['updateThreadStatus'] === true){ ?>
+            <form method="POST">
+                [ADMIN] <?=$lang['updateThreadStatus']?>
+                <select name="status"><?php
+                    foreach($status as $s){
+                        if($s != $dat['status']){
+                            ?><option value="<?=$s?>"><?=$s?></option><?php
+                        }
+                    }
+                ?></select>
+                <button class="btn" type="submit"><?=$lang['change']?></button>
+            </form>
+        <?php }
+        if($dat['updateThreadDocument'] === true){ ?>
+            <form method="POST">
+                [ADMIN] <?=$lang['updateThreadDocument']?>
+                <input type="text" name="document" value="<?=$ns.$title?>">
+                <button class="btn" type="submit"><?=$lang['change']?></button>
+            </form>
+        <?php }
+        if($dat['updateThreadTopic'] === true){ ?>
+            <form method="POST">
+                [ADMIN] <?=$lang['updateThreadTopic']?>
+                <input type="text" name="topic" value="<?=$dat['topic']?>">
+                <button class="btn" type="submit"><?=$lang['change']?></button>
+            </form>
+        <?php } ?>
+        <form method="POST">
+            <div data-pressdo-loginform class="c">
+                <textarea data-pressdo-thread id="contentInput" rows="5" <?=($dat['status']!='normal'?' disabled="disabled"':'name="text"')?> required><?=($dat['status']!='normal'?$lang['msg:thread_status_'.$dat['status']]:'')?></textarea>
+                <?php if(!$_SESSION['member']['username']){ ?>
+                <p data-pressdo-warning-unlogined><?=str_replace('@1@', PressDo::getip(), $lang['msg:unlogined_comment'])?></p><?php } ?>
+            </div>
+            <button type="submit" <?=($dat['status']!='normal'?' disabled="disabled"':'')?> class="btn btn-wideright btn-blue"><?=$lang['submit']?></button>
+            <div style="clear: both;">
+                <div class="grecaptcha-badge" data-style="inline" style="width: 256px; height: 60px; box-shadow: gray 0px 0px 5px;">
+                    <div class="grecaptcha-logo">
+                        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&k=6Le0YCgUAAAAAPuP955bk3npzh_ymfSd53DpI74j&co=aHR0cHM6Ly90aGVzZWVkLmlvOjQ0Mw..&hl=ko&v=6OAif-f8nYV0qSFmq-D6Qssr&size=invisible&badge=inline&cb=8wsokgsumi1k" width="256" height="60" role="presentation" name="a-p1qimm5s15r" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                    <div class="grecaptcha-error"></div>
+                    <textarea id="g-recaptcha-response-4" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea>
+                </div>
+                <iframe style="display: none;"></iframe>
+            </div>
+        </form>
+    </div>
+</div>
+<div data-pressdo-thread-popover="hidden" placement="bottom" class="tooltip popover">
+    <div class="wrapper">
+        <div class="tooltip-inner popover-inner" style="position:relative;">
+            <div>
+                <div class="m">
+                    <button id="bt-wiki" v="block" class="btn" type="button"><?=$lang['view_original']?></button>
+                    <button id="bt-origin" v="none" class="btn" type="button"><?=$lang['view_wiki']?></button>
+                    <button class="btn btn-red" type="button">[ADMIN] <?=$lang['hide_thread_comment']?></button>
+                </div>
+            </div>
+        </div>
+        <div class="tooltip-arrow popover-arrow" style="left:66px;"></div>
+    </div>
+</div>

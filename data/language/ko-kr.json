@@ -196,6 +196,7 @@
         "new_login": "안녕하세요. @1@ 입니다.<br>확인되지 않은 기기에서 로그인을 시도하셨습니다.<br>본인이 맞다면 아래 PIN 번호를 입력해주세요.<br>PIN: <b>@2@</b><br><br>이 메일은 10분동안 유효합니다.<br>요청 아이피: @3@"
     },
     "thread":{
+        "content": "내용",
         "updateThreadStatus": "스레드 상태 변경",
         "updateThreadDocument": "스레드 이동",
         "updateThreadTopic": "스레드 주제 변경",
@@ -230,6 +231,7 @@
         "history": "역사",
         "delete": "삭제",
         "move": "이동",
+        "edit_request": "편집 요청",
         "acl": "ACL",
         "diff": "비교",
         "document_history": "문서 역사",
@@ -282,7 +284,6 @@
     "until": "@1@ 까지",
     "show_closed_edit_requests": "닫힌 편집 요청 보기",
     "show_closed_discuss": "닫힌 토론 목록 보기",
-    "edit_request": "편집 요청",
     "change": "변경",
     "confirm": "확인",
     "submit": "전송",

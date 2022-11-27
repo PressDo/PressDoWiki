@@ -102,6 +102,7 @@ class WikiACL
      * 
      * @param string $perm      target perm of check
      * @param object $session   session object
+     * @param string $title     title without namespace
      */
     public static function check_perms(string $perm, object $session, string $title) : bool
     {

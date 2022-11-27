@@ -1,11 +1,11 @@
 <div class="wiki-content">
     <div n:if="$error['errbox']" class="a e">
         <strong>{$lang['msg']['error']}</strong>
-        <span><{$error['message']}</span>
+        <span>{$error['message']}</span>
     </div>
     <div n:if="$wiki['alert']['alertbox']" class="a">
         <strong>{$lang['msg']['alert']}</strong>
-        <span><{$wiki['alert']['message']}</span>
+        <span>{$wiki['alert']['message']}</span>
     </div>
     <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
         <input type="hidden" name="token" value="{$wiki['page']['data']['token']}">

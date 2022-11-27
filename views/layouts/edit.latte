@@ -1,11 +1,11 @@
 <div class="wiki-content">
     <div n:if="$error['errbox']" class="a e">
         <strong>{$lang['msg']['error']}</strong>
-        <span><{$error['message'].$error['code']|noescape}</span>
+        <span>{$error['message'].$error['code']|noescape}</span>
     </div>
     <div n:if="$wiki['alert']['alertbox']" class="a">
         <strong>{$lang['msg']['alert']}</strong>
-        <span><{$wiki['alert']['message']}</span>
+        <span>{$wiki['alert']['message']}</span>
     </div>
     {if strpos($wiki['session']['ua'], 'Mobile') !== false || strpos($wiki['session']['ua'], 'Android') !== false}
         {var $mobile = true}
@@ -56,9 +56,7 @@
             <input data-pressdo-edit-summary type="text" name="comment" id="logInput">
         </div>
         <label><input type="checkbox" name="agree" id="agree"> <span>{stripslashes($config['edit_agree_text'])|noescape}</span></label>
-        {if !$wiki['session']['member']['username']}
-            <p data-pressdo-warning-unlogined>{str_replace('@1@', $wiki['session']['ip'], $lang['msg']['unlogined_edit'])}</p>
-        {/if}
+        <p n:if="!$wiki['session']['member']['username']" data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace: '@1@', $wiki['session']['ip']}</p>
         <div class="btn-area">
             <button class="btn-blue btn btn-wideright" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
         </div>

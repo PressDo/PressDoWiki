@@ -1,0 +1,49 @@
+list($page,$data,$ns) = $args;
+global $conf, $lang, $uri, $_ns; ?>
+<head>
+<title> <?=$lang[$page]?> - <?=$conf['SiteName']?> </title>
+</head>
+<div data-pressdo-content-header>
+    <h1 data-pressdo-doc-title><?=$lang[$page]?></h1>
+</div>
+<div class="wiki-content">
+    <div><?php if($page == 'RandomPage'){ ?>
+        <fieldset data-pressdo-nsfield>
+            <form method="POST">
+                <div data-pressdo-pagelist>
+                    <label data-pressdo-pagelist><?=$lang['namespace']?> :</label><select data-pressdo-pagelist name="namespace">
+                        <?php foreach ($ns as $n){
+                            if($n == $_GET['namespace'])
+                                $sel = 'selected';
+                            else
+                                $sel = '';
+                            ?><option value="<?=$n?>" <?=$sel?>><?=$n?></option><?php
+                        } ?>
+                        
+                    </select>
+                </div>
+                <div data-pressdo-pagelist class="b">
+                    <button type="submit" class="btn btn-blue"><?=$lang['submit']?></button>
+                </div>
+            </form>
+        </fieldset>
+        <?php }else{ ?>
+            <p><?=$lang['msg:'.$page]?></p>
+        <?php }?>
+        <ul data-pressdo-ul>
+            <?php foreach($data as $d){
+                $txt = [
+                    'OldPages' => '('.$lang['modifiedat'].':'.date('Y-m-d H:i:s', $d['datetime']).')',
+                    'LongestPages' => '('.$d['length'].$lang['letters'].')',
+                    'ShortestPages' => '('.$d['length'].$lang['letters'].')'
+                ];
+
+                if($conf['ForceShowNameSpace'] === false && $d['namespace'] == $_ns['document'])
+                    $title = $d['title'];
+                else
+                    $title = $d['namespace'].':'.$d['title'];
+                ?><li><a href="<?=$uri['wiki'].$title?>"><?=$title?></a> <?=$txt[$page]?></li><?php
+            } ?>
+        </ul>
+    </div>
+</div>
