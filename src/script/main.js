@@ -59,20 +59,20 @@ document.onkeydown = (e) => {
             case 18:
                 Alt = true
                 break
-            case 70:
-                location.href = '/rd.php?t=FrontPage'
+            case 70: // key f
+                location.href = '/'
                 break
-            case 67:
-                location.href = '/rd.php?t=RecentChanges'
+            case 67: // key c
+                location.href = '/RecentChanges'
                 break
-            case 68:
-                location.href = '/rd.php?t=RecentDiscuss'
+            case 68: // key d
+                location.href = '/RecentDiscuss'
                 break
-            case 65:
-                location.href = '/rd.php?t=random'
+            case 65: // key a
+                location.href = '/random'
                 break
-            case 69:
-                location.href = '/rd.php?t=edit'
+            case 69: // key e
+                location.href = '/edit/'+getdoctitle()
                 break
         }
     }
