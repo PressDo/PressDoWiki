@@ -28,7 +28,7 @@
                 {/if}
                 <tr data-pressdo-recent-changes class="n">
                     <td data-pressdo-recent-changes>
-                        <a href="/thread/{$he['slug']}">{$he['topic']}</a> (<a href="/discuss/{$ns.$he['document']['title']}">{$ns.$he['document']['title']}</a>)
+                        <a href="/thread/{$he['slug']}">{$he['topic']}</a> (<a href="/discuss/{$ns.$he['document']['title']|escapeUrl}">{$ns.$he['document']['title']}</a>)
                     </td>
                     <td data-pressdo-recent-changes><time datetime="{date('Y-m-d\TH:i:s', $he['date']-32400)}">{date('Y-m-d H:i:s', $he['date'])}</time></td>
                 </tr>

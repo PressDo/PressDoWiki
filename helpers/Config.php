@@ -1,5 +1,5 @@
 <?php
-namespace PressDo;
+namespace WebTools;
 class Config 
 {
     protected static array $configs = [];

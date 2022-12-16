@@ -30,6 +30,8 @@ class WikiPage extends WikiCore
             array_push($d_perms, $a);
         }
 
+        if($this->uri_data->query->status !== 'close' || $this->uri_data->query->status !== 'closed_edit_requests')
+
         $thr = Models::get_doc_thread($rawns,$title);
         $threads = [];
         foreach ($thr as $t){

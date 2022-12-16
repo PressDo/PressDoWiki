@@ -9,10 +9,10 @@
     </div>
     {if strpos($wiki['session']['ua'], 'Mobile') !== false || strpos($wiki['session']['ua'], 'Android') !== false}
         {var $mobile = true}
-        {var $toolbarinit = 'v="none"'}
+        {var $toolbarinit = 'none'}
     {else}
         {var $mobile = false}
-        {var $toolbarinit = ''}
+        {var $toolbarinit = false}
     {/if}
     <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
         <input type="hidden" name="token" value="{$wiki['page']['data']['token']}">
@@ -26,7 +26,7 @@
             <li class="editor top">
                 <button id="p" class="e editor top" type="button">{$lang['editor']['preview']}</button>
             </li>
-            <li class="t editor top" {$toolbarinit|noescape}>
+            <li n:attr="v: $toolbarinit" class="t editor top">
                 <div class="editor top">
                     <button id="btn-bold" class="editor top" type="button">{$lang['editor']['bold']}</button>
                 </div><div class="editor top">

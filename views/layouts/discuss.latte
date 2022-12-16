@@ -6,7 +6,7 @@
     <div>
         <h3 data-pressdo-discuss-type>{$lang['page']['edit_request']}</h3>
         <ul data-pressdo-ul></ul>
-        <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
+        <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']|escapeUrl}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
         <h3 data-pressdo-discuss-type>{$lang['page']['discuss']}</h3>
         <ul data-pressdo-ul>
         {var $cnt = count($wiki['page']['data']['thread_list'])}
@@ -15,7 +15,7 @@
                 <a href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a>
             </li>
         </ul>
-        <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']}?state=close">[{$lang['show_closed_discuss']}]</a></p>
+        <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']|escapeUrl}?state=close">[{$lang['show_closed_discuss']}]</a></p>
             <div n:for="$i=0; $i<$cnt; ++$i">
                 <h2>{$i+1}. <a id="s-{$i+1}" href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a></h2>
                 <div n:inner-foreach="$wiki['page']['data']['thread_list'][$i]['discuss'] as $d" class="t">

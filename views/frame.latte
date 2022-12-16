@@ -13,6 +13,7 @@
     <script>apiuri = '/internal/preview'</script>
     <link rel="stylesheet" href="/src/style/base.css">
     <script defer src="/src/script/main.js"></script>
+    <title> {$wiki['page']['title']} - {$config['sitename']} </title>
     {if $wiki['page']['view_name'] == 'wiki'}
         <link rel="stylesheet" href="/src/style/namumark.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous"/>
@@ -20,11 +21,10 @@
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
         <script defer src="/src/script/namumark.js"></script>
     {/if}
-        <title> {$wiki['page']['title']} - {$config['sitename']} </title>
     {if $wiki['page']['view_name'] == 'edit'}
         <script>
-        DocContent = {json_encode(['c' => $wiki['page']['data']['editor']['raw']], JSON_UNESCAPED_UNICODE)};
         monacoVersion = {$config['editor_version']};
+        DocContent = {json_encode(['c' => $wiki['page']['data']['editor']['raw']], JSON_UNESCAPED_UNICODE)};
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/{$config['editor_version']}/min/vs/loader.js"></script>
         <script src="/src/script/monaco.js"></script>
