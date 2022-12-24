@@ -24,7 +24,6 @@ class DB
         if(!static::$instance) {
             switch(Config::get('db_type')){
                 case 'mysql':
-                case 'mariadb':
                 case 'pgsql':
                 case 'cubrid':
                     $dsn = Config::get('db_type').':dbname='.Config::get('db_name').';host='.Config::get('db_host').';port='.Config::get('db_port').';charset:utf8';

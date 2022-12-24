@@ -58,6 +58,7 @@
     },
     "perm":{
         "any": "아무나",
+        "ip": "아이피 사용자",
         "member": "로그인된 사용자",
         "admin": "관리자",
         "member_singup_15days_ago": "가입한지 15일 지난 사용자",

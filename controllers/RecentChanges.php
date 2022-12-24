@@ -43,6 +43,7 @@ class WikiPage extends WikiCore
                 'log' => $f['comment'],
                 'author' => $f['contributor_m'],
                 'ip' => $f['contributor_i'],
+                'rev' => $f['rev'],
                 'style' => null,
                 'count' => $f['count'],
                 'logtype' => $f['action'],

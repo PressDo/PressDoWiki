@@ -17,7 +17,7 @@ class Models extends baseModels
     {
         $db = self::db();
         try {
-            $d = $db->query("SELECT `docid`,`action`,`comment`,`reverted_version`,`count`,`contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime` FROM `document` WHERE BINARY `is_hidden`='false' $option ORDER BY `datetime` DESC LIMIT 100");
+            $d = $db->query("SELECT `docid`,`action`,`comment`,`reverted_version`,`count`,`contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, rev FROM `document` WHERE BINARY `is_hidden`='false' $option ORDER BY `datetime` DESC LIMIT 100");
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 최근 변경 가져오는 중 오류 발생');
         }

@@ -46,7 +46,7 @@
                         <td data-pressdo-recent-changes>
                             <a href="/w/{$title|escapeUrl}">{$title}</a> 
                             <a href="/history/{$title|escapeUrl}">[역사]</a>
-                            <a n:if="$he['logtype'] !== 'create'" href="/diff/{$title|escapeUrl}?rev={$he['rev']}">[비교]</a>
+                            <a n:if="$he['logtype'] !== 'create'" href="/diff/{$title|escapeUrl}?rev={$he['rev']}&oldrev={$he['rev']-1}">[비교]</a>
                             <a href="/discuss/{$title|escapeUrl}">[토론]</a>
                             <span>(<span data-pressdo-history-{$color}>{$flag.$Diff}</span>)</span>
                         </td>
