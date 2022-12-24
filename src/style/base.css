@@ -86,6 +86,15 @@ table.diff del.diff{background-color: #fff;color: #999;text-decoration: line-thr
 table.diff ins.diff{background-color: #50ff50;text-decoration: none;}
 th.diff {text-align:left;}
 
+.pressdo-dark-mode table.diff{border-color: #383b40;}
+.pressdo-dark-mode table.diff thead{background: #2d2f34;border-bottom: 1px solid #383b40;}
+.pressdo-dark-mode table.diff tbody th{background: #27292d;border: 1px solid #383b40;color: #8a8a8a;}
+.pressdo-dark-mode table.diff .skip{background-color: #2d2f34;border: 1px solid #383b40;}
+.pressdo-dark-mode table.diff .delete{background-color: #943838;}
+.pressdo-dark-mode table.diff .insert{background-color: #3b5a3b;}
+.pressdo-dark-mode table.diff del.diff{background-color: #d05d5d;color: #ddd;}
+.pressdo-dark-mode table.diff ins.diff{background-color: #1c751c;}
+
 /* Search */
 form.spacing-ud {margin-top: 1rem;margin-bottom: 1rem;}
 input.search {min-width:20rem;}
