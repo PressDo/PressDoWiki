@@ -67,10 +67,10 @@
         "match_username_and_document_title": "문서 제목과 사용자 이름이 일치"
     },
     "menu":{
-        "RecentChanges": "최근바뀜",
-        "RecentDiscuss": "최근토론",
+        "RecentChanges": "최근 변경",
+        "RecentDiscuss": "최근 토론",
         "tools": "도구",
-        "random": "임의문서",
+        "random": "임의 문서",
         "aclgroup": "ACL Group",
         "grant": "권한 부여",
         "login_history": "로그인 기록 조회",

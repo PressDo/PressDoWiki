@@ -28,7 +28,7 @@ class Models extends baseModels
             else
                 $str = 'DESC LIMIT';
 
-            $d = $db->prepare("SELECT `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
+            $d = $db->prepare("SELECT `comment`, `action`, `reverted_version`, `contributor`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
             $d->execute([$id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 역사 조회 중 오류 발생');

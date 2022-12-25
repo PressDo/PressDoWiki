@@ -85,7 +85,7 @@ class baseModels {
     public static function load(string $rawns, string $title, int|null $rev=null): null | array
     {
         $db = self::db();
-        $sql = "SELECT d.content,d.length,d.comment,d.datetime,d.action,d.rev,d.count,d.reverted_version,d.contributor_m,d.contributor_i, d.edit_request_uri,d.acl_changed,d.moved_from,d.moved_to,d.is_hidden,d.is_latest FROM `document` as d INNER JOIN `live_document_list` as l ON l.docid = d.docid WHERE BINARY l.`namespace`=? AND BINARY l.`title`=? AND `is_hidden`='false' ORDER BY d.`datetime`";
+        $sql = "SELECT d.content,d.length,d.comment,d.datetime,d.action,d.rev,d.count,d.reverted_version,d.contributor, d.edit_request_uri,d.acl_changed,d.moved_from,d.moved_to,d.is_hidden,d.is_latest FROM `document` as d INNER JOIN `live_document_list` as l ON l.docid = d.docid WHERE BINARY l.`namespace`=? AND BINARY l.`title`=? AND `is_hidden`='false' ORDER BY d.`datetime`";
         if($rev === null){
             $d = $db->prepare($sql.' DESC LIMIT 1');
         } else {
@@ -162,18 +162,10 @@ class baseModels {
         $db = self::db();
         $perms = [];
         try {
-            if($session->member){
-                $c = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor_m`=?");
-                $c->execute([$session->member->username]);
-                $d = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor_m`=? AND `docid`=?");
-                $d->execute([$session->member->username, $docid]);
-            }else{
-                $c = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor_i`=?");
-                $c->execute([$session->ip]);
-                $d = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor_i`=? AND `docid`=?");
-                $d->execute([$session->ip, $docid]);
-            }
-            
+            $c = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor`=?");
+            $session->member? $c->execute(['m:'.$session->member->username]):$c->execute(['i:'.$session->ip]);
+            $d = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor`=? AND `docid`=?");
+            $session->member? $d->execute(['m:'.$session->member->username, $docid]):$d->execute(['i:'.$session->ip, $docid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 권한 목록 조회 중 오류 발생');
         }

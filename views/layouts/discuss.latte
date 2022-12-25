@@ -5,10 +5,10 @@
     </div>
     <div>
         <h3 data-pressdo-discuss-type>{$lang['page']['edit_request']}</h3>
-        <ul data-pressdo-ul></ul>
+        <ul class="lists" data-pressdo-ul></ul>
         <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']|escapeUrl}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
         <h3 data-pressdo-discuss-type>{$lang['page']['discuss']}</h3>
-        <ul data-pressdo-ul>
+        <ul class="lists" data-pressdo-ul>
         {var $cnt = count($wiki['page']['data']['thread_list'])}
             <li n:for="$i=0; $i < $cnt; ++$i">
                 <a href="#s-{$i+1}">{$i+1}</a>.
@@ -25,34 +25,36 @@
                         {var $str = ''}
                     {/if}
                     {if $d['type'] == 'comment'}
-                        {$sta = ''}
+                        {var $sta = ''}
                     {else}
-                        {$sta = 's'}
+                        {var $sta = 's'}
                     {/if}
 
                     {if $d['id'] == $wiki['page']['data']['thread_list'][$i]['discuss'][1]['id'] && $d['id'] > 2}
-                        <a data-pressdo-thread-content href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}" class="m">more...</a>
+                        <a href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}" class="thread m">more...</a>
                     {/if}
-                    <div data-pressdo-thread-content class="r v">
-                        <div data-pressdo-thread-content class="c">
-                            <div data-pressdo-thread-content class="h">
-                                <span><a id="{$d['id']}">#{$d['id']}</a></span>
-                                <div v="inline">
-                                    <div v="inline-block">
-                                        <a {$str}>{$d['author'].$d['ip']}</a>
+                    <div class="thread r v">
+                        <div class="thread vi">
+                            <div class="thread c">
+                                <div class="thread h">
+                                    <span><a id="{$d['id']}">#{$d['id']}</a></span>
+                                    <div v="inline">
+                                        <div v="inline-block">
+                                            <a {$str}>{$d['author'].$d['ip']}</a>
+                                        </div>
                                     </div>
+                                    <span class="d"><time datetime="{date('Y-m-d\TH:i:s', $d['date']).'.000Z'}">{date('Y-m-d H:i:s', $d['date'])}</time></span>
                                 </div>
-                                <span class="d"><time datetime="{date('Y-m-d\TH:i:s', $d['date']).'.000Z'}">{date('Y-m-d H:i:s', $d['date'])}</time></span>
-                            </div>
-                            <div data-pressdo-thread-content class="b {$sta}">
-                                <div>
-                                    <div data-pressdo-thread-content class="w">
-                                        <div data-pressdo-doc-paragraph>
-                                        {if $d['type'] == 'comment'}
-                                            {$d['text']}
-                                        {else}
-                                            {=$lang['msg']['changed_thread_'.$d['type']]|replace: '@1@', $d['text']}
-                                        {/if}
+                                <div class="thread b {$sta}">
+                                    <div>
+                                        <div class="thread w">
+                                            <div data-pressdo-doc-paragraph>
+                                            {if $d['type'] == 'comment'}
+                                                {$d['text']|noescape}
+                                            {else}
+                                                {=$lang['msg']['changed_thread_'.$d['type']]|replace: '@1@', $d['text']|noescape}
+                                            {/if}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

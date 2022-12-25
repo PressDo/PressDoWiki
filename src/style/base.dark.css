@@ -20,3 +20,9 @@
 
 /* DIscuss */
 .pressdo-dark-mode input[data-pressdo-thread],.pressdo-dark-mode textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode div.r div.c.thread{background-color: #2d2f34;border-color: #383b40;}
+.pressdo-dark-mode div.r div.b.s.thread{background: #54411a;}
+.pressdo-dark-mode div.r div.h.f.thread{background-color:#324432}
+.pressdo-dark-mode div.r div.b.thread{background: #27292d}
+.pressdo-dark-mode a.m.thread{background-color: #325a56;color: #ddd;}
+.pressdo-dark-mode a.m.thread:hover{background-color: #438a83;color: #ddd;}

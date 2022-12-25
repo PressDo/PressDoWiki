@@ -1,7 +1,7 @@
 <?php
 if(!function_exists('loadMarkUp')){
 function loadMarkUp($content, array $options){
-    require 'NamuMark.php';
+    require_once 'NamuMark.php';
     // MySQLWikiPage와는 달리 PlainWikiPage의 첫 번째 인수로 위키텍스트를 받습니다.
     $wPage = new PlainWikiPage($content);
     $wEngine = new NamuMark($wPage);

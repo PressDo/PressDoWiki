@@ -90,8 +90,8 @@ class WikiPage extends WikiCore
                 'starred' => $this->session->member?Models::if_starred($docid,$this->session->member->username):false,
                 'star_count' => Models::count_stars($docid),
                 'document' => [
-                    'namespace' => $doc['namespace'],
-                    'title' => $doc['title'],
+                    'namespace' => $namespace,
+                    'title' => $title,
                     'content' => htmlspecialchars($content['html']),
                     'categories' => $content['categories']
                 ],

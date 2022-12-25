@@ -49,6 +49,14 @@ class WikiPage extends WikiCore
             $cl = ($cn < 31)? $cn:$cn-1;
 
             foreach($fetch as $f){
+                $contr = explode(':', $f['contributor']);
+                if($contr[0] == 'm'){
+                    $author = $contr[1];
+                    $ip = null;
+                }else{
+                    $ip = $contr[1];
+                    $author = null;
+                }
                 array_push($page['data']['history'], [
                     'rev' => $f['rev'],
                     'log' => $f['comment'],
@@ -56,8 +64,8 @@ class WikiPage extends WikiCore
                     'count' => $f['count'],
                     'logtype' => $f['action'],
                     'target_rev' => $f['reverted_version'],
-                    'author' => $f['contributor_m'],
-                    'ip' => $f['contributor_i'],
+                    'author' => $author,
+                    'ip' => $ip,
                     'style' => null,
                     'blocked' => null,
                     'edit_request' => $f['edit_request_uri'],

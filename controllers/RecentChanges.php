@@ -36,13 +36,21 @@ class WikiPage extends WikiCore
         $resultSet = [];
 
         foreach($fetch as $f){
+            $contr = explode(':', $f['contributor']);
+            if($contr[0] == 'm'){
+                $author = $contr[1];
+                $ip = null;
+            }else{
+                $ip = $contr[1];
+                $author = null;
+            }
             $_e = Models::get_doc_title($f['docid']);
             $rs = array(
                 'document' => ['namespace' => Namespaces::get($_e['namespace']), 'title' => $_e['title']],
                 'date' => $f['datetime'],
                 'log' => $f['comment'],
-                'author' => $f['contributor_m'],
-                'ip' => $f['contributor_i'],
+                'author' => $author,
+                'ip' => $ip,
                 'rev' => $f['rev'],
                 'style' => null,
                 'count' => $f['count'],

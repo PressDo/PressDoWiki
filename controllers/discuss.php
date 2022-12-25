@@ -35,7 +35,7 @@ class WikiPage extends WikiCore
         $thr = Models::get_doc_thread($rawns,$title);
         $threads = [];
         foreach ($thr as $t){
-            $com = Thread::getLatestComments($t['urlstr']);
+            $com = Models::getLatestComments($t['urlstr']);
             $discuss = [];
             foreach ($com as $c){
                 if($c['type'] == 'status' || $c['type'] == 'topic' || $c['type'] == 'document')
@@ -43,10 +43,19 @@ class WikiPage extends WikiCore
                 else
                     $cont = $this::readSyntax($c['content'], Config::get('mark'), ['thread' => true])['html'];
                 $blocked = ($c['hide_author'])? true:false;
+
+                $contr = explode(':', $c['contributor']);
+                if($contr[0] == 'm'){
+                    $author = $contr[1];
+                    $ip = null;
+                }else{
+                    $ip = $contr[1];
+                    $author = null;
+                }
                 array_push($discuss, [
                     'id' => $c['no'],
-                    'author' => $c['contributor_m'],
-                    'ip' => $c['contributor_i'],
+                    'author' => $author,
+                    'ip' => $ip,
                     'text' => $cont,
                     'date' => $c['datetime'],
                     'hide_author' => $c['blind'],

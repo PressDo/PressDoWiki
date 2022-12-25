@@ -13,7 +13,7 @@
                 <p id="errmail" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['email']}</p>
                 {if $config['use_mail_whitelist'] === true}
                     <p>{$lang['msg:use_email_whitelist']}</p>
-                    <ul data-pressdo-mail-whitelist>
+                    <ul class="list">
                         <li n:foreach="$config['mail_whitelist'] as $wl" data-pressdo-mail-whitelist>{$wl}</li>
                     </ul>
                 {/if}
