@@ -85,7 +85,8 @@
         "move": "이동",
         "delete": "삭제",
         "history": "역사",
-        "ACL": "ACL"
+        "ACL": "ACL",
+        "thread_list": "토론 목록"
     },
     "log":{
         "create": "새 문서",
@@ -233,6 +234,8 @@
         "delete": "삭제",
         "move": "이동",
         "edit_request": "편집 요청",
+        "discuss_closed_edit_requests": "닫힌 편집 요청",
+        "discuss_close": "닫힌 토론",
         "acl": "ACL",
         "diff": "비교",
         "document_history": "문서 역사",

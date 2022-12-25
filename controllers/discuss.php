@@ -30,62 +30,84 @@ class WikiPage extends WikiCore
             array_push($d_perms, $a);
         }
 
-        if($this->uri_data->query->status !== 'close' || $this->uri_data->query->status !== 'closed_edit_requests')
-
-        $thr = Models::get_doc_thread($rawns,$title);
-        $threads = [];
-        foreach ($thr as $t){
-            $com = Models::getLatestComments($t['urlstr']);
-            $discuss = [];
-            foreach ($com as $c){
-                if($c['type'] == 'status' || $c['type'] == 'topic' || $c['type'] == 'document')
-                    $cont = $c['content'];
-                else
-                    $cont = $this::readSyntax($c['content'], Config::get('mark'), ['thread' => true])['html'];
-                $blocked = ($c['hide_author'])? true:false;
-
-                $contr = explode(':', $c['contributor']);
-                if($contr[0] == 'm'){
-                    $author = $contr[1];
-                    $ip = null;
-                }else{
-                    $ip = $contr[1];
-                    $author = null;
-                }
-                array_push($discuss, [
-                    'id' => $c['no'],
-                    'author' => $author,
-                    'ip' => $ip,
-                    'text' => $cont,
-                    'date' => $c['datetime'],
-                    'hide_author' => $c['blind'],
-                    'type' => $c['type'],
-                    'admin' => $ACL::check_perms('admin',$this->session,$title),
-                    'blocked' => $blocked
-                ]);
-            }
-            $ra = [
-                'slug' => $t['urlstr'],
-                'topic' => $t['topic'],
-                'discuss' => $discuss
+        if($this->uri_data->query->state == 'close' || $this->uri_data->query->state == 'closed_edit_requests'){
+            // 닫힌 00 목록
+            $threads = Models::get_doc_thread($rawns, $title, 'closed');
+            $page = [
+                'view_name' => 'discuss_list',
+                'title' => $this->uri_data->title,
+                'subtitle' => Lang::get('page')['discuss_'.$this->uri_data->query->state],
+                'data' => [
+                    'document' => [
+                        'namespace' => $namespace,
+                        'title' => $title
+                    ],
+                    'state' => $this->uri_data->query->state,
+                    'thread_list' => $threads,
+                    'editRequests' => [
+                        'slug'
+                    ],
+                    'perms' => $d_perms
+                ]
             ];
-            array_push($threads, $ra);
+        }else{
+            $thr = Models::get_doc_thread($rawns,$title);
+            $threads = [];
+            foreach ($thr as $t){
+                $com = Models::getLatestComments($t['urlstr']);
+                $discuss = [];
+                foreach ($com as $c){
+                    if($c['type'] == 'status' || $c['type'] == 'topic' || $c['type'] == 'document')
+                        $cont = $c['content'];
+                    else
+                        $cont = $this::readSyntax($c['content'], Config::get('mark'), ['thread' => true])['html'];
+                    $blocked = ($c['hide_author'])? true:false;
+
+                    $contr = explode(':', $c['contributor']);
+                    if($contr[0] == 'm'){
+                        $author = $contr[1];
+                        $ip = null;
+                    }else{
+                        $ip = $contr[1];
+                        $author = null;
+                    }
+                    array_push($discuss, [
+                        'id' => $c['no'],
+                        'author' => $author,
+                        'ip' => $ip,
+                        'text' => $cont,
+                        'date' => $c['datetime'],
+                        'hide_author' => $c['blind'],
+                        'type' => $c['type'],
+                        'admin' => $ACL::check_perms('admin',$this->session,$title),
+                        'blocked' => $blocked
+                    ]);
+                }
+                $ra = [
+                    'slug' => $t['urlstr'],
+                    'topic' => $t['topic'],
+                    'discuss' => $discuss
+                ];
+                array_push($threads, $ra);
+            }
+            $page = [
+                'view_name' => 'discuss',
+                'title' => $this->uri_data->title,
+                'subtitle' => Lang::get('page')['discuss'],
+                'data' => [
+                    'document' => [
+                        'namespace' => $namespace,
+                        'title' => $title
+                    ],
+                    'thread_list' => $threads,
+                    'editRequests' => [
+                        'slug'
+                    ],
+                    'perms' => $d_perms
+                ]
+            ];
         }
-        $page = [
-            'view_name' => 'discuss',
-            'title' => $this->uri_data->title.' ('.Lang::get('page')['discuss'].')',
-            'data' => [
-                'document' => [
-                    'namespace' => $namespace,
-                    'title' => $title
-                ],
-                'thread_list' => $threads,
-                'editRequests' => [
-                    'slug'
-                ],
-                'perms' => $d_perms
-            ]
-        ];
+
         return $page;
     }
 }

@@ -1,0 +1,6 @@
+<ul n:if="$wiki['page']['data']['state'] == 'close'" class="lists">
+    <li n:foreach="$wiki['page']['data']['thread_list'] as $i => $t"> {=$i + 1}. <a href="/thread/{$t['urlstr']}">{$t['topic']}</a></li>
+</ul>
+<ul n:if="$wiki['page']['data']['state'] == 'closed_edit_requests'" class="lists">
+    <li n:foreach="$wiki['page']['data']['thread_list'] as $i => $t"> {=$i + 1}. <a href="/edit_request/{$t['urlstr']}">{$lang['page']['edit_request'].$t['urlstr']}</a></li>
+</ul>

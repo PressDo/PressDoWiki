@@ -17,7 +17,8 @@ class WikiPage extends WikiCore
         $ACL->check();
         $page = [
             'view_name' => 'diff',
-            'title' => $this->uri_data->title.' ('.Lang::get('page')['diff'].')',
+            'title' => $this->uri_data->title,
+            'subtitle' => Lang::get('page')['diff'],
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

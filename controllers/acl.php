@@ -45,7 +45,8 @@ class WikiPage extends WikiCore
 
         $page = [
             'view_name' => 'acl',
-            'title' => $this->uri_data->title.' ('.Lang::get('page')['acl'].')',
+            'title' => $this->uri_data->title,
+            'subtitle' => Lang::get('page')['acl'],
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

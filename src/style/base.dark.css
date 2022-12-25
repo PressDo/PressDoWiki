@@ -3,6 +3,7 @@
 .pressdo-dark-mode form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
 .pressdo-dark-mode form input[data-pressdo-edit-summary], .pressdo-dark-mode form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
 .pressdo-dark-mode form div.c.editor, .pressdo-dark-mode form ul.editor.top {border-color: #383b40;}
+.pressdo-dark-mode textarea.editor {background-color: #000;color: #ddd;}
 
 /* Diff */
 .pressdo-dark-mode table.diff{border-color: #383b40;}

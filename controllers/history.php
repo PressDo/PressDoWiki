@@ -17,7 +17,8 @@ class WikiPage extends WikiCore
         $ACL->check();
         $page = [
             'view_name' => 'history',
-            'title' => $this->uri_data->title.' ('.Lang::get('page')['history'].')',
+            'title' => $this->uri_data->title,
+            'subtitle' => Lang::get('page')['history'],
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

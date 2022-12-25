@@ -35,17 +35,15 @@ class WikiPage extends WikICore
             }else{
                 // Approve Edit
                 if(!empty($this->session->member)){
-                    $id = $this->session->member->username;
-                    $ip = null;
+                    $id = 'm:'.$this->session->member->username;
                 }else{
-                    $id = null;
-                    $ip = $this->session->ip;
+                    $id = 'i:'.$this->session->ip;
                 }
 
                 if($exist){
-                    Models::save_document($rawns,$title,$this->post->content,$this->post->comment,$id,$ip,$this->session->baserev,iconv_strlen($this->session->raw));
+                    Models::save_document($rawns,$title,$this->post->content,$this->post->comment,$id,$this->session->baserev,iconv_strlen($this->session->raw));
                 }else{
-                    Models::create_document($rawns,$title,$this->post->content,$this->post->comment,$id,$ip);
+                    Models::create_document($rawns,$title,$this->post->content,$this->post->comment,$id);
                 }
 
                 Header('Location: /w/'.$this->uri_data->title);
@@ -60,7 +58,8 @@ class WikiPage extends WikICore
 
         $page = [
             'view_name' => 'edit',
-            'title' => $this->uri_data->title.' (r'.$this->session->baserev.' '.Lang::get('page')['edit'].')',
+            'title' => $this->uri_data->title,
+            'subtitle' => 'r'.$this->session->baserev.' '.Lang::get('page')['edit'],
             'data' => [
                 'editor' => [
                     'baserev' => $this->session->baserev,

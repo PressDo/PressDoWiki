@@ -31,7 +31,7 @@ div.r div.c.thread{min-width: 100%;width: 100%;display: block;}
 
 p[data-pressdo-warning-unlogined]{margin-top: 0; margin-bottom: 1rem;font-weight: 700;}
 textarea[disabled][data-pressdo-thread]{cursor: not-allowed;background-color: #eceeef;opacity: 1;}
-button.btn{touch-action: manipulation;padding: .2rem .7rem;border: .0625rem solid #ccc; font-size:.9rem}
+button.btn:not(.search-menu){touch-action: manipulation;padding: .2rem .7rem;border: .0625rem solid #ccc; font-size:.9rem}
 button.btn.square{border-radius:unset;}
 button.btn.btn-blue{color: #fff;background-color: #0275d8;border-color: #0275d8;}
 button.btn.btn-red{color: #fff;background-color: #d9534f;border-color: #d9534f;}
@@ -49,6 +49,7 @@ div.a:not(.editor){margin-bottom: 1.4rem;padding: .5rem .8rem;border-radius: .25
 #dr_e.i{color:red!important;}
 .nav-func[data-pressdo-toc-fold=hide]{display:none;}
 ul.lists {margin: .4em 0 .4em 1.5em;padding-left: .5rem}
+ul.lists li{list-style: inherit!important;list-style-type: inherit!important;margin: .4em 0;}
 
 /* Editor */
 form ul.editor.top {height: 36px;padding-left: 0;margin-bottom: 0;list-style: none;border-bottom: 1px solid #ddd; margin-top: 0;}

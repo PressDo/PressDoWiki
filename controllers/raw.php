@@ -57,7 +57,7 @@ class WikiPage extends WikiCore
             }
 
             $doc = Models::load($rawns, $title, $rev);
-            $page['title'] .= ' (r'.$rev.' RAW)';
+            $page['subtitle'] .= 'r'.$rev.' RAW';
             $page['data']['rev'] = $rev;
             $page['data']['text'] = $doc['content'];
             //'debug' => $this->uri_data
