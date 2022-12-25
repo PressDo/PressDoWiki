@@ -1,0 +1,22 @@
+/* Editor */
+.pressdo-dark-mode form li button.a.editor.top{background-color: #383b40;}
+.pressdo-dark-mode form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode form input[data-pressdo-edit-summary], .pressdo-dark-mode form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode form div.c.editor, .pressdo-dark-mode form ul.editor.top {border-color: #383b40;}
+
+/* Diff */
+.pressdo-dark-mode table.diff{border-color: #383b40;}
+.pressdo-dark-mode table.diff thead{background: #2d2f34;border-bottom: 1px solid #383b40;}
+.pressdo-dark-mode table.diff tbody th{background: #27292d;border: 1px solid #383b40;color: #8a8a8a;}
+.pressdo-dark-mode table.diff .skip{background-color: #2d2f34;border: 1px solid #383b40;}
+.pressdo-dark-mode table.diff .delete{background-color: #943838;}
+.pressdo-dark-mode table.diff .insert{background-color: #3b5a3b;}
+.pressdo-dark-mode table.diff del.diff{background-color: #d05d5d;color: #ddd;}
+.pressdo-dark-mode table.diff ins.diff{background-color: #1c751c;}
+
+/* Recent */
+.pressdo-dark-mode ol[data-pressdo-recentmenu]{background-color: #27292d;border-color: #383b40;}
+.pressdo-dark-mode table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #383b40;}
+
+/* DIscuss */
+.pressdo-dark-mode input[data-pressdo-thread],.pressdo-dark-mode textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}

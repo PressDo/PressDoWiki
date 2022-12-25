@@ -1,4 +1,5 @@
 @import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(base.dark.css);
 @charset "UTF-8";
 @-webkit-keyframes data-pressdo-warning-unlogined{0%{color:#000}to{color:red}}
 @keyframes data-pressdo-warning-unlogined{0%{color:#000;}to{color:red;}}
@@ -52,20 +53,16 @@ form ul.editor.top {height: 36px;padding-left: 0;margin-bottom: 0;list-style: no
 form ul.editor.top:after, form ul.editor.top:before {display:table; content: " ";}
 form li.editor.top {float:left; margin-bottom: -1px;}
 form li button.a.editor.top {color: #55595c; background-color:#fff; border-color: #ddd #ddd transparent;}
-.pressdo-dark-mode form li button.a.editor.top{background-color: #383b40;}
 form li button.editor.top {background: 0 0;cursor: pointer;font-size: .9rem;display: block;padding: 0.5em 1em;border: 1px solid transparent;border-radius: 0.25rem 0.25rem 0 0;}
-.pressdo-dark-mode form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
 form li.t.editor.top {float:right;}
 form li+li.editor.top {margin-left:0.2rem;}
 form li.t>div.editor.top {display:inline-block;}
 textarea.editor {border:none;font-family: inherit;color: #55595c;font-size: .9rem;margin: 0;border-radius: 0;padding: .25rem .5rem;width: 100%;height: 30rem;resize: vertical;}
 textarea {width: 100%;border: 1px solid #e1e8ed;padding: .5rem;resize: vertical;}
 form input[data-pressdo-edit-summary]{font-size: .9rem;border-radius: 0;padding: .25rem .5rem;width: 100%;line-height: 1.5;}
-.pressdo-dark-mode form input[data-pressdo-edit-summary], .pressdo-dark-mode form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
 input[type=text][data-pressdo-edit-summary]{ border-radius: 0;padding: .25rem .5rem; width: 100%; color: #55595c;background-color: #fff; background-image: none;border: .0625rem solid #ccc;}
 textarea[readonly]{border: .0625rem solid #ccc;background-color: #eceeef;opacity: 1;}
 form div.c.editor{border:1px solid #ddd; border-top:none;}
-.pressdo-dark-mode form div.c.editor, .pressdo-dark-mode form ul.editor.top {border-color: #383b40;}
 form div.g.comment{margin-top: 1rem; margin-bottom:15px;}
 form div.c>div.p.editor {height: 30rem; overflow: auto; padding: 10px;}
 form div.c>div.editor{display:none;}
@@ -85,15 +82,6 @@ table.diff div{word-wrap: break-word;word-break: break-all;}
 table.diff del.diff{background-color: #fff;color: #999;text-decoration: line-through;}
 table.diff ins.diff{background-color: #50ff50;text-decoration: none;}
 th.diff {text-align:left;}
-
-.pressdo-dark-mode table.diff{border-color: #383b40;}
-.pressdo-dark-mode table.diff thead{background: #2d2f34;border-bottom: 1px solid #383b40;}
-.pressdo-dark-mode table.diff tbody th{background: #27292d;border: 1px solid #383b40;color: #8a8a8a;}
-.pressdo-dark-mode table.diff .skip{background-color: #2d2f34;border: 1px solid #383b40;}
-.pressdo-dark-mode table.diff .delete{background-color: #943838;}
-.pressdo-dark-mode table.diff .insert{background-color: #3b5a3b;}
-.pressdo-dark-mode table.diff del.diff{background-color: #d05d5d;color: #ddd;}
-.pressdo-dark-mode table.diff ins.diff{background-color: #1c751c;}
 
 /* Search */
 form.spacing-ud {margin-top: 1rem;margin-bottom: 1rem;}
@@ -122,6 +110,7 @@ a[data-pressdo-history-null],button[disabled]{cursor: not-allowed!important; opa
 div>a[data-pressdo-history-mv]{margin-left:-1px;font-size: .9rem;padding: .2rem .45rem;line-height: 1.5;color: #373a3c!important;background-color: #fff;border: .0625rem solid #ccc;font-weight: 400; text-align: center; white-space: nowrap; touch-action: manipulation; cursor: pointer;-webkit-user-select: none; -moz-user-select: none;-ms-user-select: none;user-select: none; text-decoration: none!important;float: left;}
 div>a[data-pressdo-history-mv]:first-child {margin-left: 0;}
 div.bt-g,div>a[data-pressdo-history-mv]{position: relative;display: inline-block;vertical-align: middle;}
+
 /* FontAwesome, Ionicons Font Settings */
 *[fa]{display:inline-block; font: normal normal normal 14px/1 FontAwesome; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
 *[ionicon]{display: inline-block;font-family: Ionicons; speak: none; font-style: normal;font-weight: 400;font-feature-settings: normal; font-variant: normal;text-transform: none;text-rendering: auto; line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
@@ -194,14 +183,12 @@ form[data-pressdo-aclgroup-remove]{-webkit-box-flex: 1;flex: 1 0 auto;width: 100
 
 /* Recent */
 ol[data-pressdo-recentmenu]{padding: .4rem .8rem;display: inline-block;border-radius: 0;list-style: none;background-color: #eceeef;margin-bottom: 1rem;margin-top: 0;}
-.pressdo-dark-mode ol[data-pressdo-recentmenu]{background-color: #27292d;border-color: #383b40;}
 ol li[data-pressdo-recentmenu]{display: inline-block;}
 table[data-pressdo-recent-changes]{border-spacing: 0;border-collapse: collapse;background-color: transparent;margin-bottom: 1rem;width: 100%;max-width: 100%;word-break: break-all;}
 table td[data-pressdo-recent-changes], table th[data-pressdo-recent-changes]{padding: .5rem .7rem;line-height: 1.5;}
 table th[data-pressdo-recent-changes]{vertical-align: bottom;border-bottom: 2px solid #eceeef;text-align: left;}
 table td[data-pressdo-recent-changes]{vertical-align: top;border-top: 1px solid #eceeef;}
 table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #f5f5f5;}
-.pressdo-dark-mode table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #383b40;}
 a[data-pressdo-recent-user]{cursor:pointer;}
 div[data-pressdo-popover]{display: inline;}
 table tr:not(.n) td[data-pressdo-recent-changes]{border-top: 0;padding-top: 0;padding-left: 1.5rem;}
@@ -215,7 +202,6 @@ p[data-pressdo-discuss-more]{margin-bottom: 1rem;margin-top: 0;}
 label[data-pressdo-breakline]{margin-bottom: .2rem;display: inline-block;}
 input[data-pressdo-wideinput]{margin: 5px 0 10px;}
 input[data-pressdo-thread],textarea[data-pressdo-thread]{border-radius: 0;padding: .25rem .5rem;width: 100%;line-height: 1.5;color: #55595c;background-color: #fff;background-image: none;border: .0625rem solid #ccc;display: block;font: inherit;}
-.pressdo-dark-mode input[data-pressdo-thread],.pressdo-dark-mode textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}
 div.r[data-pressdo-thread-content]{padding-bottom: 20px;margin: 0;}
 div.t div.r[data-pressdo-thread-content]{padding-left: 25px;}
 div.t div.r[data-pressdo-thread-content] div.c{width: 75%;}
