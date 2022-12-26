@@ -74,7 +74,8 @@
         "aclgroup": "ACL Group",
         "grant": "권한 부여",
         "login_history": "로그인 기록 조회",
-        "skin_settings": "스킨 설정"
+        "skin_settings": "스킨 설정",
+        "my_user_document": "내 사용자 문서"
     },
     "btn":{
         "document": "문서",
@@ -86,7 +87,7 @@
         "delete": "삭제",
         "history": "역사",
         "ACL": "ACL",
-        "thread_list": "토론 목록"
+        "discuss_list": "토론 목록"
     },
     "log":{
         "create": "새 문서",
@@ -170,7 +171,7 @@
         "changed_thread_status": "스레드 상태를 <b>@1@</b>로 변경",
         "changed_thread_topic": "스레드 주제를 <b>@1@</b>로 변경",
         "changed_thread_document": "스레드를 <b>@1@</b>로 이동",
-        "noDisplayHideAuthor": "숨겨진 댓글 보이지 않기",
+        "no_display_hidden_comment": "숨겨진 댓글 보이지 않기",
         "thread_invalid_status": "토론이 열린 상태가 아닙니다.",
         "thread_status_pause": "중지된 토론입니다.",
         "thread_status_close": "닫힌 토론입니다.",
@@ -214,14 +215,14 @@
         "RecentChanges": "최근 변경내역",
         "RecentDiscuss": "최근 토론",
         "OrphanedPages": "고립된 문서",
+        "UncategorizedPages": "분류가 되지 않은 문서",
         "NeededPages": "작성이 필요한 문서",
         "OldPages": "편집된 지 오래된 문서",
         "ShortestPages": "내용이 짧은 문서",
         "LongestPages": "내용이 긴 문서",
         "BlockHistory": "차단 내역",
         "RandomPage": "RandomPage",
-        "Upload": "업로드",
-        "FileUpload": "파일 올리기",
+        "Upload": "파일 올리기",
         "License": "라이선스",
         "Settings": "설정",
         "starred_documents": "내 문서함",
@@ -240,6 +241,7 @@
         "diff": "비교",
         "document_history": "문서 역사",
         "discuss": "토론",
+        "thread": "토론",
         "mypage": "내 정보",
         "contribution": "기여내역",
         "error": "오류",

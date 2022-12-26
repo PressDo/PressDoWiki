@@ -11,7 +11,7 @@ class WikiPage extends WikiCore
         unset($this->session);
         session_destroy();
         if(!empty($ref))
-            Header('Location: '.base64_decode($ref));
+            Header('Location: '.$ref);
         else
             Header('Location: /');
     }

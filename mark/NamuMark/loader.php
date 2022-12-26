@@ -13,6 +13,9 @@ function loadMarkUp($content, array $options){
     $wEngine->ns = $options['namespace'];
 
     // toHtml을 호출하면 HTML 페이지가 생성됩니다.
-    return ['html' => $wEngine->toHtml(), 'categories' => $wEngine->category];
+    if($options['thread'])
+        return $wEngine->toHtml();
+    else
+        return ['html' => $wEngine->toHtml(), 'categories' => $wEngine->category];
 }
 }

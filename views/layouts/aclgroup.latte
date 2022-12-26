@@ -74,7 +74,7 @@
             <p n:if="$err[1]['expire']" class="errmsg">{=$lang['msg']['err_required_input']|replace '@1@', 'expire'}</p>
             <p n:if="$err[1]['expire_much']" class="errmsg">{$lang['msg']['err_expire_too_long']}</p>
         </div>
-        <button class="btn btn-blue" {$st} type="submit">{$lang['acl']['add']}</button>
+        <button class="pressdo-btn btn-blue" {$st} type="submit">{$lang['acl']['add']}</button>
     </form>
     <div class="bt-g">
         <a {$_p|noescape} data-pressdo-history-mv>
@@ -87,7 +87,7 @@
     <form class="s" data-pressdo-aclgroup method="GET">
         <div data-pressdo-aclgroup class="g">
             <input data-pressdo-acl-span type="text" name="from" placeholder="ID">
-            <button class="btn btn-blue" type="submit">Go</button>
+            <button class="pressdo-btn btn-blue" type="submit">Go</button>
         </div>
     </form>
     <table data-pressdo-aclgroup>
@@ -127,7 +127,7 @@
                     {if !$api['accessible']}
                         {var $st = 'disabled="disabled"'}
                     {/if}
-                    <td data-pressdo-aclgroup><button {$st|noescape} id="acl_delete" acllog_id="{$li['id']}" class="btn btn-red" type="button">{$lang['acl']['delete']}</button></td>
+                    <td data-pressdo-aclgroup><button {$st|noescape} id="acl_delete" acllog_id="{$li['id']}" class="pressdo-btn btn-red" type="button">{$lang['acl']['delete']}</button></td>
                 </tr>
             {/if}
         </tbody>
@@ -166,8 +166,8 @@
                         <p n:if="$err[1]['note']" id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace '@1@', 'note'}</p>
                     </div>
                     <div data-pressdo-buttons-right>
-                        <button class="btn btn-blue btn-sizeup" type="submit">{$lang['acl']['delete']}</button>
-                        <button class="btn btn-sizeup" id="cancel_btn" type="button">{$lang['cancel']}</button>
+                        <button class="pressdo-btn btn-blue btn-sizeup" type="submit">{$lang['acl']['delete']}</button>
+                        <button class="pressdo-btn btn-sizeup" id="cancel_btn" type="button">{$lang['cancel']}</button>
                     </div>
                 </form>
             </div>
@@ -191,8 +191,8 @@
                         <br><input type="checkbox" name="isAdmin[]" value="true"> 관리자만 보이기
                     </div>
                     <div data-pressdo-buttons-right>
-                        <button class="btn btn-blue btn-sizeup" type="submit">{$lang['btn:create']}</button>
-                        <button class="btn btn-blue btn-sizeup" id="cancel_btn" type="button">{$lang['cancel']}</button>
+                        <button class="pressdo-btn btn-blue btn-sizeup" type="submit">{$lang['btn']['create']}</button>
+                        <button class="pressdo-btn btn-blue btn-sizeup" id="cancel_btn" type="button">{$lang['cancel']}</button>
                     </div>
                 </form>
             </div>

@@ -104,7 +104,7 @@ class WikiACL
      * @param object $session   session object
      * @param string $title     title without namespace
      */
-    public static function check_perms(string $perm, object $session, string $title) : bool
+    public static function check_perms(string $perm, object $session, string $title='') : bool
     {
         // get permission data of user
         if(!self::$acc_perms || !self::$doc_perms){
@@ -112,7 +112,9 @@ class WikiACL
                 self::$acc_perms = Models::get_account_perms($session->member?->username);
             else
                 self::$acc_perms = ['ip'];
-            self::$doc_perms = Models::get_document_perms(self::$docid, $session);
+            
+            if (strlen($title) > 0)
+                self::$doc_perms = Models::get_document_perms(self::$docid, $session);
         }
 
         if($session->username !== null){

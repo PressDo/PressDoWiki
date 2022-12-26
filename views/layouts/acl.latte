@@ -36,7 +36,7 @@
                                 {$acls[$a][$A][$i]['condition']}</td><td data-pressdo-acl-part>
                                 {$lang['acl'][$acls[$a][$A][$i]['action']]}</td><td data-pressdo-acl-part>
                                 {$acls[$a][$A][$i]['expired']}</td><td data-pressdo-acl-part>
-                                <button n:if="$allow[$a] === true" delete-info="{$a}.{$acls[$a][$A][$i]['id']}" msg="{$lang['msg']['acl_delete_confirm']}" type="button" class="btn btn-red d">{$lang['acl']['delete']}</button></td>
+                                <button n:if="$allow[$a] === true" delete-info="{$a}.{$acls[$a][$A][$i]['id']}" msg="{$lang['msg']['acl_delete_confirm']}" type="button" class="pressdo-btn btn-red d">{$lang['acl']['delete']}</button></td>
                             </tr>
                         {/for}
                     </tbody>
@@ -112,7 +112,7 @@
                         </span>
                     </div>
                 </div>
-                <button type="submit" class="s btn btn-blue">{$lang['acl']['add']}</button>
+                <button type="submit" class="s pressdo-btn btn-blue">{$lang['acl']['add']}</button>
             </form>
         {/foreach}
     </div>

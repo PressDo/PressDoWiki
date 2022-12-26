@@ -1,3 +1,7 @@
+.pressdo-dark-mode .pressdo-btn:not([disabled]):active, 
+.pressdo-dark-mode .pressdo-btn:not([disabled]):hover {background-color: #2d2f34;border-color: #383b40;}
+.pressdo-dark-mode .pressdo-btn{background-color: #27292d;border-color: #383b40;color: #ddd;}
+
 /* Editor */
 .pressdo-dark-mode form li button.a.editor.top{background-color: #383b40;}
 .pressdo-dark-mode form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
@@ -19,7 +23,7 @@
 .pressdo-dark-mode ol[data-pressdo-recentmenu]{background-color: #27292d;border-color: #383b40;}
 .pressdo-dark-mode table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #383b40;}
 
-/* DIscuss */
+/* Discuss */
 .pressdo-dark-mode input[data-pressdo-thread],.pressdo-dark-mode textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}
 .pressdo-dark-mode div.r div.c.thread{background-color: #2d2f34;border-color: #383b40;}
 .pressdo-dark-mode div.r div.b.s.thread{background: #54411a;}
@@ -27,3 +31,7 @@
 .pressdo-dark-mode div.r div.b.thread{background: #27292d}
 .pressdo-dark-mode a.m.thread{background-color: #325a56;color: #ddd;}
 .pressdo-dark-mode a.m.thread:hover{background-color: #438a83;color: #ddd;}
+.pressdo-dark-mode .thread-btn{border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode form.editor li button.selector-btn{background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode form.editor li button.selector-btn.ak{background-color: #383b40;}
+.pressdo-dark-mode form.editor .c, .pressdo-dark-mode form.editor ul.selector{border-color: #383b40;}

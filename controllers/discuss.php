@@ -60,7 +60,7 @@ class WikiPage extends WikiCore
                     if($c['type'] == 'status' || $c['type'] == 'topic' || $c['type'] == 'document')
                         $cont = $c['content'];
                     else
-                        $cont = $this::readSyntax($c['content'], Config::get('mark'), ['thread' => true])['html'];
+                        $cont = $this::readSyntax($c['content'], Config::get('mark'), ['thread' => true]);
                     $blocked = ($c['hide_author'])? true:false;
 
                     $contr = explode(':', $c['contributor']);

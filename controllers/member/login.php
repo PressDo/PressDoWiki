@@ -31,7 +31,8 @@ class WikiPage extends WikiCore
                 $this->session->member = (object) [
                     'user_document_discuss' => null,
                     'username' => $l['username'],
-                    'gravatar_url' => $l['gravatar_url']
+                    'gravatar_url' => $l['gravatar_url'],
+                    'admin' => (in_array('admin', $sps))? true:false
                 ];
                 
                 

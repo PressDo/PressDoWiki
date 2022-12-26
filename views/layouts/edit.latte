@@ -58,7 +58,7 @@
         <label><input type="checkbox" name="agree" id="agree"> <span>{stripslashes($config['edit_agree_text'])|noescape}</span></label>
         <p n:if="!$wiki['session']['member']['username']" data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace: '@1@', $wiki['session']['ip']}</p>
         <div class="btn-area">
-            <button class="btn-blue btn btn-wideright" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
+            <button class="btn-blue pressdo-btn btn-wideright" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
         </div>
     </form>
 </div>

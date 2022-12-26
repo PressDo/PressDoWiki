@@ -6,7 +6,7 @@
                 <label data-pressdo-uploader for="fakeFileInput">{$lang['file_select']}</label>
                 <div class="ig">
                     <input data-pressdo-uploader id="fakeFileInput" type="text" readonly="readonly">
-                    <span><button id="fubtn" type="button" class="btn">Select</button></span>
+                    <span><button id="fubtn" type="button" class="pressdo-btn">Select</button></span>
                 </div>
             </div>
             <div class="g" data-pressdo-uploader>
@@ -59,7 +59,7 @@
             {if !$_SESSION['member']['username']}
                 <br><p data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace '@1@', $ip}</p>
             {/if}
-            <button class="editor btn-wideright btn-blue btn" type="button">{$lang['Upload']}</button>
+            <button class="editor btn-wideright btn-blue pressdo-btn" type="button">{$lang['Upload']}</button>
         </form>
     </div>
 </div>
