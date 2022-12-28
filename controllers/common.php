@@ -8,6 +8,8 @@ use PressDo\WikiParams as WP;
  */
 class WikiCore
 {
+    public $session, $api_config, $latte, $skin, $dataset, $server, $uri_data, $post, $error, $page, $alert;
+
     public function __construct()
     {
         require 'vendor/autoload.php';
@@ -44,9 +46,10 @@ class WikiCore
     {
         $this->latte = new \Latte\Engine;
         $this->latte->setTempDirectory('temp');
+        $this->latte->addFilter('formatTime', fn($time) => self::formatTime($time));
 
         $this->skin = new stdClass;
-        $this->skin->name = isset($this->member->skin)? $this->member->skin_name : Config::get('default_skin');
+        $this->skin->name = isset($this->session->member->settings->skin)? $this->session->member->settings->skin_name : Config::get('default_skin');
         $this->skin->config = json_decode(file_get_contents('skins/'.$this->skin->name.'/config.json'), true);
     }
 
@@ -98,14 +101,18 @@ class WikiCore
             'error' => (array) $this->error,
             'alert' => (array) $this->alert
         ];
-        
-        switch($this->uri_data->page){
-            case 'admin':
-            case 'member':
-                $innerLayout = $this->latte->renderToString('views/layouts/'.$this->uri_data->page.'/'.$this->uri_data->title.'.latte', $paramSet);
-                break;
-            default:
-                $innerLayout = $this->latte->renderToString('views/layouts/'.$this->dataset['page']['view_name'].'.latte', $paramSet);
+
+        if($this->dataset['page']['view_name'] == 'error'){
+            $innerLayout = $this->latte->renderToString('views/layouts/'.$this->dataset['page']['view_name'].'.latte', $paramSet);
+        }else{
+            switch($this->uri_data->page){
+                case 'admin':
+                case 'member':
+                    $innerLayout = $this->latte->renderToString('views/layouts/'.$this->uri_data->page.'/'.$this->uri_data->title.'.latte', $paramSet);
+                    break;
+                default:
+                    $innerLayout = $this->latte->renderToString('views/layouts/'.$this->dataset['page']['view_name'].'.latte', $paramSet);
+            }
         }
 
         

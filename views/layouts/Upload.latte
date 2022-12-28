@@ -56,7 +56,7 @@
                 <input data-pressdo-edit-summary type="text" name="summary" id="logInput">
             </div>
             <span>{stripslashes($config['EditAgreeText'])}</span>
-            {if !$_SESSION['member']['username']}
+            {if !$wiki['session']['member']['username']}
                 <br><p data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace '@1@', $ip}</p>
             {/if}
             <button class="editor btn-wideright btn-blue pressdo-btn" type="button">{$lang['Upload']}</button>

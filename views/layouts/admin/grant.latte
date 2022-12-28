@@ -1,21 +1,25 @@
 <div class="wiki-content">
-    <div n:if="$data['errbox']" class="a e">
+    <div n:if="$wiki['page']['data']['errbox']" class="a e">
         <strong>{$lang['msg']['error']}</strong>
-        <span>{$data['errbox']}</span>
+        <span>{$lang['msg'][$wiki['page']['data']['errbox']]}</span>
     </div>
-    <form method="POST" action="{$_SERVER['REQUEST_URI']}">
-        Username <input data-pressdo-acl-span type="text" name="username">
+    <form method="GET" action="{$request_uri}">
+        <div class="form c">
+            <label for="usernameInput">Username</label>
+            <input class="pressdo-form" data-pressdo-acl-span type="text" id="usernameInput" name="username">
+        </div>
         <div class="btn-area">
-            <button class="btn-blue btn" type="submit">{$lang['confirm']}</button>
+            <button class="btn-blue pressdo-btn" type="submit">{$lang['confirm']}</button>
         </div>
     </form>
-    <form n:if="$_GET['username']" method="POST" action="{$_SERVER['REQUEST_URI']}">
-        <ul data-pressdo-grant>
-            <h3>{$_GET['username']}<input type="hidden" name="member" value="{$_GET['username']}"></h3>
-            <li n:foreach="$data['perms'] as $p">{$p} <input type="checkbox" name="perms[]" value="{$p}" n:attr="checked: in_array($p, $data['have'])"></li>
-        </ul>
+    <form n:if="$wiki['page']['data']['username']" method="POST" action="{$request_uri}">
+        <h3>{$wiki['page']['data']['username']}</h3>
+        <div n:foreach="$wiki['page']['data']['perms'] as $p" class="c form">
+            <label for="{$p}">{$p}</label>
+            <input type="checkbox" class="pressdo-form" id="{$p}" name="permissions[]" value="{$p}" n:attr="checked: in_array($p, $wiki['page']['data']['have'])">
+        </div>
         <div class="btn-area">
-            <button class="btn-blue btn" type="submit">{$lang['confirm']}</button>
+            <button class="btn-blue pressdo-btn" type="submit">{$lang['confirm']}</button>
         </div>
     </form>
 </div>

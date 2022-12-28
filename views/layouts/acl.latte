@@ -28,9 +28,9 @@
                     </thead>
                     <tbody data-pressdo-acl-part>
                         <tr n:if="!$acls[$a][$A][0]" data-pressdo-acl-part><td colspan="5" data-pressdo-acl-part>({$lang['msg']['empty_set_'.$a.'acl']})</td></tr>
-                        {var $aclcnt = count($acls[$a][$A])}
+                        {var $aclcnt = ($acls[$a][$A]|length)}
                         {for $i=0; $i<$aclcnt; ++$i}
-                            {var $acls[$a][$A][$i]['expired'] = ($acls[$a][$A][$i]['expired'] === 0)? $lang['acl']['forever'] : date("Y-m-d H:i:s",$acls[$a][$A][$i]['expired'])}
+                            {var $acls[$a][$A][$i]['expired'] = ($acls[$a][$A][$i]['expired'] === 0)? $lang['acl']['forever'] : ($acls[$a][$A][$i]['expired']|date: 'Y-m-d H:i:s')}
                             <tr data-pressdo-acl-part><td data-pressdo-acl-part>
                                 {$i+1}</td><td data-pressdo-acl-part>
                                 {$acls[$a][$A][$i]['condition']}</td><td data-pressdo-acl-part>
@@ -63,7 +63,7 @@
                             <option data-pressdo-acl-change value="contributor">{$lang['perm']['contributor']}</option> 
                             <option data-pressdo-acl-change value="match_username_and_document_title">{$lang['perm']['match_username_and_document_title']}</option>
                         </select>
-                        <input id="ct_r" i="{$a.'-'.$A}" name="" type="hidden" data-pressdo-acl-span data-pressdo-acl-change>
+                        <input id="ct_r" i="{$a.'-'.$A}" name="" type="hidden" class="pressdo-form" data-pressdo-acl-change>
                     </div>
                 </div> 
                 <div data-pressdo-acl-change class="g">
@@ -79,35 +79,35 @@
                 <div data-pressdo-acl-change class="g">
                     <label data-pressdo-acl-change>Duration :</label> 
                     <div data-pressdo-acl-change>
-                        <span data-pressdo-acl-span data-pressdo-acl-change>
-                            <input id="dr" name="duration_raw" data-pressdo-acl-span type="hidden" name="0" value="0" i="{$a.'-'.$A}">
-                            <select id="duration" data-pressdo-acl-span i="{$a.'-'.$A}">
-                                <option data-pressdo-acl-span value="0">{$lang['acl']['forever']}</option>
-                                <option data-pressdo-acl-span value="300">{$lang['acl']['300s']}</option>
-                                <option data-pressdo-acl-span value="600">{$lang['acl']['600s']}</option>
-                                <option data-pressdo-acl-span value="1800">{$lang['acl']['1800s']}</option>
-                                <option data-pressdo-acl-span value="3600">{$lang['acl']['3600s']}</option>
-                                <option data-pressdo-acl-span value="7200">{$lang['acl']['7200s']}</option>
-                                <option data-pressdo-acl-span value="86400">{$lang['acl']['86400s']}</option>
-                                <option data-pressdo-acl-span value="259200">{$lang['acl']['259200s']}</option>
-                                <option data-pressdo-acl-span value="432000">{$lang['acl']['432000s']}</option>
-                                <option data-pressdo-acl-span value="604800">{$lang['acl']['604800s']}</option>
-                                <option data-pressdo-acl-span value="1209600">{$lang['acl']['1209600s']}</option>
-                                <option data-pressdo-acl-span value="1814400">{$lang['acl']['1814400s']}</option>
-                                <option data-pressdo-acl-span value="2419200">{$lang['acl']['2419200s']}</option>
-                                <option data-pressdo-acl-span value="4838400">{$lang['acl']['4838400s']}</option>
-                                <option data-pressdo-acl-span value="7257600">{$lang['acl']['7257600s']}</option>
-                                <option data-pressdo-acl-span value="14515200">{$lang['acl']['14515200s']}</option>
-                                <option data-pressdo-acl-span value="29030400">{$lang['acl']['29030400s']}</option> 
-                                <option data-pressdo-acl-span value="raw">{$lang['acl']['raw']}</option>
+                        <span class="pressdo-form" data-pressdo-acl-change>
+                            <input id="dr" name="duration_raw" class="pressdo-form" type="hidden" name="0" value="0" i="{$a.'-'.$A}">
+                            <select id="duration" class="pressdo-form" i="{$a.'-'.$A}">
+                                <option class="pressdo-form" value="0">{$lang['acl']['forever']}</option>
+                                <option class="pressdo-form" value="300">{$lang['acl']['300s']}</option>
+                                <option class="pressdo-form" value="600">{$lang['acl']['600s']}</option>
+                                <option class="pressdo-form" value="1800">{$lang['acl']['1800s']}</option>
+                                <option class="pressdo-form" value="3600">{$lang['acl']['3600s']}</option>
+                                <option class="pressdo-form" value="7200">{$lang['acl']['7200s']}</option>
+                                <option class="pressdo-form" value="86400">{$lang['acl']['86400s']}</option>
+                                <option class="pressdo-form" value="259200">{$lang['acl']['259200s']}</option>
+                                <option class="pressdo-form" value="432000">{$lang['acl']['432000s']}</option>
+                                <option class="pressdo-form" value="604800">{$lang['acl']['604800s']}</option>
+                                <option class="pressdo-form" value="1209600">{$lang['acl']['1209600s']}</option>
+                                <option class="pressdo-form" value="1814400">{$lang['acl']['1814400s']}</option>
+                                <option class="pressdo-form" value="2419200">{$lang['acl']['2419200s']}</option>
+                                <option class="pressdo-form" value="4838400">{$lang['acl']['4838400s']}</option>
+                                <option class="pressdo-form" value="7257600">{$lang['acl']['7257600s']}</option>
+                                <option class="pressdo-form" value="14515200">{$lang['acl']['14515200s']}</option>
+                                <option class="pressdo-form" value="29030400">{$lang['acl']['29030400s']}</option> 
+                                <option class="pressdo-form" value="raw">{$lang['acl']['raw']}</option>
                             </select>
-                            <input id="dr_e" data-pressdo-acl-span type="hidden" name="0" value="0" i="{$a.'-'.$A}">
-                            <select id="du" data-pressdo-acl-span v="none" i="{$a.'-'.$A}">
-                                <option data-pressdo-acl-span value="1">{$lang['acl']['second']}</option>
-                                <option data-pressdo-acl-span value="60">{$lang['acl']['minute']}</option>
-                                <option data-pressdo-acl-span value="3600">{$lang['acl']['hour']}</option>
-                                <option data-pressdo-acl-span value="86400">{$lang['acl']['day']}</option>
-                                <option data-pressdo-acl-span value="604800">{$lang['acl']['week']}</option>
+                            <input id="dr_e" class="pressdo-form" type="hidden" name="0" value="0" i="{$a.'-'.$A}">
+                            <select id="du" class="pressdo-form" v="none" i="{$a.'-'.$A}">
+                                <option class="pressdo-form" value="1">{$lang['acl']['second']}</option>
+                                <option class="pressdo-form" value="60">{$lang['acl']['minute']}</option>
+                                <option class="pressdo-form" value="3600">{$lang['acl']['hour']}</option>
+                                <option class="pressdo-form" value="86400">{$lang['acl']['day']}</option>
+                                <option class="pressdo-form" value="604800">{$lang['acl']['week']}</option>
                             </select>
                         </span>
                     </div>

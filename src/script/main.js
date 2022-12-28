@@ -144,7 +144,7 @@ if(q('div#r textarea.editor') !== null){
             text: x
         })
 
-        xhr.open('POST', window.location.protocol + '//' + window.location.host + apiuri)
+        xhr.open('POST', window.location.protocol + '//' + window.location.host + '/api/preview')
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8')
         xhr.onreadystatechange = () => {
             if(xhr.readyState === xhr.DONE && xhr.status === 200) {

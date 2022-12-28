@@ -1,82 +1,33 @@
-global $lang, $conf, $_ns, $uri;
-list($keyword) = $args;
-?>
-<head>
-    <title> <?=$lang['search']?> - <?=$conf['SiteName']?> </title>
-</head>
-<div data-pressdo-content-header>
-    <h1 data-pressdo-doc-title><?=$lang['search']?></h1>
-</div>
 <div class="wiki-content">
     <div>
         <form class="spacing-ud" method="GET">
             <input type="hidden" name="page" value="Search">
             <select class="search" name="namespace">
-                <?php
-                foreach(array_keys($_ns) as $n){
-                    ?><option value="<?=$_ns[$n]?>"><?=$_ns[$n]?></option><?php
-                }
-                ?>
+                <option n:foreach="array_keys($_ns) as $n" value="{$_ns[$n]}">{$_ns[$n]}</option>
             </select>
             <select class="search" name="target">
-                <option value="title_content"><?=$lang['search:title_content']?></option>
-                <option value="title"><?=$lang['search:title']?></option>
-                <option value="content"><?=$lang['search:content']?></option>
-                <option value="raw"><?=$lang['search:raw']?></option>
+                <option value="title_content">{$lang['search']['title_content']}</option>
+                <option value="title">{$lang['search']['title']}</option>
+                <option value="content">{$lang['search']['content']}</option>
+                <option value="raw">{$lang['search']['raw']}</option>
             </select>
             <input class="search" type="text" name="query">
-            <button type="submit" class="pressdo-btn btn-blue"><?=$lang['search']?></button>
+            <button type="submit" class="pressdo-btn btn-blue">{$lang['search']}</button>
         </form>
         <div class="a search">
             <div class="l">
-                <i class="ion-ios-arrow-forward"></i><?=$lang['msg:search_go_directly']?>
+                <i class="ion-ios-arrow-forward"></i>{$lang['msg']['search_go_directly']}
             </div>
             <div class="r">
-                <a class="bt-white" href="<?=$uri['wiki'].$keyword?>"><?=str_replace('@1@', "'$keyword'", $lang['search:go'])?></a>
+                <a class="bt-white" href="/w/{$keyword}">{=$lang['search']['go']|replace: '@1@', $keyword}</a>
             </div>
         </div>
         <div class="s">
-            <?=str_replace('@1@', $resultCount, $lang['search:count'])?> / <?=str_replace('@1@', $period, $lang['search:period'])?>
+            {=$lang['search']['count']|replace: '@1@', $resultCount} / {=$lang['search']['period']|replace: '@1@', $period}
         </div>
         <ul data-pressdo-blockhistory>
-        <?php foreach ($data['history'] as $h) {
-            ?><li>
-                <time datetime="<?=date("Y-m-d\TH:i:s", $h['datetime']-32400)?>.000Z"><?=date("Y-m-d H:i:s", $h['datetime'])?></time>
-                <?php if($h['author'] === null){
-                    $subject = 'div v="inline"><div v="inline-block"><a data-pressdo-user-ip>'.$h['author_ip'].'</a></div></div>';
-                }else{
-                    $subject = '<a data-pressdo-user-member>'.$h['author'].'</a>';
-                } ?>
-                <?=str_replace(['@1@','@2@'], [$subject, $h['content']['ip'].$h['content']['member']], $lang['msg:b_user'])?>
-                <i><?php
-                switch($h['action']){
-                    case 'aclgroup_add':
-                    case 'aclgroup_remove':
-                        ?>(<?=str_replace('@1@','<b>'.$h['content']['aclgroup'].'</b>',$lang['msg:b_'.$h['action']])?>)<?php
-                        break;
-                    case 'login_history':
-                    case 'grant':
-                        ?>(<?=$lang['msg:b_'.$h['action']]?>)<?php
-                        break;
-                }
-                if($h['content']['duration'] < 0)
-                    $l = $lang['msg:b_forever'];
-                elseif($h['content']['duration'] == null)
-                    $l = null;
-                else{
-                    $time = PressDo::formatTime(intval($h['content']['duration']));
-                    $timeSet = '';
-                    foreach (array_keys($time) as $t){
-                        if($time[$t] != 0)
-                            $timeSet .= ' '.$time[$t].$lang['acl:'.$t];
-                    }
-                    $l = str_replace('@1@', $timeSet, $lang['msg:b_for']);
-                } ?>
-                </i>
-                #<?=$h['content']['id']?> <?=$l?>
-                <?php if($h['action'] !== 'login_history') { ?><span data-pressdo-history-gray data-pressdo-history-log><?=$h['content']['memo'].$h['content']['granted']?></span><?php } ?>
-            </li><?php
-        }?>
+            <li n:foreach="$data['history'] as $h">
+            </li>
         </ul>
     </div>
 </div>

@@ -50,7 +50,7 @@ class WikiPage extends WikICore
             }
         }
 
-        $doc = Models::load($rawns, $title, $this->uri_data->rev);
+        $doc = Models::load($rawns, $title, $this->uri_data->query->rev);
 
         $this->session->baserev = ($exist) ? Models::get_version($rawns, $title) : 0;
         $this->session->raw = ($exist) ? $doc['content'] : '';

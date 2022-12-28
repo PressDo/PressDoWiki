@@ -29,7 +29,7 @@
         </div>
         <ul class="lists">
             <li data-pressdo-blockhistory n:foreach="$wiki['page']['data']['history'] as $h">
-                <time datetime="{date('Y-m-d\TH:i:s', $h['datetime']-32400)}.000Z">{date("Y-m-d H:i:s", $h['datetime'])}</time>
+                <time datetime="{$h['datetime']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$h['datetime']|date: "Y-m-d H:i:s"}</time>
                 {if $h['author'] === null}
                     {var $subject = '<div v="inline"><div v="inline-block"><a data-pressdo-user-ip>'.$h['author_ip'].'</a></div></div>';}
                 {else}

@@ -23,6 +23,18 @@ class baseModels {
             return self::$db;
     }
 
+    public static function member_exist($username): string|bool
+    {
+        $db = self::db();
+        $d = $db->prepare("SELECT username, count(*) as cnt FROM member WHERE username=?");
+        $d->execute([$username]);
+        $data = $d->fetch(\PDO::FETCH_ASSOC);
+        if($data['cnt'] < 1)
+            return false;
+        else
+            return $data['username'];
+    }
+
     /**
      * Get ID of the document.
      *
@@ -300,6 +312,9 @@ class baseModels {
         return intval($d->fetch(PDO::FETCH_ASSOC)['rev']);
     }
 
+    /**
+     * Get if certain document exists.
+     */
     public static function exist(string $rawns, string $title): bool
     {
         $db = self::db();
@@ -315,6 +330,9 @@ class baseModels {
             return false;
     }
     
+    /**
+     * check perms grantable with 'grant'
+     */
     public static function special_perms(string $username): array
     {
         $db = self::db();

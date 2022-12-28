@@ -9,7 +9,7 @@
         <p data-pressdo-discuss-more><a href="/discuss/{$uri_data['title']|escapeUrl}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
         <h3 data-pressdo-discuss-type>{$lang['page']['discuss']}</h3>
         <ul class="lists" data-pressdo-ul>
-        {var $cnt = count($wiki['page']['data']['thread_list'])}
+        {var $cnt = ($wiki['page']['data']['thread_list']|length)}
             <li n:for="$i=0; $i < $cnt; ++$i">
                 <a href="#s-{$i+1}">{$i+1}</a>.
                 <a href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a>
@@ -43,7 +43,7 @@
                                             <a {$str}>{$d['author'].$d['ip']}</a>
                                         </div>
                                     </div>
-                                    <span class="d"><time datetime="{date('Y-m-d\TH:i:s', $d['date']).'.000Z'}">{date('Y-m-d H:i:s', $d['date'])}</time></span>
+                                    <span class="d"><time datetime="{$d['date']|date: 'Y-m-d\TH:i:s'}.000Z">{$d['date']|date: 'Y-m-d H:i:s'}</time></span>
                                 </div>
                                 <div class="thread b {$sta}">
                                     <div>

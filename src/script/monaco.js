@@ -305,7 +305,7 @@
         let target = document.getElementById('monaco');
         require.config({
             paths: {
-                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/'+monacoVersion+'/min/vs',
+                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/'+a.g(q('meta[name="monaco-version"]'), 'content')+'/min/vs',
                 'namu': '../src/script',
             },
         });
@@ -397,7 +397,7 @@
                 renderWhitespace: 'all',
                 minimap: { enabled: false },
                 fontFamily: 'D2Coding, Consolas, "나눔고딕코딩", "Courier New", monospace',
-                value: JSON.parse(DocContent).c
+                value: q('textarea.editor#pressdo-anchor[name="content"]').innerHTML
             });
             //target.querySelector('textarea').style.display = 'none';
             

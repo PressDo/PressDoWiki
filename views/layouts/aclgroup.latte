@@ -23,52 +23,52 @@
         </li>
     </ul>
     <form data-pressdo-aclgroup method="POST" action="{$_SERVER['REQUEST_URI']}" class="a">
-        <input data-pressdo-aclgroup data-pressdo-acl-span type="hidden" name="group" value="{$api['currentgroup']}">
+        <input data-pressdo-aclgroup class="pressdo-form" type="hidden" name="group" value="{$api['currentgroup']}">
         <div data-pressdo-aclgroup class="g">
-            <select data-pressdo-aclgroup data-pressdo-acl-span name="mode" id="agmd">
+            <select data-pressdo-aclgroup class="pressdo-form" name="mode" id="agmd">
                 <option value="ip">{$lang['acl']['ip']}</option>
                 <option value="username">{$lang['acl']['username']}</option>
             </select>
-            <input data-pressdo-acl-span data-pressdo-aclgroup id="vl" type="text" name="ip" placeholder="CIDR">
+            <input class="pressdo-form" data-pressdo-aclgroup id="vl" type="text" name="ip" placeholder="CIDR">
             <p n:if="$err[1]['username']" class="errmsg">{$lang['msg']['err_wrong_username']}</p>
             <p n:if="$err[1]['ip']" class="errmsg">{$lang['msg']['invalid_cidr']}</p>
         </div>
         <div data-pressdo-aclgroup class="g">
             <label data-pressdo-aclgroup for="noteInput">{$lang['acl']['memo']} :</label>
-            <input data-pressdo-acl-span data-pressdo-aclgroup type="text" id="noteInput" name="note">
+            <input class="pressdo-form" data-pressdo-aclgroup type="text" id="noteInput" name="note">
             <p n:if="$err[1]['note']" id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace '@1@', 'note'}</p>
         </div>
         <div data-pressdo-aclgroup class="g">
             <label data-pressdo-aclgroup>{$lang['acl']['expire']} :</label>
             <span>
-                <input id="dr" name="duration_raw" data-pressdo-acl-span="" type="hidden" value="0" i="aclgroup">
-                <select data-pressdo-acl-span id="dur" i="aclgroup">
-                    <option data-pressdo-acl-span value="0">{$lang['acl']['forever']}</option>
-                    <option data-pressdo-acl-span value="300">{$lang['acl']['300s']}</option>
-                    <option data-pressdo-acl-span value="600">{$lang['acl']['600s']}</option>
-                    <option data-pressdo-acl-span value="1800">{$lang['acl']['1800s']}</option>
-                    <option data-pressdo-acl-span value="3600">{$lang['acl']['3600s']}</option>
-                    <option data-pressdo-acl-span value="7200">{$lang['acl']['7200s']}</option>
-                    <option data-pressdo-acl-span value="86400">{$lang['acl']['86400s']}</option>
-                    <option data-pressdo-acl-span value="259200">{$lang['acl']['259200s']}</option>
-                    <option data-pressdo-acl-span value="432000">{$lang['acl']['432000s']}</option>
-                    <option data-pressdo-acl-span value="604800">{$lang['acl']['604800s']}</option>
-                    <option data-pressdo-acl-span value="1209600">{$lang['acl']['1209600s']}</option>
-                    <option data-pressdo-acl-span value="1814400">{$lang['acl']['1814400s']}</option>
-                    <option data-pressdo-acl-span value="2419200">{$lang['acl']['2419200s']}</option>
-                    <option data-pressdo-acl-span value="4838400">{$lang['acl']['4838400s']}</option>
-                    <option data-pressdo-acl-span value="7257600">{$lang['acl']['7257600s']}</option>
-                    <option data-pressdo-acl-span value="14515200">{$lang['acl']['14515200s']}</option>
-                    <option data-pressdo-acl-span value="29030400">{$lang['acl']['29030400s']}</option> 
-                    <option data-pressdo-acl-span value="raw">{$lang['acl']['raw']}</option>
+                <input id="dr" name="duration_raw" class="pressdo-form"="" type="hidden" value="0" i="aclgroup">
+                <select class="pressdo-form" id="dur" i="aclgroup">
+                    <option class="pressdo-form" value="0">{$lang['acl']['forever']}</option>
+                    <option class="pressdo-form" value="300">{$lang['acl']['300s']}</option>
+                    <option class="pressdo-form" value="600">{$lang['acl']['600s']}</option>
+                    <option class="pressdo-form" value="1800">{$lang['acl']['1800s']}</option>
+                    <option class="pressdo-form" value="3600">{$lang['acl']['3600s']}</option>
+                    <option class="pressdo-form" value="7200">{$lang['acl']['7200s']}</option>
+                    <option class="pressdo-form" value="86400">{$lang['acl']['86400s']}</option>
+                    <option class="pressdo-form" value="259200">{$lang['acl']['259200s']}</option>
+                    <option class="pressdo-form" value="432000">{$lang['acl']['432000s']}</option>
+                    <option class="pressdo-form" value="604800">{$lang['acl']['604800s']}</option>
+                    <option class="pressdo-form" value="1209600">{$lang['acl']['1209600s']}</option>
+                    <option class="pressdo-form" value="1814400">{$lang['acl']['1814400s']}</option>
+                    <option class="pressdo-form" value="2419200">{$lang['acl']['2419200s']}</option>
+                    <option class="pressdo-form" value="4838400">{$lang['acl']['4838400s']}</option>
+                    <option class="pressdo-form" value="7257600">{$lang['acl']['7257600s']}</option>
+                    <option class="pressdo-form" value="14515200">{$lang['acl']['14515200s']}</option>
+                    <option class="pressdo-form" value="29030400">{$lang['acl']['29030400s']}</option> 
+                    <option class="pressdo-form" value="raw">{$lang['acl']['raw']}</option>
                 </select>
-                <input id="dr_e" data-pressdo-acl-span type="hidden" name="0" value="0" i="aclgroup">
-                <select id="du" data-pressdo-acl-span v="none" i="aclgroup">
-                    <option data-pressdo-acl-span value="1">{$lang['acl']['second']}</option>
-                    <option data-pressdo-acl-span value="60">{$lang['acl']['minute']}</option>
-                    <option data-pressdo-acl-span value="3600">{$lang['acl']['hour']}</option>
-                    <option data-pressdo-acl-span value="86400">{$lang['acl']['day']}</option>
-                    <option data-pressdo-acl-span value="604800">{$lang['acl']['week']}</option>
+                <input id="dr_e" class="pressdo-form" type="hidden" name="0" value="0" i="aclgroup">
+                <select id="du" class="pressdo-form" v="none" i="aclgroup">
+                    <option class="pressdo-form" value="1">{$lang['acl']['second']}</option>
+                    <option class="pressdo-form" value="60">{$lang['acl']['minute']}</option>
+                    <option class="pressdo-form" value="3600">{$lang['acl']['hour']}</option>
+                    <option class="pressdo-form" value="86400">{$lang['acl']['day']}</option>
+                    <option class="pressdo-form" value="604800">{$lang['acl']['week']}</option>
                 </select>
             </span>
             <p n:if="$err[1]['expire']" class="errmsg">{=$lang['msg']['err_required_input']|replace '@1@', 'expire'}</p>
@@ -86,7 +86,7 @@
     </div>
     <form class="s" data-pressdo-aclgroup method="GET">
         <div data-pressdo-aclgroup class="g">
-            <input data-pressdo-acl-span type="text" name="from" placeholder="ID">
+            <input class="pressdo-form" type="text" name="from" placeholder="ID">
             <button class="pressdo-btn btn-blue" type="submit">Go</button>
         </div>
     </form>
@@ -111,17 +111,17 @@
         </thead>
         <tbody>
             <td n:if="count($api['groupmembers']) === 0" data-pressdo-aclgroup class="s" colspan="5">{$lang['msg:empty_aclgroup']}</td>
-            {if count($api['groupmembers']) !== 0}
+            {if ($api['groupmembers']|length) !== 0}
                 <tr n:foreach="$api['groupmembers'] as $li">
                     <td data-pressdo-aclgroup class="s">{$li['id']}</td>
                     <td data-pressdo-aclgroup class="s">{$li['cidr'].$li['member']}</td>
                     <td data-pressdo-aclgroup class="s">{$li['memo']}</td>
-                    <td data-pressdo-aclgroup class="s">{date('Y-m-d H:i:s', $li['date'])}</td>
+                    <td data-pressdo-aclgroup class="s">{$li['date']|date:'Y-m-d H:i:s'}</td>
                     <td data-pressdo-aclgroup class="s">
                     {if $li['expiry'] == 0}
                         {$lang['acl']['forever']}
                     {else}
-                        {date('Y-m-d H:i:s', $li['expiry'])}
+                        {$li['expiry']|date: 'Y-m-d H:i:s'}
                     {/if}
                     </td>
                     {if !$api['accessible']}
@@ -153,8 +153,8 @@
                     <span>{$lang['msg'][$err[0]]}</span>
                 </div>
                 <form data-pressdo-aclgroup-remove method="POST" action="{$_SERVER['REQUEST_URI']}">
-                    <input data-pressdo-aclgroup data-pressdo-acl-span id="idto_remove" type="hidden" name="id" value>
-                    <input data-pressdo-aclgroup data-pressdo-acl-span type="hidden" name="group" value="{$api['currentgroup']}">
+                    <input data-pressdo-aclgroup class="pressdo-form" id="idto_remove" type="hidden" name="id" value>
+                    <input data-pressdo-aclgroup class="pressdo-form" type="hidden" name="group" value="{$api['currentgroup']}">
                     <h4 data-pressdo-aclgroup-remove>{$lang['acl']['remove_member']}</h4>
                     <div>
                         <p data-pressdo-aclgroup-remove>ID:</p>
@@ -162,7 +162,7 @@
                     </div>
                     <div>
                         <p data-pressdo-aclgroup-remove>{$lang['acl']['memo']}:</p>
-                        <input data-pressdo-aclgroup data-pressdo-acl-span type="text" name="note">
+                        <input data-pressdo-aclgroup class="pressdo-form" type="text" name="note">
                         <p n:if="$err[1]['note']" id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace '@1@', 'note'}</p>
                     </div>
                     <div data-pressdo-buttons-right>
@@ -183,11 +183,13 @@
                     <span>{$lang['msg'][$err[0]]}</span>
                 </div>
                 <form data-pressdo-aclgroup-remove method="POST" action="{$_SERVER['REQUEST_URI']}">
-                    <h4 data-pressdo-aclgroup-remove>{$lang['aclgroup:group_add']}</h4>
+                    <h4 data-pressdo-aclgroup-remove>{$lang['aclgroup']['group_add']}</h4>
                     <div>
-                        <p data-pressdo-aclgroup-remove>{$lang['aclgroup:group_name']}:</p>
-                        <input data-pressdo-aclgroup data-pressdo-acl-span type="text" name="name">
-                        <?php if($err[1]['name']) {?><p id="erruser" class="errmsg">{str_replace('@1@', 'name', $lang['msg:err_required_input'])}</p><?php } ?>
+                        <p data-pressdo-aclgroup-remove>{$lang['aclgroup']['group_name']}:</p>
+                        <input data-pressdo-aclgroup class="pressdo-form" type="text" name="name">
+                        {if $err[1]['name']}
+                            <p id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'name'}</p>
+                        {/if}
                         <br><input type="checkbox" name="isAdmin[]" value="true"> 관리자만 보이기
                     </div>
                     <div data-pressdo-buttons-right>

@@ -4,11 +4,11 @@
         <span>{$lang['msg'][$wiki['page']['data']['error']]}</span>
     </div>
     <form data-pressdo-register id="loginform" name="loginform" method="POST" action="/member/login?redirect={$wiki['page']['data']['redirect']|escapeUrl}">
-        <div data-pressdo-loginform class="c">
+        <div data-pressdo-loginform class="c form">
             <label data-pressdo-loginform for="username">Username</label>
             <input data-pressdo-formdata type="text" id="username" name="username" required>
         </div>
-        <div data-pressdo-loginform class="c">
+        <div data-pressdo-loginform class="c form">
             <label data-pressdo-loginform for="password">Password</label>
             <input data-pressdo-formdata type="password" id="password" name="password" required>
         </div>
@@ -20,7 +20,7 @@
         </div>
         <a data-pressdo-loginform class="a" href="/member/recover_password">[{$lang['auth']['recover_password']}]</a>
         <div class="btn-area">
-            <a class="btn" href="/member/signup">{$lang['auth']['signup']}</a>
+            <a class="pressdo-btn" href="/member/signup">{$lang['auth']['signup']}</a>
             <button type="submit" class="btn-blue btn" id="log-in">{$lang['auth']['login']}</button>
         </div>
     </form>

@@ -107,7 +107,7 @@ class WikiACL
     public static function check_perms(string $perm, object $session, string $title='') : bool
     {
         // get permission data of user
-        if(!self::$acc_perms || !self::$doc_perms){
+        if(!isset(self::$acc_perms) || !isset(self::$doc_perms)){
             if($session->member?->username !== null)
                 self::$acc_perms = Models::get_account_perms($session->member?->username);
             else

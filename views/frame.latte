@@ -5,12 +5,12 @@
     <meta name="author" content="PRASEOD-">
     <meta name="title" content="{$config['sitename']}">
     <meta name="description" content="{$config['description']}">
+    <meta name="monaco-version" content="{$config['editor_version']}">
     <meta http-equiv="Content-Type" content="text/html;">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{$config['sitename']}">
-    <meta property="og:description" content="{$config['description']}?>">
-    <script>apiuri = '/internal/preview'</script>
+    <meta property="og:description" content="{$config['description']}">
     <link rel="stylesheet" href="/src/style/base.css">
     <script defer src="/src/script/main.js"></script>
     <title> {$wiki['page']['title']} - {$config['sitename']} </title>
@@ -22,10 +22,6 @@
         <script defer src="/src/script/namumark.js"></script>
     {/if}
     {if $wiki['page']['view_name'] == 'edit'}
-        <script>
-        monacoVersion = {$config['editor_version']};
-        DocContent = {json_encode(['c' => $wiki['page']['data']['editor']['raw']], JSON_UNESCAPED_UNICODE)};
-        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/{$config['editor_version']}/min/vs/loader.js"></script>
         <script src="/src/script/monaco.js"></script>
     {/if}

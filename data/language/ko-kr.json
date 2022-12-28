@@ -182,6 +182,7 @@
         "b_grant": "사용자 권한 설정",
         "b_forever": "(영구적으로)",
         "b_for": "@1@ 동안",
+        "no_change": "변경 사항이 없습니다.",
         "admin_no_permission": "권한이 부족합니다.",
         "notice": "[알림]",
         "error": "[오류!]",

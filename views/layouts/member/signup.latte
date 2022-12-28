@@ -7,7 +7,7 @@
         {* 초기화면 *}
         {$_SESSION['MAIL_CHECK'] = true}
         <form data-pressdo-register method="POST" id="regform" name="regform" action="/member/signup">
-            <div data-pressdo-loginform class="c">
+            <div data-pressdo-loginform class="c form">
                 <label data-pressdo-loginform for="email">{$lang['auth']['email']}</label>
                 <input data-pressdo-formdata type="email" id="email" name="email">
                 <p id="errmail" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['email']}</p>
@@ -40,8 +40,8 @@
         {* 이메일 인증대기 *}
         <p>{=$lang['msg']['sent_email']|replace '@1@', $_POST['email']}</p>
         <ul>
-            <li>{$lang['msg:check_spam']}</li>
-            <li>{$lang['msg:email_expiry']}</li>
+            <li>{$lang['msg']['check_spam']}</li>
+            <li>{$lang['msg']['email_expiry']}</li>
         </ul>
     {elseif $mode === 3}
         {* 계정생성 완료 *}
@@ -50,23 +50,23 @@
     {elseif $mode === 2}
         {* 메일인증 완료 *}
         <form data-pressdo-register id="signupform" name="signupform" method="POST" action="/member/signup">
-            <div data-pressdo-loginform class="c">
+            <div data-pressdo-loginform class="c form">
                 <label data-pressdo-loginform for="username">{$lang['auth']['username']}</label>
                 <input data-pressdo-formdata type="text" id="username" name="username">
                 <p id="erruser1" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['username']}</p><p id="erruser2" class="errmsg" v="none">{$lang['msg']['err_username_exists']}</p><p id="erruser3" class="errmsg" v="none">{$lang['msg']['err_username_format']}</p>
             </div>
-            <div data-pressdo-loginform class="c">
+            <div data-pressdo-loginform class="c form">
                 <label data-pressdo-loginform for="password">{$lang['auth']['password']}</label>
                 <input data-pressdo-formdata type="password" id="password" name="password">
                 <p id="errpwd" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['password']}</p>
             </div>
-            <div data-pressdo-loginform class="c">
+            <div data-pressdo-loginform class="c form">
                 <label data-pressdo-loginform for="password2">{$lang['auth']['password2']}</label>
                 <input data-pressdo-formdata type="password" id="password2" name="password2">
                 <p id="errpwd21" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace '@1@', $lang['auth']['password2']}</p><p id="errpwd22" class="errmsg" v="none">{$lang['msg']['err_wrong_password2']}</p>
             </div>
             <b>{$lang['msg']['cannot_delete_account']}</b>
-            <button type="button" class="btn-blue btn" id="signup">{$lang['auth']['signup_submit']}</button>
+            <button type="button" class="btn-blue pressdo-btn" id="signup">{$lang['auth']['signup_submit']}</button>
         </form>
     
     {/if}

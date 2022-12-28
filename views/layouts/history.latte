@@ -33,7 +33,7 @@
                     {var $color = 'red'}
                     {var $flag = ''}
                 {/if}
-                <li data-pressdo-history><time datetime="{date('Y-m-d\TH:i:s',$d['date']-32400).'.000Z'}">{date('Y-m-d H:i:s',$d['date'])}</time> 
+                <li data-pressdo-history><time datetime="{$d['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$d['date']|date: 'Y-m-d H:i:s'}</time> 
                     <span data-pressdo-history-menu>(<a href="/w/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['view']}</a> | 
                     <a href="/raw/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">RAW</a> | 
                     {*<a href="<?=$uri['blame'].$Doc.$uri['prefix'].'rev={$d['rev']}">Blame</a> | *}
@@ -45,7 +45,7 @@
                             <a href="<?=$uri['hide'].$Doc.'?rev='.$d['rev']?>">숨기기</a>
                     }*})
                     </span>
-                    <input data-pressdo-history-radio type="radio" name="oldrev" value="{$d['rev']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="rev" value="{$d['rev']}"  v="inline-block">
+                    <input data-pressdo-history-radio type="radio" name="oldrev" value="{$d['rev']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="rev" value="{$d['rev']}" v="inline-block">
                     <i>{switch $d['logtype']}
                         {case 'revert'}
                             ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})

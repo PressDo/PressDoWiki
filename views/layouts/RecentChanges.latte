@@ -57,9 +57,9 @@
                             <a data-pressdo-recent-user style="{$he['style']}" data-pressdo-user-member>{$he['author']}</a>
                         {/if}
                         </div></td>
-                        <td data-pressdo-recent-changes><time datetime="{date('Y-m-d\TH:i:s', $he['date']-32400)}">{date('Y-m-d H:i:s', $he['date'])}</time></td>
+                        <td data-pressdo-recent-changes><time datetime="{$he['date']-32400|date: 'Y-m-d\TH:i:s'}">{$he['date']|date:'Y-m-d H:i:s'}</time></td>
                     </tr>
-                    <tr n:if="strlen($he['log']) > 0 || $he['logtype'] !== 'modify'" data-pressdo-recent-changes>
+                    <tr n:if="($he['log']|length) > 0 || $he['logtype'] !== 'modify'" data-pressdo-recent-changes>
                         <td data-pressdo-recent-changes colspan="3">
                             <span data-pressdo-recent-changes>{$he['log']}</span>
                             <i>
