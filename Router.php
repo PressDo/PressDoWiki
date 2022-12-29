@@ -6,10 +6,12 @@ class Router {
     /**
      * Parse requested URI
      */
-    public static function handle_uri($request_uri, $query_string) : object
+    public static function handle_uri($request_uri, $query_string) : object|null
     {   
-        if($request_uri == '/')
+        if($request_uri == '/'):
             Header('Location: /w/'.rawurlencode(Config::get('frontpage')));
+            exit;
+        endif;
 
         $uriset = explode('/', explode('?', $request_uri)[0]);
         $uri_data = (object) [
@@ -28,6 +30,7 @@ class Router {
         switch($uri_data->page){
             case 'member':
             case 'admin':
+            case 'api':
                 require 'controllers/'.$uri_data->page.'/'.$uri_data->title.'.php';
                 break;
             default:

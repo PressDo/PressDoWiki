@@ -215,7 +215,7 @@ class NamuMark {
         // 리다이렉트 문법
         if(self::startsWith($text, '#') && preg_match('/^#(?:redirect|넘겨주기) (.+)$/im', $text, $target) && $this->inThread !== false) {
             array_push($this->links, ['target'=>$target[1], 'type'=>'redirect']);
-            @header('Location: '.$this->uriset['wiki'].'/'.self::encodeURI($target[1]));
+            @header('Location: /w/'.self::encodeURI($target[1]));
             return;
         }
 
@@ -792,7 +792,7 @@ class NamuMark {
 
             //+ 부분 편집 기능 작업
             //+ content-s- 속성 추가 (문단 숨기기용)
-            $result .= '<span class="wiki-edit-section nm-cb"><a href="'.$this->uriset['edit'].$this->title.$this->uriprefix.'section='.$id.'" rel="nofollow">[편집]</a></span>
+            $result .= '<span class="wiki-edit-section nm-cb"><a href="/edit/'.$this->title.$this->uriprefix.'section='.$id.'" rel="nofollow">[편집]</a></span>
                             </span>
                         </h'.$level.'><div id="content-s-'.$id.'" class="wiki-heading-content" '.$folded.'>';
             $line = '';
@@ -998,7 +998,6 @@ class NamuMark {
             $wEngine->noredirect = $this->noredirect;
             $wEngine->prefix = $this->prefix;
             $wEngine->title = $this->title;
-            $wEngine->uriset = $this->uriset;
             $wEngine->uriprefix = $this->uriprefix;
 
             return '<div '.html_entity_decode($match[0]).'>'.htmlspecialchars_decode($wEngine->toHtml()).'</div>';
@@ -1163,7 +1162,7 @@ class NamuMark {
                 $href[0] = $this->title.$href[0];
             }
 
-            $targetUrl = $this->uriset['wiki'].self::encodeURI($href[0]);
+            $targetUrl = '/w/'.self::encodeURI($href[0]);
             if($this->wapRender && !empty($href[1])){
                 $title = $href[0];
                 if($this->pageExists($title) === false){

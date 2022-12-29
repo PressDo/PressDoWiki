@@ -140,15 +140,14 @@ if(q('div#r textarea.editor') !== null){
         var x = q('div#r textarea.editor').value
         g('editForm').content.value = x
         const xhr = new XMLHttpRequest()
-        const data = new URLSearchParams({
-            text: x
-        })
+        const data = new FormData()
+        data.append('text', x)
+        data.append('title', a.g(q('div.title h1 a'), 'href').split('/').slice(2).join('/'))
 
         xhr.open('POST', window.location.protocol + '//' + window.location.host + '/api/preview')
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8')
         xhr.onreadystatechange = () => {
             if(xhr.readyState === xhr.DONE && xhr.status === 200) {
-                q('div#p.editor').innerHTML = xhr.responseText
+                q('div#p.editor div.w').innerHTML = xhr.responseText
             }
         }
         xhr.send(data)

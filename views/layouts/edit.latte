@@ -49,7 +49,7 @@
                 <div id="monaco" class="editor showUnused"></div>
             </div><div n:class="$mobile ? a, editor" id="r">
                 <textarea class="editor" id="pressdo-anchor" name="content">{$wiki['page']['data']['editor']['raw']|noescape}</textarea>
-            </div><div id="p" class="p editor"></div>
+            </div><div id="p" class="p editor"><div class="w"></div></div>
         </div>
         <div class="g comment">
             <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
@@ -57,8 +57,7 @@
         </div>
         <label><input type="checkbox" name="agree" id="agree"> <span>{stripslashes($config['edit_agree_text'])|noescape}</span></label>
         <p n:if="!$wiki['session']['member']['username']" data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace: '@1@', $wiki['session']['ip']}</p>
-        <div class="btn-area">
-            <button class="btn-blue pressdo-btn btn-wideright" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
-        </div>
+        <button class="btn-blue pressdo-btn btn-wideright editor" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
+        <div class="clearfix"></div>
     </form>
 </div>

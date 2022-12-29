@@ -21,7 +21,7 @@ class Models extends baseModels
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT count(username) as cnt, `gravatar_url`, `username`, `password` FROM `member` WHERE `username`=?");
+            $d = $db->prepare("SELECT count(username) as cnt, `gravatar_url`, `username`, `password`, `skin` FROM `member` WHERE `username`=?");
             $d->execute([$id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 유저 조회 중 오류 발생');

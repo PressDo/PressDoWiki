@@ -32,7 +32,8 @@ class WikiPage extends WikiCore
                     'user_document_discuss' => null,
                     'username' => $l['username'],
                     'gravatar_url' => $l['gravatar_url'],
-                    'admin' => (in_array('admin', $sps))? true:false
+                    'admin' => (in_array('admin', $sps))? true:false,
+                    'settings' => ['skin' => $l['skin']]
                 ];
                 
                 

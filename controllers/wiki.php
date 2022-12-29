@@ -67,16 +67,6 @@ class WikiPage extends WikiCore
             $docid = Models::get_doc_id($rawns,$title);
             $lver = Models::get_version($rawns,$title);
 
-            if(isset($_GET['rev'])){
-                if(!is_numeric($_GET['rev']) || $_GET['rev'] > $lver || $_GET['rev'] < 1){
-                    $this->error->code = 'no_such_revision';
-                    return $page;
-                }
-                $rev = $_GET['rev'];
-                $page['title'] .= ' (r'.$_GET['rev'].' 판)';
-            }else
-                $rev = $lver;
-
             $doc = Models::load($rawns, $title, $rev);
 
             $content = $this::readSyntax($doc['content'], Config::get('mark'), [

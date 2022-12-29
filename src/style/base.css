@@ -208,7 +208,7 @@ div.r div.c.thread{min-width: 400px;max-width: 100%;display: inline-block;word-w
 div.r div.h.thread{margin: 0;padding: 7px 7px 7px 10px;}
 div.r div.c.thread span.d, form.d[data-pressdo-thread-show]{float: right;}
 div.r div.b.thread{padding: 13px;background: #f4f4f4;word-wrap: break-word;max-height: 500px;overflow-y: auto;}
-div.f.thread {clear:both;}
+div.f.thread, div.clearfix {clear:both;}
 div.r div.b.s.thread{background: #fc6;}
 div.r div.h.f.thread{background: #b0d3ad;}
 a.m.thread{display: block;background: #f4f4f4;border: 1px solid grey;width: 80px;text-align: center;font-weight: 700;padding: 5px;margin-bottom: 25px;margin-left: 40px;}
