@@ -48,11 +48,11 @@
                     <input data-pressdo-history-radio type="radio" name="oldrev" value="{$d['rev']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="rev" value="{$d['rev']}" v="inline-block">
                     <i>{switch $d['logtype']}
                         {case 'revert'}
-                            ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})
+                            ({=$lang['log']['revert']|replace: '@1@', $d['target_rev']})
                         {case 'delete', 'create'}
                             ({$lang['log'][$d['logtype']]})
                         {case 'move'}
-                            ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
+                            ({=$lang['log']['move']|replace: ['@1@' => $d['from'], '@2@' => $d['to']]})
                     {/switch}</i>
                     <strong>r{$d['rev']}</strong> <span>(<span data-pressdo-history-{$color}>{$flag.$d['count']}</span>)</span>
                     <div data-pressdo-history-menu style="display:inline;">

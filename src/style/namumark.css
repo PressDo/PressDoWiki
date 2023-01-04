@@ -44,6 +44,7 @@ code,kbd,pre,samp{font-family:Menlo,Monaco,Consolas,Courier New,monospace;font-s
 .w code,kbd{padding:.2rem .4rem; font-size:90%!important;}
 .w code.wiki-escape {padding:2px;background-color:transparent;border:none;border-radius:0;}
 .w pre{padding: 7px;background-color: #eee;border: 1px solid #ddd;border-radius: 3px;overflow-x: auto;}
+.w del{color:grey;}
 .w hr{margin: .5em 0;height: 0;box-sizing: content-box;border: 0;border-top: .0625rem solid #ccc;}
 .w .wiki-fn-content {white-space: nowrap;font-size: .8em;vertical-align: super;}
 .wiki-size.size-down-1 {font-size:.9258888889em}
