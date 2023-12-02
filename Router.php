@@ -3,9 +3,7 @@ namespace PressDo;
 require 'helpers/Config.php';
 use PressDo\Config;
 class Router {
-    /**
-     * Parse requested URI
-     */
+    // Parse requested URI
     public static function handle_uri($request_uri, $query_string) : object|null
     {   
         if($request_uri == '/'):
