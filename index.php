@@ -2,9 +2,11 @@
 namespace PressDo;
 use PressDo\WikiPage;
 use PressDo\Router;
+use PressDo\Config;
 
 require 'Router.php';
 
+date_default_timezone_set(Config::get('timezone'));
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 if(!session_id())
     session_start();
