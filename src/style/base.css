@@ -31,7 +31,9 @@ div.r div.c.thread{min-width: 100%;width: 100%;display: block;}
 
 p[data-pressdo-warning-unlogined]{margin-top: 0; margin-bottom: 1rem;font-weight: 700;}
 textarea[disabled][data-pressdo-thread]{cursor: not-allowed;background-color: #eceeef;opacity: 1;}
-button.pressdo-btn {display: inline-block;font-size: 1rem;font-weight: 400;line-height: 1.5;text-align: center;white-space: nowrap;vertical-align: middle;touch-action: manipulation;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;padding: 0.2rem 0.7rem;color: #373a3c;background-color: #fff;border: 0.0625rem solid #ccc;font-size: .9rem;text-decoration: none!important;}
+a.pressdo-btn, button.pressdo-btn{background-color: #fff;border: .0625rem solid #ccc;cursor: pointer;display: inline-block;font-size: 1rem;font-size: .9rem;font-weight: 400;line-height: 1.5;padding: .2rem .7rem;text-align: center;touch-action: manipulation;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;white-space: nowrap;}
+button.pressdo-btn {color: #373a3c;margin: 0;}
+a.pressdo-btn {color: #373a3c!important;text-decoration: none!important;vertical-align: middle;}
 button.pressdo-btn.square{border-radius:unset;}
 button.pressdo-btn.btn-blue{color: #fff;background-color: #0275d8;border-color: #0275d8;}
 button.pressdo-btn.btn-red{color: #fff;background-color: #d9534f;border-color: #d9534f;}

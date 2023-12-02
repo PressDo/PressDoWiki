@@ -1,6 +1,6 @@
 .pressdo-dark-mode .pressdo-btn:not([disabled]):active, 
 .pressdo-dark-mode .pressdo-btn:not([disabled]):hover {background-color: #2d2f34;border-color: #383b40;}
-.pressdo-dark-mode .pressdo-btn{background-color: #27292d;border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode .pressdo-btn{background-color: #27292d;border-color: #383b40;color: #ddd!important;}
 .pressdo-dark-mode form input.pressdo-form {background-color: #27292d;border-color: #383b40;color: #ddd;}
 
 /* Editor */
