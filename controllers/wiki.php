@@ -67,13 +67,14 @@ class WikiPage extends WikiCore
             $docid = Models::get_doc_id($rawns,$title);
             $lver = Models::get_version($rawns,$title);
 
+            
             $doc = Models::load($rawns, $title, $rev);
-
             $content = $this::readSyntax($doc['content'], Config::get('mark'), [
-                'title' => $this->page->title,
+                'title' => $this->uri_data->title,
                 'noredirect' => $this->uri_data->query->noredirect,
                 'db' => DB::getInstance(),
-                'namespace' => $this->namespaces
+                'namespace' => Namespaces::all(),
+                'thread' => false
             ]);
 
             $page['data'] = [
