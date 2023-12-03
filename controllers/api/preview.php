@@ -12,7 +12,8 @@ class WikiPage extends WikiCore
             'title' => $_POST['title'],
             'noredirect' => '1',
             'db' => DB::getInstance(),
-            'namespace' => $this->namespaces
+            'namespace' => Namespaces::all(),
+            'thread' => false
         ]);
 
         echo $content['html'];

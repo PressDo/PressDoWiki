@@ -75,16 +75,14 @@ class WikiCore
         switch($error_type){
             case 'DBCONNECT':
                 die('Cannot connect to database.');
-                break;
             case 'ClassNotFound':
                 die('Class Not Found');
-                break;
         }
     }
 
     /**
      * Returns HTML.
-     * @return HTML
+     * @return string
      */
     public function get_page() : string
     {
@@ -175,11 +173,11 @@ class WikiCore
      */
     public static function make_title(string $rawns, string $title): string
     {
-        global $lang, $_ns, $conf;
-        if($rawns == 'document' && $conf['UseShortURI'] === false)
+        global $lang, $_ns;
+        if($rawns == 'document' && Config::get('force_show_namespace') === false)
             return $title;
         else 
-            return $lang['ns:'.$rawns].$title;
+            return Namespaces::get($rawns).':'.$title;
     }
 
     /**
