@@ -1,0 +1,11 @@
+<div class="wiki-content">
+    <div n:if="$wiki['page']['data']['error']" class="a e">
+        <strong>{$lang['msg']['error']}</strong>
+        <span>{$lang['msg'][$wiki['page']['data']['error']]}</span>
+    </div>
+    <ul class="lists">
+        {foreach $wiki['page']['data']['starred_documents'] as $doc}
+            <li><a href="/w/{$doc['title']}">{$doc['title']}</a> (수정시각: <time datetime="{date('Y-m-d\TH:i:s', $doc['datetime'] - 32400)}.000Z">{date('Y-m-d H:i:s', $doc['datetime'])}</time>)</li>
+        {/foreach}
+    </ul>
+</div>

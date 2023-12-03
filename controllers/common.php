@@ -106,7 +106,7 @@ class WikiCore
             switch($this->uri_data->page){
                 case 'admin':
                 case 'member':
-                    $innerLayout = $this->latte->renderToString('views/layouts/'.$this->uri_data->page.'/'.$this->uri_data->title.'.latte', $paramSet);
+                    $innerLayout = $this->latte->renderToString('views/layouts/'.$this->uri_data->page.'/'.$this->uri_data->menu.'.latte', $paramSet);
                     break;
                 default:
                     $innerLayout = $this->latte->renderToString('views/layouts/'.$this->dataset['page']['view_name'].'.latte', $paramSet);

@@ -28,7 +28,7 @@ class baseModels {
         $db = self::db();
         $d = $db->prepare("SELECT username, count(*) as cnt FROM member WHERE username=?");
         $d->execute([$username]);
-        $data = $d->fetch(\PDO::FETCH_ASSOC);
+        $data = $d->fetch(PDO::FETCH_ASSOC);
         if($data['cnt'] < 1)
             return false;
         else
@@ -62,10 +62,33 @@ class baseModels {
     }
 
     /**
-     * Get ID of the document.
+     * Get title of the document with ID.
      *
-     * @param   string $id     Document namespace (raw)
-     * @return  array       Document ID
+     * @param   array $ids     Document ID (least 1 doc)
+     * @return  array       Document namespace, title
+     */
+    public static function get_bulk_doc_title(array $ids): array
+    {
+        $db = self::db();
+
+        try {
+            $ORSTATEMENT = str_repeat(',?', count($ids) - 1);
+            $c = $db->prepare("SELECT `docid`,`namespace`,`title` FROM `live_document_list` WHERE `docid` IN (?".$ORSTATEMENT.")");
+            $c->execute($ids);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ID로 문서명 조회 중 오류 발생');
+        }
+
+        $res = $c->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $res;
+    }
+
+    /**
+     * Get title of the document with ID.
+     *
+     * @param   string $id     Document ID
+     * @return  array       Document namespace, title
      */
     public static function get_doc_title(string $id): array
     {

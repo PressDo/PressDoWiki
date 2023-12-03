@@ -72,7 +72,7 @@ class WikiPage extends WikICore
                     'ForceShowNameSpace' => Config::get('ForceShowNameSpace')
                 ],
                 'user' => ($namespace == Namespaces::get('user')),
-                'token' => null
+                'token' => self::rand(64)
             //   'customData' => $ad_set
             ]
         ];
@@ -85,11 +85,11 @@ class WikiPage extends WikICore
                 return $page;
             else
                 Header('Location: /edit_request/'.$this->uri_data->titleurl);
-        }elseif($this->error){
+        }elseif($this->error->code !== 'err_csrf_token'){
             return $page;
         }
 
-        $this->session->token = $page['data']['token'] = self::rand(64);
+        $this->session->token = $page['data']['token'];
 
         return $page;
     }

@@ -11,14 +11,19 @@ class Router {
             exit;
         endif;
 
+        // 0/1/2/3
         $uriset = explode('/', explode('?', $request_uri)[0]);
         $uri_data = (object) [
             'page' => $uriset[1]=='w'?'wiki':$uriset[1]
         ];
 
-        if(count($uriset) > 2){
+        if(count($uriset) > 2 && $uri_data->page !== 'member'){
             $uri_data->title = urldecode(implode('/', array_slice($uriset, 2)));
             $uri_data->titleurl = implode('/', array_slice($uriset, 2));
+        }else{
+            $uri_data->menu = $uriset[2];
+            $uri_data->title = urldecode(implode('/', array_slice($uriset, 3)));
+            $uri_data->titleurl = implode('/', array_slice($uriset, 3));
         }
 
         $query = [];
@@ -29,7 +34,7 @@ class Router {
             case 'member':
             case 'admin':
             case 'api':
-                require 'controllers/'.$uri_data->page.'/'.$uri_data->title.'.php';
+                require 'controllers/'.$uri_data->page.'/'.$uri_data->menu.'.php';
                 break;
             default:
                 require 'controllers/'.$uri_data->page.'.php';

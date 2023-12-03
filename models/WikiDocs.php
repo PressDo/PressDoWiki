@@ -23,60 +23,6 @@ class Models {
             return self::$db;
     }
     
-    /**
-     * add document to starred.
-     * 
-     * @param string $docid     ID of document
-     * @param string $user      username
-     * @return void
-     */
-    public static function star_document(int $docid, string $user) : void
-    {
-        $db = self::db();
-        try {
-            $d = $db->prepare("INSERT INTO `starred`(docid, user) VALUES(?,?)");
-            $d->execute([$docid, $user]);
-        } catch (PDOException $err) {
-            throw new ErrorException($err->getMessage().': 문서 별표 중 오류 발생');
-        }
-    }
-
-    /**
-     * add document to starred.
-     * 
-     * @param string $docid     ID of document
-     * @param string $user      username
-     * @return void
-     */
-    public static function unstar_document(int $docid, string $user) : void
-    {
-        $db = self::db();
-        try {
-            $d = $db->prepare("DELETE FROM `starred` WHERE `docid`=? AND `user`=?");
-            $d->execute([$docid, $user]);
-        } catch (PDOException $err) {
-            throw new ErrorException($err->getMessage().': 문서 별표해제 중 오류 발생');
-        }
-    }
-
-    /**
-     * get starred document list
-     * 
-     * @param string $username  username
-     * @return array
-     */
-    public static function get_starred(string $username) : array
-    {
-        $db = self::db();
-        try{
-            $d = $db->prepare("SELECT `docid` FROM `starred` WHERE `user`=?");
-            $d->execute([$username]);
-            return $d->fetchAll(PDO::FETCH_COLUMN);
-        } catch (PDOException $err) {
-            throw new ErrorException($err->getMessage().': 사용자 문서함 조회 중 오류 발생');
-        }
-    }
-    
     public static function saveDocument(string $ns, string $t, string $con, string $com, string $act, $baserev,  int $prevlen, $id, $ip): void
     {
         global $db;

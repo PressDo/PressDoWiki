@@ -68,7 +68,7 @@ class WikiPage extends WikiCore
             $lver = Models::get_version($rawns,$title);
 
             
-            $doc = Models::load($rawns, $title, $rev);
+            $doc = Models::load($rawns, $title, null);
             $content = $this::readSyntax($doc['content'], Config::get('mark'), [
                 'title' => $this->uri_data->title,
                 'noredirect' => $this->uri_data->query->noredirect,
