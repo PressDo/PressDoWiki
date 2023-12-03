@@ -36,7 +36,7 @@ class WikiPage extends WikiCore
 
         $page = [
             'view_name' => '',
-            'title' => Lang::get('page')['login'],
+            'title' => Lang::get('page')['signup'],
             'data' => [
                 'error' => $error,
                 'redirect' => base64_decode($this->uri_data->query->redirect)

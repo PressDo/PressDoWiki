@@ -39,7 +39,7 @@
     "custom_sidebar":[
         {"url":"http://github.com/PressDo/PressDoWiki","name":"GitHub","icon":""}
     ],
-    "mark":"NamuMark",
+    "mark":"Markdown",
     "title_text":"PressDoWiki",
     "logo_width":"6.6rem",
     "use_mail_whitelist":true,

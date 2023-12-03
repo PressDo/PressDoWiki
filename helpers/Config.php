@@ -11,6 +11,7 @@ class Config
     {
         if(empty(static::$configs)) {
             static::$configs = json_decode(file_get_contents('data/global/config.json'), true);
+            static::$configs['mark_config'] = json_decode(file_get_contents('mark/'.static::$configs['mark'].'/config.json'), true);
         }
     }
 
