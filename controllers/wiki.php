@@ -9,7 +9,7 @@ use PressDo\Models;
 use PressDo\WikiACL;
 class WikiPage extends WikiCore
 {
-    public function make_data()
+    public function make_data(): array
     {
         list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
 

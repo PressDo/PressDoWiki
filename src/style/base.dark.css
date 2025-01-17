@@ -1,38 +1,59 @@
-.pressdo-dark-mode .pressdo-btn:not([disabled]):active, 
-.pressdo-dark-mode .pressdo-btn:not([disabled]):hover {background-color: #2d2f34;border-color: #383b40;}
-.pressdo-dark-mode .pressdo-btn{background-color: #27292d;border-color: #383b40;color: #ddd!important;}
-.pressdo-dark-mode form input.pressdo-form {background-color: #27292d;border-color: #383b40;color: #ddd;}
+.pressdo-dark-mode {
+    /* Button */
+    .pressdo-btn:not([disabled]):active, .pressdo-btn:not([disabled]):hover {background-color: #2d2f34;border-color: #383b40;}
+    .pressdo-btn{background-color: #282828;border-color: #484848;color: #e0e0e0 !important;color: var(--dark-text-color, var(--text-color, #e0e0e0)) !important;}
+    .btn-round{border-color: #484848;}
+    .pressdo-btn[disabled][role=button]{background-color: #373737;border-color: #424242;color: #777;}
+    .pressdo-btn:not([disabled]):hover {background-color:#555;}
 
-/* Editor */
-.pressdo-dark-mode form li button.a.editor.top{background-color: #383b40;}
-.pressdo-dark-mode form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
-.pressdo-dark-mode form input[data-pressdo-edit-summary], .pressdo-dark-mode form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
-.pressdo-dark-mode form div.c.editor, .pressdo-dark-mode form ul.editor.top {border-color: #383b40;}
-.pressdo-dark-mode textarea.editor {background-color: #000;color: #ddd;}
+    form input.pressdo-form {background-color: #27292d;border-color: #383b40;color: var(--dark-text-color, var(--text-color, #e0e0e0));}
 
-/* Diff */
-.pressdo-dark-mode table.diff{border-color: #383b40;}
-.pressdo-dark-mode table.diff thead{background: #2d2f34;border-bottom: 1px solid #383b40;}
-.pressdo-dark-mode table.diff tbody th{background: #27292d;border: 1px solid #383b40;color: #8a8a8a;}
-.pressdo-dark-mode table.diff .skip{background-color: #2d2f34;border: 1px solid #383b40;}
-.pressdo-dark-mode table.diff .delete{background-color: #943838;}
-.pressdo-dark-mode table.diff .insert{background-color: #3b5a3b;}
-.pressdo-dark-mode table.diff del.diff{background-color: #d05d5d;color: #ddd;}
-.pressdo-dark-mode table.diff ins.diff{background-color: #1c751c;}
+    /* Editor */
+    form li button.a.editor.top{background-color: #383b40;}
+    form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
+    form input[data-pressdo-edit-summary],  form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
+    form div.c.editor,  form ul.editor.top {border-color: #383b40;}
+    textarea.editor {background-color: #000;color: #ddd;}
 
-/* Recent */
-.pressdo-dark-mode ol[data-pressdo-recentmenu]{background-color: #27292d;border-color: #383b40;}
-.pressdo-dark-mode table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #383b40;}
+    /* Diff */
+    table.diff{border-color: #383b40;}
+    table.diff thead{background: #2d2f34;border-bottom: 1px solid #383b40;}
+    table.diff tbody th{background: #27292d;border: 1px solid #383b40;color: #8a8a8a;}
+    table.diff .skip{background-color: #2d2f34;border: 1px solid #383b40;}
+    table.diff .delete{background-color: #943838;}
+    table.diff .insert{background-color: #3b5a3b;}
+    table.diff del.diff{background-color: #d05d5d;color: #ddd;}
+    table.diff ins.diff{background-color: #1c751c;}
 
-/* Discuss */
-.pressdo-dark-mode input[data-pressdo-thread],.pressdo-dark-mode textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}
-.pressdo-dark-mode div.r div.c.thread{background-color: #2d2f34;border-color: #383b40;}
-.pressdo-dark-mode div.r div.b.s.thread{background: #54411a;}
-.pressdo-dark-mode div.r div.h.f.thread{background-color:#324432}
-.pressdo-dark-mode div.r div.b.thread{background: #27292d}
-.pressdo-dark-mode a.m.thread{background-color: #325a56;color: #ddd;}
-.pressdo-dark-mode a.m.thread:hover{background-color: #438a83;color: #ddd;}
-.pressdo-dark-mode .thread-btn{border-color: #383b40;color: #ddd;}
-.pressdo-dark-mode form.editor li button.selector-btn{background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
-.pressdo-dark-mode form.editor li button.selector-btn.ak{background-color: #383b40;}
-.pressdo-dark-mode form.editor .c, .pressdo-dark-mode form.editor ul.selector{border-color: #383b40;}
+    /* Recent */
+    .recent-tr{border-bottom-color:#575757}
+    .recent-td+.recent-log{color:#bbb;}
+    .recent-toolbox>*{border-bottom-color:#575757;border-top-color:#575757}
+    .recent-toolbox>:first-of-type{border-left-color: #575757;}
+    .recent-toolbox>:last-of-type{border-right-color:#575757;}
+    .recent-menu-current{--navigation-item-underline-color: var(--brand-bright-color-1, #45474b);}
+    .recent-menu{color:#e0e0e0; color: var(--dark-text-color, var(--text-color, #e0e0e0));}
+    .recent-document-title{color:#e0e0e0; color:var(--dark-text-color, var(--text-color, #e0e0e0));}
+
+    /* History */
+    .history-goto span{color: hsla(0, 0%, 88%, .749);color: var(--text-color, hsla(0, 0%, 88%, .749));}
+    .history-goto input{background-color: #282829;border-color: #484848;}
+
+    /* Discuss */
+    input[data-pressdo-thread], textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}
+    div.r div.c.thread{background-color: #2d2f34;border-color: #383b40;}
+    div.r div.b.s.thread{background: #54411a;}
+    div.r div.h.f.thread{background-color:#324432}
+    div.r div.b.thread{background: #27292d}
+    a.m.thread{background-color: #325a56;color: #ddd;}
+    a.m.thread:hover{background-color: #438a83;color: #ddd;}
+    .thread-btn{border-color: #383b40;color: #ddd;}
+    form.editor li button.selector-btn{background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
+    form.editor li button.selector-btn.ak{background-color: #383b40;}
+    form.editor .c,  form.editor ul.selector{border-color: #383b40;}
+
+    /* Media Query */
+    @media screen and (max-width: 1023.98px){
+        .recent-th+.recent-tr{border-top-color: #575757;}
+    }
+}

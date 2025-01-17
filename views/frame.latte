@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <head>
-    <link href="{$config['favicon_url']}" rel="SHORTCUT ICON">
+    <link href="{$config['wiki']['logo_url']}" rel="SHORTCUT ICON">
     <meta charset="UTF-8">
     <meta name="author" content="PRASEOD-">
-    <meta name="title" content="{$config['sitename']}">
+    <meta name="title" content="{$config['wiki']['sitename']}">
     <meta name="description" content="{$config['description']}">
     <meta name="monaco-version" content="{$config['editor_version']}">
     <meta http-equiv="Content-Type" content="text/html;">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{$config['sitename']}">
+    <meta property="og:title" content="{$config['wiki']['sitename']}">
     <meta property="og:description" content="{$config['description']}">
-    <link rel="stylesheet" href="/src/style/base.css">
+    <meta name="format-detection" content="telephone=no">
     <script defer src="/src/script/main.js"></script>
-    <title> {$wiki['page']['title']} - {$config['sitename']} </title>
+    <title> {$wiki['page']['title']} - {$config['wiki']['site_name']} </title>
     {if $wiki['page']['view_name'] == 'wiki'}
         {foreach $config['mark_config']['css'] as $mc}
             <link rel="stylesheet" href="/mark/{$config['mark']}/src/{$mc}">
@@ -29,15 +29,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/{$config['editor_version']}/min/vs/loader.js"></script>
         <script src="/src/script/monaco.js"></script>
     {/if}
-    {foreach $skinConfig['auto_css_targets']['*'] as $sf}
-        <link rel="preload" as="style" href="/skins/{$skinName}/{$sf|noCheck}">
-        <link rel="stylesheet" href="/skins/{$skinName}/{$sf|noCheck}">
-    {/foreach}
-    {foreach $skinConfig['auto_js_targets']['*'] as $sf}
+    {foreach $skinConfig['js'] as $sf}
         <link rel="preload" as="script" href="/skins/{$skinName}/{$sf['path']|noCheck}">
         <script defer src="/skins/{$skinName}/{$sf['path']|noCheck}"></script>
     {/foreach}
     {$skinConfig['additional_heads']|implode|noescape}
+    <link rel="stylesheet" href="/src/style/base.css">
 </head>
 <body>
     <div id="app">

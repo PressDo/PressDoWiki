@@ -275,7 +275,9 @@
         "diff": "비교",
         "view": "보기",
         "revert": "이 리비전으로 되돌리기",
-        "move_ip": "이 기여를 로그인 사용자로 이전하기"
+        "move_ip": "이 기여를 로그인 사용자로 이전하기",
+        "prev": "이전",
+        "next": "다음"
     },
     "document":{
         "content": "내용",
@@ -283,8 +285,27 @@
         "rev": "r@1@ 판",
         "raw": "r@1@ RAW",
         "create_document": "새 문서 만들기",
-        "lastchanged": "이 문서는 @1@에 마지막으로 변경되었습니다.",
         "modifiedat": "수정 시각"
+    },
+    "recent":{
+        "document": "문서",
+        "title": "제목",
+        "function": "기능",
+        "editor": "수정자",
+        "ago": "시간",
+        "logtype_all": "전체",
+        "logtype_create": "새 문서",
+        "logtype_delete": "삭제",
+        "logtype_move": "이동",
+        "logtype_revert": "되돌림",
+        "logtype_normal_thread": "열린 토론",
+        "logtype_old_thread": "오래된 토론",
+        "logtype_pause_thread": "중지된 토론",
+        "logtype_closed_thread": "닫힌 토론",
+        "logtype_open_editrequest": "열린 편집 요청",
+        "logtype_accepted_editrequest": "승인된 편집 요청",
+        "logtype_closed_editrequest": "닫힌 편집 요청",
+        "logtype_old_editrequest": "오래된 편집 요청"
     },
     "blocked_reason": "차단 사유",
     "forever": "영구적으로",

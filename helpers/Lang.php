@@ -5,7 +5,7 @@ class Lang
     protected static array $items = [];
 
     /**
-     * Initialize configs.
+     * Initialize languages.
      */
     protected static function init()
     {
@@ -15,7 +15,7 @@ class Lang
     }
 
     /**
-     * get config value
+     * get specific language string
      */
     public static function get(string $key, mixed $default = null)
     {
@@ -24,7 +24,7 @@ class Lang
     }
 
     /**
-     * all config value
+     * get all language string
      */
     public static function all()
     {

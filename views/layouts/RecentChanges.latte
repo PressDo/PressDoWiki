@@ -1,81 +1,93 @@
 <div class="wiki-content">
     <div>
-        <ol data-pressdo-recentmenu>
-            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=all">[전체]</a></li>
-            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=create">[새 문서]</a></li>
-            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=delete">[삭제]</a></li>
-            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=move">[이동]</a></li>
-            <li data-pressdo-recentmenu><a href="/RecentChanges?logtype=revert">[되돌림]</a></li>
-        </ol>
-        <table data-pressdo-recent-changes>
-            <colgroup>
-                <col>
-                <col style="width: 25%;">
-                <col style="width: 22%;">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th data-pressdo-recent-changes>항목</th>
-                    <th data-pressdo-recent-changes>수정자</th>
-                    <th data-pressdo-recent-changes>수정 시간</th>
-                </tr>
-            </thead>
-            <tbody>
-                {foreach $wiki['page']['data']['content'] as $he}
-                    {if $he['document']['namespace'] == $namespace['document'] && $config['force_show_namespace'] === false}
-                        {var $ns = ''}
-                    {else}
-                        {var $ns = $he['document']['namespace'].':'}
-                    {/if}
+        <div class="top-area">
+            <div class="toolkit-wrap">
+                <div class="menu-wrap">
+                    <ul class="recent-toolbox">
+                        <li><a n:class="!in_array($uri_data['query']->logtype, ['create', 'delete', 'move', 'revert']) ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=all">{$lang['recent']['logtype_all']}</a></li>
+                        <li><a n:class="$uri_data['query']->logtype == 'create' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=create">{$lang['recent']['logtype_create']}</a></li>
+                        <li><a n:class="$uri_data['query']->logtype == 'delete' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=delete">{$lang['recent']['logtype_delete']}</a></li>
+                        <li><a n:class="$uri_data['query']->logtype == 'move' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=move">{$lang['recent']['logtype_move']}</a></li>
+                        <li><a n:class="$uri_data['query']->logtype == 'revert' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=revert">{$lang['recent']['logtype_revert']}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="recent-changes recent-table">
+            <div class="recent-tr recent-th">
+                <div class="recent-td">{$lang['recent']['document']}</div>
+                <div class="recent-td">{$lang['recent']['function']}</div>
+                <div class="recent-td">{$lang['recent']['editor']}</div>
+                <div class="recent-td">{$lang['recent']['ago']}</div>
+            </div>
+            {foreach $wiki['page']['data']['content'] as $he}
+                {var $diff = 'a'}
+                {var $disdiff = false}
 
-                    {var $title = $ns.$he['document']['title']}
-                    {var $Diff = $he['count']}
-                    
-                    {if $Diff > 0}
-                        {var $color = 'green'}
-                        {var $flag = '+'}
-                    {elseif $Diff == 0}
-                        {var $color = 'gray'}
-                        {var $flag = ''}
-                    {elseif $Diff < 0}
-                        {var $color = 'red'}
-                        {var $flag = ''}
-                    {/if}
+                {if $he['document']['namespace'] == $namespace['document'] && $config['force_show_namespace'] === false}
+                    {var $ns = ''}
+                {else}
+                    {var $ns = $he['document']['namespace'].':'}
+                {/if}
 
-                    <tr data-pressdo-recent-changes class="n">
-                        <td data-pressdo-recent-changes>
-                            <a href="/w/{$title|escapeUrl}">{$title}</a> 
-                            <a href="/history/{$title|escapeUrl}">[역사]</a>
-                            <a n:if="$he['logtype'] !== 'create'" href="/diff/{$title|escapeUrl}?rev={$he['rev']}&oldrev={$he['rev']-1}">[비교]</a>
-                            <a href="/discuss/{$title|escapeUrl}">[토론]</a>
-                            <span>(<span data-pressdo-history-{$color}>{$flag.$Diff}</span>)</span>
-                        </td>
-                        <td data-pressdo-recent-changes><div data-pressdo-popoever>
-                        {if $he['author'] === null}
-                            <a data-pressdo-recent-user style="{$he['style']}" data-pressdo-user-ip>{$he['ip']}</a>
-                        {else}
-                            <a data-pressdo-recent-user style="{$he['style']}" data-pressdo-user-member>{$he['author']}</a>
-                        {/if}
-                        </div></td>
-                        <td data-pressdo-recent-changes><time datetime="{$he['date']-32400|date: 'Y-m-d\TH:i:s'}">{$he['date']|date:'Y-m-d H:i:s'}</time></td>
-                    </tr>
-                    <tr n:if="($he['log']|length) > 0 || $he['logtype'] !== 'modify'" data-pressdo-recent-changes>
-                        <td data-pressdo-recent-changes colspan="3">
-                            <span data-pressdo-recent-changes>{$he['log']}</span>
-                            <i>
-                            {switch $he['logtype']}
-                                {case 'revert'}
-                                    ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})
-                                {case 'delete', 'create'}
-                                    ({$lang['log'][$he['logtype']]})
-                                {case 'move'}
-                                    ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
-                            {/switch}
-                            </i>
-                        </td>
-                    </tr>
-                {/foreach}
-            </tbody>
-        </table>
+                {var $title = $ns.$he['document']['title']}
+                {var $Diff = $he['count']}
+                
+                {if $Diff > 0}
+                    {var $color = 'green'}
+                    {var $flag = '+'}
+                {elseif $Diff == 0}
+                    {var $color = 'gray'}
+                    {var $flag = ''}
+                {elseif $Diff < 0}
+                    {var $color = 'red'}
+                    {var $flag = ''}
+                {/if}
+
+                {if $he['logtype'] == 'create'}
+                    {var $diff = 'span'}
+                    {var $disdiff = true}
+                {/if}
+
+                <div class="recent-tr">
+                    <div class="recent-td">
+                        <a href="/w/{$title|escapeUrl}">{$title}</a> 
+                        <span class="recent-history-length history-{$color}">{$flag.$Diff}</span>
+                    </div>
+                    <div class="recent-td recent-tool">
+                        <div class="recent-buttonarea">
+                            <a class="pressdo-btn btn-round" role="button" href="/history/{$title|escapeUrl}" title="역사">역사</a>
+                            <a n:tag="$diff" role="button" n:attr="disabled: $disdiff" class="pressdo-btn btn-round" href="/diff/{$title|escapeUrl}?rev={$he['rev']}&oldrev={$he['rev']-1}" title="비교">비교</a>
+                            <a class="pressdo-btn btn-round" role="button" href="/discuss/{$title|escapeUrl}" title="토론">토론</a>
+                        </div>
+                    </div>
+                    <div class="recent-td">
+                        <span>
+                            <div class="context-menu">
+                            {if $he['author'] === null}
+                                <a data-pressdo-recent-user style="{$he['style']}" class="user"p>{$he['ip']}</a>
+                            {else}
+                                <a data-pressdo-recent-user style="{$he['style']}" class="user user-member">{$he['author']}</a>
+                            {/if}
+                            </div>
+                        </span>
+                    </div>
+                    <div class="recent-td recent-datetime"><time datetime="{$he['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z" title="{$he['date']|date: 'Y-m-d H:i:s'}">{$he['date']|date:'Y-m-d H:i:s'}</time></div>
+                    <div n:if="($he['log']|length) > 0 || $he['logtype'] !== 'modify'" class="recent-td recent-log">
+                        <span class="recent-changes" n:ifcontent>{$he['log']}</span>
+                        <i>
+                        {switch $he['logtype']}
+                            {case 'revert'}
+                                ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})
+                            {case 'delete', 'create'}
+                                ({$lang['log'][$he['logtype']]})
+                            {case 'move'}
+                                ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
+                        {/switch}
+                        </i>
+                    </div>
+                </div>
+            {/foreach}
+        </div>
     </div>
 </div>

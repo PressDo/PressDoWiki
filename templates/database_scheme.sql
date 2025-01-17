@@ -1,8 +1,4 @@
 -- MariaDB dump 10.19  Distrib 10.6.12-MariaDB, for debian-linux-gnu (aarch64)
---
--- Host: localhost    Database: pressdo
--- ------------------------------------------------------
--- Server version	10.6.12-MariaDB-0ubuntu0.22.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -187,7 +183,7 @@ DROP TABLE IF EXISTS `login_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `login_history` (
-  `username` varchar(128) NOT NULL,
+  `username` varchar(64) NOT NULL,
   `ip` varchar(64) NOT NULL,
   `datetime` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
@@ -201,9 +197,9 @@ DROP TABLE IF EXISTS `member`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `member` (
-  `username` varchar(128) NOT NULL,
+  `username` varchar(64) NOT NULL,
   `password` varchar(256) NOT NULL,
-  `email` varchar(256) NOT NULL,
+  `email` varchar(128) NOT NULL,
   `gravatar_url` varchar(256) NOT NULL,
   `skin` varchar(256) NOT NULL,
   `perm` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
@@ -301,7 +297,7 @@ DROP TABLE IF EXISTS `user_agent`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_agent` (
-  `username` varchar(128) NOT NULL,
+  `username` varchar(64) NOT NULL,
   `useragent` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

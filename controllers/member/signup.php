@@ -7,7 +7,7 @@ require 'models/member/login.php';
 use PressDo\Models;
 class WikiPage extends WikiCore
 {
-    public function make_data()
+    public function make_data(): array
     {
         if(isset($this->post->username) && isset($this->post->password)){
             $l = Models::login($this->post->username, password_hash($this->post->password, PASSWORD_BCRYPT), $_SERVER['REQUEST_TIME'], $this->session->ip, $this->server->HTTP_USER_AGENT);

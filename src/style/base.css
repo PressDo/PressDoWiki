@@ -3,22 +3,6 @@
 @charset "UTF-8";
 @-webkit-keyframes data-pressdo-warning-unlogined{0%{color:#000}to{color:red}}
 @keyframes data-pressdo-warning-unlogined{0%{color:#000;}to{color:red;}}
-@media screen and (max-width:700px) {
-div.t div.r.thread{padding-left: 0;}
-div.r div.c.thread{min-width: 100%;width: 100%;display: block;}
-}
-@media screen and (min-width: 420px) {
-    div.b[data-pressdo-pagelist]{float: right;margin: 0;}
-}
-@media screen and (min-width: 34rem){
-    form[data-pressdo-register]{width: 28rem!important;margin: 0 auto;}
-    form label[data-pressdo-loginform] { display: block;}
-}
-@media screen and (min-width: 34em){
-    div[data-pressdo-pagelist],label[data-pressdo-pagelist],select[data-pressdo-pagelist]{vertical-align: middle;display: inline-block;}
-    div[data-pressdo-pagelist],label[data-pressdo-pagelist]{margin-bottom: 0;}
-    select[data-pressdo-pagelist]{display: inline-block;width: auto;}
-}
 
 *[v=none]{display:none!important;}
 *[v=hidden]{visibility:hidden!important;}
@@ -26,26 +10,48 @@ div.r div.c.thread{min-width: 100%;width: 100%;display: block;}
 *[v=inline-block]{display:inline-block!important;}
 *[v=inline]{display:inline!important;}
 
+/* FontAwesome, Ionicons Font Settings */
+*[fa]{display:inline-block; font: normal normal normal 14px/1 FontAwesome; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+*[ionicon]{display: inline-block;font-family: Ionicons; speak: none; font-style: normal;font-weight: 400;font-feature-settings: normal; font-variant: normal;text-transform: none;text-rendering: auto; line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
+*[fa-refresh]:before {content: "\f021";}
+*[fa-comments]:before {content: "\f086";}
+*[fa-gear]:before {content: "\f013";}
+*[fa-random]:before {content: "\f074";}
+*[fa-search]:before {content: "\f06e";min-width: 15px;display: block;}
+*[fa-move]:before {content: "\f002";min-width: 15px;display: block;}
+*[fa-sign-out]:before {content: "\f08b";}
+*[fa-sign-in]:before {content: "\f090";}
+*[ion-arrow-back]:before{content: "\f3cf";}
+*[ion-arrow-forward]:before{content: "\f3d1";}
 .ion, .ion-ios-add-circle-outline:before, .ion-ios-add-circle:before, .ion-ios-add:before, .ion-ios-airplane:before, .ion-ios-alarm:before, .ion-ios-albums:before, .ion-ios-alert:before, .ion-ios-american-football:before, .ion-ios-analytics:before, .ion-ios-aperture:before, .ion-ios-apps:before, .ion-ios-appstore:before, .ion-ios-archive:before, .ion-ios-arrow-back:before, .ion-ios-arrow-down:before, .ion-ios-arrow-dropdown-circle:before, .ion-ios-arrow-dropdown:before, .ion-ios-arrow-dropleft-circle:before, .ion-ios-arrow-dropleft:before, .ion-ios-arrow-dropright-circle:before, .ion-ios-arrow-dropright:before, .ion-ios-arrow-dropup-circle:before, .ion-ios-arrow-dropup:before, .ion-ios-arrow-forward:before, .ion-ios-arrow-round-back:before, .ion-ios-arrow-round-down:before, .ion-ios-arrow-round-forward:before, .ion-ios-arrow-round-up:before, .ion-ios-arrow-up:before, .ion-ios-at:before, .ion-ios-attach:before, .ion-ios-backspace:before, .ion-ios-barcode:before, .ion-ios-baseball:before, .ion-ios-basket:before, .ion-ios-basketball:before, .ion-ios-battery-charging:before, .ion-ios-battery-dead:before, .ion-ios-battery-full:before, .ion-ios-beaker:before, .ion-ios-bed:before, .ion-ios-beer:before, .ion-ios-bicycle:before, .ion-ios-bluetooth:before, .ion-ios-boat:before, .ion-ios-body:before, .ion-ios-bonfire:before, .ion-ios-book:before, .ion-ios-bookmark:before, .ion-ios-bookmarks:before, .ion-ios-bowtie:before, .ion-ios-briefcase:before, .ion-ios-browsers:before, .ion-ios-brush:before, .ion-ios-bug:before, .ion-ios-build:before, .ion-ios-bulb:before, .ion-ios-bus:before, .ion-ios-business:before, .ion-ios-cafe:before, .ion-ios-calculator:before, .ion-ios-calendar:before, .ion-ios-call:before, .ion-ios-camera:before, .ion-ios-car:before, .ion-ios-card:before, .ion-ios-cart:before, .ion-ios-cash:before, .ion-ios-cellular:before, .ion-ios-chatboxes:before, .ion-ios-chatbubbles:before, .ion-ios-checkbox-outline:before, .ion-ios-checkbox:before, .ion-ios-checkmark-circle-outline:before, .ion-ios-checkmark-circle:before, .ion-ios-checkmark:before, .ion-ios-clipboard:before, .ion-ios-clock:before, .ion-ios-close-circle-outline:before, .ion-ios-close-circle:before, .ion-ios-close:before, .ion-ios-cloud-circle:before, .ion-ios-cloud-done:before, .ion-ios-cloud-download:before, .ion-ios-cloud-outline:before, .ion-ios-cloud-upload:before, .ion-ios-cloud:before, .ion-ios-cloudy-night:before, .ion-ios-cloudy:before, .ion-ios-code-download:before, .ion-ios-code-working:before, .ion-ios-code:before, .ion-ios-cog:before, .ion-ios-color-fill:before, .ion-ios-color-filter:before, .ion-ios-color-palette:before, .ion-ios-color-wand:before, .ion-ios-compass:before, .ion-ios-construct:before, .ion-ios-contact:before, .ion-ios-contacts:before, .ion-ios-contract:before, .ion-ios-contrast:before, .ion-ios-copy:before, .ion-ios-create:before, .ion-ios-crop:before, .ion-ios-cube:before, .ion-ios-cut:before, .ion-ios-desktop:before, .ion-ios-disc:before, .ion-ios-document:before, .ion-ios-done-all:before, .ion-ios-download:before, .ion-ios-easel:before, .ion-ios-egg:before, .ion-ios-exit:before, .ion-ios-expand:before, .ion-ios-eye-off:before, .ion-ios-eye:before, .ion-ios-fastforward:before, .ion-ios-female:before, .ion-ios-filing:before, .ion-ios-film:before, .ion-ios-finger-print:before, .ion-ios-fitness:before, .ion-ios-flag:before, .ion-ios-flame:before, .ion-ios-flash-off:before, .ion-ios-flash:before, .ion-ios-flashlight:before, .ion-ios-flask:before, .ion-ios-flower:before, .ion-ios-folder-open:before, .ion-ios-folder:before, .ion-ios-football:before, .ion-ios-funnel:before, .ion-ios-gift:before, .ion-ios-git-branch:before, .ion-ios-git-commit:before, .ion-ios-git-compare:before, .ion-ios-git-merge:before, .ion-ios-git-network:before, .ion-ios-git-pull-request:before, .ion-ios-glasses:before, .ion-ios-globe:before, .ion-ios-grid:before, .ion-ios-hammer:before, .ion-ios-hand:before, .ion-ios-happy:before, .ion-ios-headset:before, .ion-ios-heart-dislike:before, .ion-ios-heart-empty:before, .ion-ios-heart-half:before, .ion-ios-heart:before, .ion-ios-help-buoy:before, .ion-ios-help-circle-outline:before, .ion-ios-help-circle:before, .ion-ios-help:before, .ion-ios-home:before, .ion-ios-hourglass:before, .ion-ios-ice-cream:before, .ion-ios-image:before, .ion-ios-images:before, .ion-ios-infinite:before, .ion-ios-information-circle-outline:before, .ion-ios-information-circle:before, .ion-ios-information:before, .ion-ios-jet:before, .ion-ios-journal:before, .ion-ios-key:before, .ion-ios-keypad:before, .ion-ios-laptop:before, .ion-ios-leaf:before, .ion-ios-link:before, .ion-ios-list-box:before, .ion-ios-list:before, .ion-ios-locate:before, .ion-ios-lock:before, .ion-ios-log-in:before, .ion-ios-log-out:before, .ion-ios-magnet:before, .ion-ios-mail-open:before, .ion-ios-mail-unread:before, .ion-ios-mail:before, .ion-ios-male:before, .ion-ios-man:before, .ion-ios-map:before, .ion-ios-medal:before, .ion-ios-medical:before, .ion-ios-medkit:before, .ion-ios-megaphone:before, .ion-ios-menu:before, .ion-ios-mic-off:before, .ion-ios-mic:before, .ion-ios-microphone:before, .ion-ios-moon:before, .ion-ios-more:before, .ion-ios-move:before, .ion-ios-musical-note:before, .ion-ios-musical-notes:before, .ion-ios-navigate:before, .ion-ios-notifications-off:before, .ion-ios-notifications-outline:before, .ion-ios-notifications:before, .ion-ios-nuclear:before, .ion-ios-nutrition:before, .ion-ios-open:before, .ion-ios-options:before, .ion-ios-outlet:before, .ion-ios-paper-plane:before, .ion-ios-paper:before, .ion-ios-partly-sunny:before, .ion-ios-pause:before, .ion-ios-paw:before, .ion-ios-people:before, .ion-ios-person-add:before, .ion-ios-person:before, .ion-ios-phone-landscape:before, .ion-ios-phone-portrait:before, .ion-ios-photos:before, .ion-ios-pie:before, .ion-ios-pin:before, .ion-ios-pint:before, .ion-ios-pizza:before, .ion-ios-planet:before, .ion-ios-play-circle:before, .ion-ios-play:before, .ion-ios-podium:before, .ion-ios-power:before, .ion-ios-pricetag:before, .ion-ios-pricetags:before, .ion-ios-print:before, .ion-ios-pulse:before, .ion-ios-qr-scanner:before, .ion-ios-quote:before, .ion-ios-radio-button-off:before, .ion-ios-radio-button-on:before, .ion-ios-radio:before, .ion-ios-rainy:before, .ion-ios-recording:before, .ion-ios-redo:before, .ion-ios-refresh-circle:before, .ion-ios-refresh:before, .ion-ios-remove-circle-outline:before, .ion-ios-remove-circle:before, .ion-ios-remove:before, .ion-ios-reorder:before, .ion-ios-repeat:before, .ion-ios-resize:before, .ion-ios-restaurant:before, .ion-ios-return-left:before, .ion-ios-return-right:before, .ion-ios-reverse-camera:before, .ion-ios-rewind:before, .ion-ios-ribbon:before, .ion-ios-rocket:before, .ion-ios-rose:before, .ion-ios-sad:before, .ion-ios-save:before, .ion-ios-school:before, .ion-ios-search:before, .ion-ios-send:before, .ion-ios-settings:before, .ion-ios-share-alt:before, .ion-ios-share:before, .ion-ios-shirt:before, .ion-ios-shuffle:before, .ion-ios-skip-backward:before, .ion-ios-skip-forward:before, .ion-ios-snow:before, .ion-ios-speedometer:before, .ion-ios-square-outline:before, .ion-ios-square:before, .ion-ios-star-half:before, .ion-ios-star-outline:before, .ion-ios-star:before, .ion-ios-stats:before, .ion-ios-stopwatch:before, .ion-ios-subway:before, .ion-ios-sunny:before, .ion-ios-swap:before, .ion-ios-switch:before, .ion-ios-sync:before, .ion-ios-tablet-landscape:before, .ion-ios-tablet-portrait:before, .ion-ios-tennisball:before, .ion-ios-text:before, .ion-ios-thermometer:before, .ion-ios-thumbs-down:before, .ion-ios-thumbs-up:before, .ion-ios-thunderstorm:before, .ion-ios-time:before, .ion-ios-timer:before, .ion-ios-today:before, .ion-ios-train:before, .ion-ios-transgender:before, .ion-ios-trash:before, .ion-ios-trending-down:before, .ion-ios-trending-up:before, .ion-ios-trophy:before, .ion-ios-tv:before, .ion-ios-umbrella:before, .ion-ios-undo:before, .ion-ios-unlock:before, .ion-ios-videocam:before, .ion-ios-volume-high:before, .ion-ios-volume-low:before, .ion-ios-volume-mute:before, .ion-ios-volume-off:before, .ion-ios-walk:before, .ion-ios-wallet:before, .ion-ios-warning:before, .ion-ios-watch:before, .ion-ios-water:before, .ion-ios-wifi:before, .ion-ios-wine:before, .ion-ios-woman:before, .ion-logo-android:before, .ion-logo-angular:before, .ion-logo-apple:before, .ion-logo-bitbucket:before, .ion-logo-bitcoin:before, .ion-logo-buffer:before, .ion-logo-chrome:before, .ion-logo-closed-captioning:before, .ion-logo-codepen:before, .ion-logo-css3:before, .ion-logo-designernews:before, .ion-logo-dribbble:before, .ion-logo-dropbox:before, .ion-logo-euro:before, .ion-logo-facebook:before, .ion-logo-flickr:before, .ion-logo-foursquare:before, .ion-logo-freebsd-devil:before, .ion-logo-game-controller-a:before, .ion-logo-game-controller-b:before, .ion-logo-github:before, .ion-logo-google:before, .ion-logo-googleplus:before, .ion-logo-hackernews:before, .ion-logo-html5:before, .ion-logo-instagram:before, .ion-logo-ionic:before, .ion-logo-ionitron:before, .ion-logo-javascript:before, .ion-logo-linkedin:before, .ion-logo-markdown:before, .ion-logo-model-s:before, .ion-logo-no-smoking:before, .ion-logo-nodejs:before, .ion-logo-npm:before, .ion-logo-octocat:before, .ion-logo-pinterest:before, .ion-logo-playstation:before, .ion-logo-polymer:before, .ion-logo-python:before, .ion-logo-reddit:before, .ion-logo-rss:before, .ion-logo-sass:before, .ion-logo-skype:before, .ion-logo-slack:before, .ion-logo-snapchat:before, .ion-logo-steam:before, .ion-logo-tumblr:before, .ion-logo-tux:before, .ion-logo-twitch:before, .ion-logo-twitter:before, .ion-logo-usd:before, .ion-logo-vimeo:before, .ion-logo-vk:before, .ion-logo-whatsapp:before, .ion-logo-windows:before, .ion-logo-wordpress:before, .ion-logo-xbox:before, .ion-logo-xing:before, .ion-logo-yahoo:before, .ion-logo-yen:before, .ion-logo-youtube:before, .ion-md-add-circle-outline:before, .ion-md-add-circle:before, .ion-md-add:before, .ion-md-airplane:before, .ion-md-alarm:before, .ion-md-albums:before, .ion-md-alert:before, .ion-md-american-football:before, .ion-md-analytics:before, .ion-md-aperture:before, .ion-md-apps:before, .ion-md-appstore:before, .ion-md-archive:before, .ion-md-arrow-back:before, .ion-md-arrow-down:before, .ion-md-arrow-dropdown-circle:before, .ion-md-arrow-dropdown:before, .ion-md-arrow-dropleft-circle:before, .ion-md-arrow-dropleft:before, .ion-md-arrow-dropright-circle:before, .ion-md-arrow-dropright:before, .ion-md-arrow-dropup-circle:before, .ion-md-arrow-dropup:before, .ion-md-arrow-forward:before, .ion-md-arrow-round-back:before, .ion-md-arrow-round-down:before, .ion-md-arrow-round-forward:before, .ion-md-arrow-round-up:before, .ion-md-arrow-up:before, .ion-md-at:before, .ion-md-attach:before, .ion-md-backspace:before, .ion-md-barcode:before, .ion-md-baseball:before, .ion-md-basket:before, .ion-md-basketball:before, .ion-md-battery-charging:before, .ion-md-battery-dead:before, .ion-md-battery-full:before, .ion-md-beaker:before, .ion-md-bed:before, .ion-md-beer:before, .ion-md-bicycle:before, .ion-md-bluetooth:before, .ion-md-boat:before, .ion-md-body:before, .ion-md-bonfire:before, .ion-md-book:before, .ion-md-bookmark:before, .ion-md-bookmarks:before, .ion-md-bowtie:before, .ion-md-briefcase:before, .ion-md-browsers:before, .ion-md-brush:before, .ion-md-bug:before, .ion-md-build:before, .ion-md-bulb:before, .ion-md-bus:before, .ion-md-business:before, .ion-md-cafe:before, .ion-md-calculator:before, .ion-md-calendar:before, .ion-md-call:before, .ion-md-camera:before, .ion-md-car:before, .ion-md-card:before, .ion-md-cart:before, .ion-md-cash:before, .ion-md-cellular:before, .ion-md-chatboxes:before, .ion-md-chatbubbles:before, .ion-md-checkbox-outline:before, .ion-md-checkbox:before, .ion-md-checkmark-circle-outline:before, .ion-md-checkmark-circle:before, .ion-md-checkmark:before, .ion-md-clipboard:before, .ion-md-clock:before, .ion-md-close-circle-outline:before, .ion-md-close-circle:before, .ion-md-close:before, .ion-md-cloud-circle:before, .ion-md-cloud-done:before, .ion-md-cloud-download:before, .ion-md-cloud-outline:before, .ion-md-cloud-upload:before, .ion-md-cloud:before, .ion-md-cloudy-night:before, .ion-md-cloudy:before, .ion-md-code-download:before, .ion-md-code-working:before, .ion-md-code:before, .ion-md-cog:before, .ion-md-color-fill:before, .ion-md-color-filter:before, .ion-md-color-palette:before, .ion-md-color-wand:before, .ion-md-compass:before, .ion-md-construct:before, .ion-md-contact:before, .ion-md-contacts:before, .ion-md-contract:before, .ion-md-contrast:before, .ion-md-copy:before, .ion-md-create:before, .ion-md-crop:before, .ion-md-cube:before, .ion-md-cut:before, .ion-md-desktop:before, .ion-md-disc:before, .ion-md-document:before, .ion-md-done-all:before, .ion-md-download:before, .ion-md-easel:before, .ion-md-egg:before, .ion-md-exit:before, .ion-md-expand:before, .ion-md-eye-off:before, .ion-md-eye:before, .ion-md-fastforward:before, .ion-md-female:before, .ion-md-filing:before, .ion-md-film:before, .ion-md-finger-print:before, .ion-md-fitness:before, .ion-md-flag:before, .ion-md-flame:before, .ion-md-flash-off:before, .ion-md-flash:before, .ion-md-flashlight:before, .ion-md-flask:before, .ion-md-flower:before, .ion-md-folder-open:before, .ion-md-folder:before, .ion-md-football:before, .ion-md-funnel:before, .ion-md-gift:before, .ion-md-git-branch:before, .ion-md-git-commit:before, .ion-md-git-compare:before, .ion-md-git-merge:before, .ion-md-git-network:before, .ion-md-git-pull-request:before, .ion-md-glasses:before, .ion-md-globe:before, .ion-md-grid:before, .ion-md-hammer:before, .ion-md-hand:before, .ion-md-happy:before, .ion-md-headset:before, .ion-md-heart-dislike:before, .ion-md-heart-empty:before, .ion-md-heart-half:before, .ion-md-heart:before, .ion-md-help-buoy:before, .ion-md-help-circle-outline:before, .ion-md-help-circle:before, .ion-md-help:before, .ion-md-home:before, .ion-md-hourglass:before, .ion-md-ice-cream:before, .ion-md-image:before, .ion-md-images:before, .ion-md-infinite:before, .ion-md-information-circle-outline:before, .ion-md-information-circle:before, .ion-md-information:before, .ion-md-jet:before, .ion-md-journal:before, .ion-md-key:before, .ion-md-keypad:before, .ion-md-laptop:before, .ion-md-leaf:before, .ion-md-link:before, .ion-md-list-box:before, .ion-md-list:before, .ion-md-locate:before, .ion-md-lock:before, .ion-md-log-in:before, .ion-md-log-out:before, .ion-md-magnet:before, .ion-md-mail-open:before, .ion-md-mail-unread:before, .ion-md-mail:before, .ion-md-male:before, .ion-md-man:before, .ion-md-map:before, .ion-md-medal:before, .ion-md-medical:before, .ion-md-medkit:before, .ion-md-megaphone:before, .ion-md-menu:before, .ion-md-mic-off:before, .ion-md-mic:before, .ion-md-microphone:before, .ion-md-moon:before, .ion-md-more:before, .ion-md-move:before, .ion-md-musical-note:before, .ion-md-musical-notes:before, .ion-md-navigate:before, .ion-md-notifications-off:before, .ion-md-notifications-outline:before, .ion-md-notifications:before, .ion-md-nuclear:before, .ion-md-nutrition:before, .ion-md-open:before, .ion-md-options:before, .ion-md-outlet:before, .ion-md-paper-plane:before, .ion-md-paper:before, .ion-md-partly-sunny:before, .ion-md-pause:before, .ion-md-paw:before, .ion-md-people:before, .ion-md-person-add:before, .ion-md-person:before, .ion-md-phone-landscape:before, .ion-md-phone-portrait:before, .ion-md-photos:before, .ion-md-pie:before, .ion-md-pin:before, .ion-md-pint:before, .ion-md-pizza:before, .ion-md-planet:before, .ion-md-play-circle:before, .ion-md-play:before, .ion-md-podium:before, .ion-md-power:before, .ion-md-pricetag:before, .ion-md-pricetags:before, .ion-md-print:before, .ion-md-pulse:before, .ion-md-qr-scanner:before, .ion-md-quote:before, .ion-md-radio-button-off:before, .ion-md-radio-button-on:before, .ion-md-radio:before, .ion-md-rainy:before, .ion-md-recording:before, .ion-md-redo:before, .ion-md-refresh-circle:before, .ion-md-refresh:before, .ion-md-remove-circle-outline:before, .ion-md-remove-circle:before, .ion-md-remove:before, .ion-md-reorder:before, .ion-md-repeat:before, .ion-md-resize:before, .ion-md-restaurant:before, .ion-md-return-left:before, .ion-md-return-right:before, .ion-md-reverse-camera:before, .ion-md-rewind:before, .ion-md-ribbon:before, .ion-md-rocket:before, .ion-md-rose:before, .ion-md-sad:before, .ion-md-save:before, .ion-md-school:before, .ion-md-search:before, .ion-md-send:before, .ion-md-settings:before, .ion-md-share-alt:before, .ion-md-share:before, .ion-md-shirt:before, .ion-md-shuffle:before, .ion-md-skip-backward:before, .ion-md-skip-forward:before, .ion-md-snow:before, .ion-md-speedometer:before, .ion-md-square-outline:before, .ion-md-square:before, .ion-md-star-half:before, .ion-md-star-outline:before, .ion-md-star:before, .ion-md-stats:before, .ion-md-stopwatch:before, .ion-md-subway:before, .ion-md-sunny:before, .ion-md-swap:before, .ion-md-switch:before, .ion-md-sync:before, .ion-md-tablet-landscape:before, .ion-md-tablet-portrait:before, .ion-md-tennisball:before, .ion-md-text:before, .ion-md-thermometer:before, .ion-md-thumbs-down:before, .ion-md-thumbs-up:before, .ion-md-thunderstorm:before, .ion-md-time:before, .ion-md-timer:before, .ion-md-today:before, .ion-md-train:before, .ion-md-transgender:before, .ion-md-trash:before, .ion-md-trending-down:before, .ion-md-trending-up:before, .ion-md-trophy:before, .ion-md-tv:before, .ion-md-umbrella:before, .ion-md-undo:before, .ion-md-unlock:before, .ion-md-videocam:before, .ion-md-volume-high:before, .ion-md-volume-low:before, .ion-md-volume-mute:before, .ion-md-volume-off:before, .ion-md-walk:before, .ion-md-wallet:before, .ion-md-warning:before, .ion-md-watch:before, .ion-md-water:before, .ion-md-wifi:before, .ion-md-wine:before, .ion-md-woman:before, .ionicons {display: inline-block;font-family: Ionicons;speak: none;font-style: normal;font-weight: 400;font-feature-settings: normal;font-variant: normal;text-transform: none;text-rendering: auto;line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
 .ion-ios-arrow-forward:before {content: "\f3d1";}
 
 p[data-pressdo-warning-unlogined]{margin-top: 0; margin-bottom: 1rem;font-weight: 700;}
 textarea[disabled][data-pressdo-thread]{cursor: not-allowed;background-color: #eceeef;opacity: 1;}
-a.pressdo-btn, button.pressdo-btn{background-color: #fff;border: .0625rem solid #ccc;cursor: pointer;display: inline-block;font-size: 1rem;font-size: .9rem;font-weight: 400;line-height: 1.5;padding: .2rem .7rem;text-align: center;touch-action: manipulation;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;white-space: nowrap;}
-button.pressdo-btn {color: #373a3c;margin: 0;}
-a.pressdo-btn {color: #373a3c!important;text-decoration: none!important;vertical-align: middle;}
-button.pressdo-btn.square{border-radius:unset;}
-button.pressdo-btn.btn-blue{color: #fff;background-color: #0275d8;border-color: #0275d8;}
-button.pressdo-btn.btn-red{color: #fff;background-color: #d9534f;border-color: #d9534f;}
-button.pressdo-btn.btn-red:not([disabled]):active, 
-button.pressdo-btn.btn-red:not([disabled]):hover {text-decoration:none;background-color: #c9302c;border-color: #c12e2a;}
-button.pressdo-btn.btn-blue:not([disabled]):active, 
-button.pressdo-btn.btn-blue:not([disabled]):hover {background-color: #025aa5;border-color: #01549b;}
-button.pressdo-btn:not([disabled]):active, 
-button.pressdo-btn:not([disabled]):hover {background-color: #e6e6e6;border-color: #adadad;text-decoration: none;}
-button.btn-sizeup{padding: .75rem 1.25rem;}
-button.btn-wideright{width: 8rem;float: right;}
-button.editor:not(.top){width:100px;margin-bottom:2rem;float:right;}
+.context-menu {display:inline;}
+
+/* Button */
+.pressdo-btn {align-items: center;background-color: #fff;background-color: var(--light-article-background-color,var(--article-background-color,#fff));border: 1px solid #d5d5d5;border-radius: 4px;color: inherit; cursor: pointer;display: inline-flex;font-size: .9rem;justify-content: center;line-height: 1.5;overflow: hidden;padding: .3rem .75rem;-webkit-text-decoration: none;text-decoration: none;transition: background-color .1s ease-in,box-shadow .1s linear;white-space: nowrap;}
+.pressdo-btn {
+    color: #373a3c;text-decoration: none;vertical-align: middle;
+    svg {height: .85rem; fill:currentColor;}
+}
+.pressdo-btn.square{border-radius:unset;}
+.btn-round{border-color:#e0e0e0; border-radius: 3px; font-size: .8rem; height: 1.6rem; min-width: 2.4rem; padding: .1rem .3rem;}
+.pressdo-btn.btn-blue{color: #fff;background-color: #0275d8;border-color: #0275d8;}
+.pressdo-btn.btn-red{color: #fff;background-color: #d9534f;border-color: #d9534f;}
+.pressdo-btn.btn-red:not([disabled]):active, 
+.pressdo-btn.btn-red:not([disabled]):hover {text-decoration:none;background-color: #c9302c;border-color: #c12e2a;}
+.pressdo-btn.btn-blue:not([disabled]):active, 
+.pressdo-btn.btn-blue:not([disabled]):hover {background-color: #025aa5;border-color: #01549b;}
+.pressdo-btn:not([disabled]):active, 
+.pressdo-btn:not([disabled]):hover {background-color: #e6e6e6;border-color: #adadad;text-decoration: none;}
+.btn-sizeup{padding: .75rem 1.25rem;}
+.btn-wideright{width: 8rem;float: right;}
+.pressdo-btn[disabled]{background-color: #f7f7f7;border-color: #f0f0f0;color: #d9d9d9;}
+.pressdo-btn[disabled]:hover{cursor:not-allowed;}
+
+.editor:not(.top){width:100px;margin-bottom:2rem;float:right;}
 div.a.e:not(.editor){color: #a94442;background-color: #f2dede;border-color: #ebcccc;}
 div.a:not(.editor){margin-bottom: 1.4rem;padding: .5rem .8rem;border-radius: .25rem;font-size: .9rem;color: #31708f;background-color: #d9edf7;border: 1px solid #bcdff1;}
 #dr_e.i{color:red!important;}
@@ -102,31 +108,28 @@ div.a.search {min-height: 3.2rem;margin-bottom: 0.8rem;overflow: hidden;}
 nav{white-space:nowrap;}
 
 /* History*/
+.history-menu{align-items: center; display:flex; gap: 1rem; margin: 1rem 0;}
+.history-menu-area{display: inline-flex;}
+.history-menu-area>*:not(:first-child):not(:last-child){border-radius: 0;}
+.bt-g{margin: 0; display: flex;}
+.history-menu-area>*:not(:last-child){border-right-width: 0;}
+.history-menu-area>*:first-child{border-bottom-right-radius: 0; border-top-right-radius: 0;}
+.history-menu-area>*:last-child{border-bottom-left-radius: 0; border-top-left-radius: 0;}
+.btn-page{-moz-column-gap: .4rem; column-gap: .4rem;}
+.history-goto{position:relative;}
+.history-goto span{color: #888;left: .75rem;position: absolute;top: .3rem;z-index: 201;}
+.history-goto input{-webkit-appearance: none;-moz-appearance: none; appearance: none;background-color: #fff;background-color: var(--light-article-background-color, var(--article-background-color, #fff));border: 1px solid #d5d5d5;border-radius: 4px;display: block;font-size: .9rem;line-height: 1.5;padding: .3rem .75rem;}
+.history-goto input{padding-left: 1.25rem; text-align: right; width: 4.5rem;}
+
 ul>li[data-pressdo-history]{font-size: .9rem;list-style: inherit!important;list-style-type: inherit!important;margin: 0.4em 0;}
-[data-pressdo-history-green]{color: green;}
-[data-pressdo-history-red]{color:red;}
-[data-pressdo-history-gray]{color:grey;}
-[data-pressdo-user-member]{font-weight:700;}
+.history-green{color: green;}
+.history-red{color:red;}
+.history-gray{color:grey;}
+.user-member{font-weight:700;}
 span[data-pressdo-history-menu]{font-size:8pt;}
 input[type=checkbox],input[type=radio]{box-sizing: border-box;padding: 0;}
 a[data-pressdo-history-null],button[disabled]{cursor: not-allowed!important; opacity: .65;}
-div>a[data-pressdo-history-mv]{margin-left:-1px;font-size: .9rem;padding: .2rem .45rem;line-height: 1.5;color: #373a3c!important;background-color: #fff;border: .0625rem solid #ccc;font-weight: 400; text-align: center; white-space: nowrap; touch-action: manipulation; cursor: pointer;-webkit-user-select: none; -moz-user-select: none;-ms-user-select: none;user-select: none; text-decoration: none!important;float: left;}
-div>a[data-pressdo-history-mv]:first-child {margin-left: 0;}
-div.bt-g,div>a[data-pressdo-history-mv]{position: relative;display: inline-block;vertical-align: middle;}
 
-/* FontAwesome, Ionicons Font Settings */
-*[fa]{display:inline-block; font: normal normal normal 14px/1 FontAwesome; font-size:inherit; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-*[ionicon]{display: inline-block;font-family: Ionicons; speak: none; font-style: normal;font-weight: 400;font-feature-settings: normal; font-variant: normal;text-transform: none;text-rendering: auto; line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
-*[fa-refresh]:before {content: "\f021";}
-*[fa-comments]:before {content: "\f086";}
-*[fa-gear]:before {content: "\f013";}
-*[fa-random]:before {content: "\f074";}
-*[fa-search]:before {content: "\f06e";min-width: 15px;display: block;}
-*[fa-move]:before {content: "\f002";min-width: 15px;display: block;}
-*[fa-sign-out]:before {content: "\f08b";}
-*[fa-sign-in]:before {content: "\f090";}
-*[ion-arrow-back]:before{content: "\f3cf";}
-*[ion-arrow-forward]:before{content: "\f3d1";}
 
 /* Auth */
 div.btn-area{text-align:right; margin-top:2rem;}
@@ -184,17 +187,34 @@ div[data-pressdo-buttons-right]{margin-top: 1rem;margin-bottom: 1rem;float: righ
 form[data-pressdo-aclgroup-remove]{-webkit-box-flex: 1;flex: 1 0 auto;width: 100%;padding: 15px;font-size: 14px;box-sizing: border-box;}
 
 /* Recent */
-ol[data-pressdo-recentmenu]{padding: .4rem .8rem;display: inline-block;border-radius: 0;list-style: none;background-color: #eceeef;margin-bottom: 1rem;margin-top: 0;}
-ol li[data-pressdo-recentmenu]{display: inline-block;}
-table[data-pressdo-recent-changes]{border-spacing: 0;border-collapse: collapse;background-color: transparent;margin-bottom: 1rem;width: 100%;max-width: 100%;word-break: break-all;}
-table td[data-pressdo-recent-changes], table th[data-pressdo-recent-changes]{padding: .5rem .7rem;line-height: 1.5;}
-table th[data-pressdo-recent-changes]{vertical-align: bottom;border-bottom: 2px solid #eceeef;text-align: left;}
-table td[data-pressdo-recent-changes]{vertical-align: top;border-top: 1px solid #eceeef;}
-table td[data-pressdo-recent-changes]:hover:not(.s){background-color: #f5f5f5;}
-a[data-pressdo-recent-user]{cursor:pointer;}
-div[data-pressdo-popover]{display: inline;}
-table tr:not(.n) td[data-pressdo-recent-changes]{border-top: 0;padding-top: 0;padding-left: 1.5rem;}
-ol li+li[data-pressdo-recentmenu]:before {padding-right: .3rem;padding-left: .3rem;content: "| ";}
+.top-area {margin-left: 0; margin-left: calc(var(--article-padding-x, 0)* -1);margin-right: 0; margin-right: calc(var(--article-padding-x, 0)* -1);position:relative;margin-bottom: 1rem; margin-top: 1rem;}
+.toolkit-wrap {overflow-x: auto;}
+.menu-wrap {display:inline-block; margin: 0; margin: 0 var(--article-padding-x, 0);}
+.recent-toolbox {display:flex; list-style: none; margin: 0; padding: 0; position:relative;}
+.recent-toolbox>*{border-bottom: 1px solid #e0e0e0;border-top: 1px solid #e0e0e0;}
+.recent-toolbox>:first-of-type{border-bottom-left-radius: 8px;border-left: 1px solid #e0e0e0;border-top-left-radius: 8px;padding: 0 0 0 .5rem;}
+.recent-toolbox>:last-of-type{border-bottom-right-radius: 8px;border-right: 1px solid #e0e0e0;border-top-right-radius: 8px;padding: 0 .5rem 0 0;}
+.recent-menu-current{--navigation-item-underline-color: var(--brand-bright-color-1,#d5d5d5);color: #bcbcbc;color: var(--brand-color-1,#bcbcbc);font-weight: 600;}
+.recent-menu{color: #212529;color: var(--light-text-color,var(--text-color,#212529));display: inline-block;padding: .5rem .75rem;position: relative;text-align: center;-webkit-text-decoration: none;text-decoration: none;white-space: nowrap;width: 100%;}
+.recent-menu:after {background-color: transparent; background-color: var(--navigation-item-underline-color,transparent);bottom: 0;content: ""; height: 4px; left: 1rem; pointer-events: none;position: absolute;right: 1rem;}
+
+.recent-history-length{font-size: .8rem; margin: 0 0 0 .35rem; vertical-align: bottom;}
+.recent-table{display: flex;flex-direction: column;}
+.recent-tr {grid-template-columns: 1fr 10rem 11rem 13rem; border-bottom: 1px solid #e0e0e0; display: grid;}
+.recent-th {border-bottom-width: 2px; font-weight: 600;}
+.recent-td {padding: .5rem .75rem;}
+.recent-tool {align-items: center; display:flex; padding-bottom: 0; padding-top:0;}
+.recent-buttonarea {display: flex;flex-wrap: wrap;gap: .4rem;height: 100%;padding: .4rem 0 0;}
+.recent-td+.recent-log{color: #777;font-size: .9rem;margin: -.25rem 0 0;padding: 0 .75rem .5rem 1.5rem;}
+.recent-log{grid-column: 1 / 5;}
+
+.recent-document{font-size:.85rem; margin: 0 0 0 .35rem;}
+.recent-document-icon{width: .9em;}
+.recent-document-icon{
+    margin-right: .3rem; width: .65rem; color: #aaa; display: inline-block; margin: 0 .15rem;
+    svg {height:100%; margin: 0 0 -.1em; width:100%; fill:currentColor;}
+}
+.recent-document-title{color:#212529; color:var(--light-text-color, var(--text-color, #212529));}
 
 /* Discuss */
 h2[data-pressdo-thread-topic]{font-weight: 700;line-height: 1.1;font-size: 1.8em;margin: 1.2em 0 .8em;}
@@ -281,3 +301,37 @@ ul#list-dropdown-menu[data-pressdo-toc-fold=hide]{display:none;}
 
 /* delete */
 p[data-pressdo-delete]{font-weight: 700;margin-bottom: 1rem;margin-top: 0;}
+
+/* media query */
+@media screen and (max-width:700px) {
+    div.t div.r.thread{padding-left: 0;}
+    div.r div.c.thread{min-width: 100%;width: 100%;display: block;}
+}
+@media screen and (min-width: 420px) {
+    div.b[data-pressdo-pagelist]{float: right;margin: 0;}
+}
+@media screen and (min-width: 34rem){
+    form[data-pressdo-register]{width: 28rem !important;margin: 0 auto;}
+    form label[data-pressdo-loginform] { display: block;}
+}
+@media screen and (min-width: 34em){
+    div[data-pressdo-pagelist],label[data-pressdo-pagelist],select[data-pressdo-pagelist]{vertical-align: middle;display: inline-block;}
+    div[data-pressdo-pagelist],label[data-pressdo-pagelist]{margin-bottom: 0;}
+    select[data-pressdo-pagelist]{display: inline-block;width: auto;}
+}
+@media screen and (max-width: 1399.98px){
+    .recent-tr {grid-template-columns: 1fr 10rem 9rem 12rem;}
+}
+@media screen and (max-width: 1023.98px){
+    /* recent */
+    .recent-td{margin: 0 !important; padding: 0 !important;}
+    .recent-tool{align-items: flex-start;}
+    .recent-td:first-child, .recent-td.recent-datetime, .recent-td:nth-child(5){grid-column: 1 / 3;}
+    .recent-td:first-child{font-size:1.05rem; margin-bottom: .15rem !important;}
+    .recent-td:nth-child(3):not(.recent-datetime){align-items: center;display:flex; text-align:right;}
+    .recent-td:nth-child(3):not(.recent-datetime)>*{flex: 1;}
+    .recent-td.recent-datetime{color:#888; font-size:.85rem; order:-1;}
+    .recent-tr{gap: .1rem; grid-template-columns: 1fr 1fr; padding: .5rem;}
+    .recent-th{display:none;}
+    .recent-th+.recent-tr{border-top: 1px solid #e0e0e0;}
+}

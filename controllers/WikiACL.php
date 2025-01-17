@@ -6,13 +6,14 @@ class WikiACL
     /**
      * Sets of allowed user in acl
      */
-    public static array $allowed = [];
-    public static array $acc_perms, $doc_perms = [];
+    public static array $allow_list = [];
+    public static array $acc_perms, $doc_perms;
 
     /**
      * if user passes acl setting 
+     * value: deny, allow, null
      */
-    public static $status = null;
+    public static string|null $status = null;
     public static $message = '';
 
     /**
@@ -20,10 +21,8 @@ class WikiACL
      */
     public static $docid = null;
 
-    /**
-     * if user is in ACL condition
-     */
-    public static $user_in = null;
+    public string|null $username;
+    public string $ip, $geoip;
 
     /**
      * Initialize ACL object
@@ -34,19 +33,11 @@ class WikiACL
      * @param object $session   session object
      * @param object|null $error     error object
      */
-    public function __construct(string $rawns, string $title, string $access, object $session, object|null $error)
+    public function __construct(public string $namespace, public string $title, public string $access, public object $session, public object|null $error)
     {
-        $this->namespace = $rawns;
-        $this->title = $title;
-        $this->access = $access;
-        
-        $this->session = $session;
         $this->username = $session->member ? $session->member->username : null;
         $this->ip = $session->ip;
         $this->geoip = WikiCore::geoip($this->ip);
-
-        $this->error = $error;
-        
     }
 
     /**
@@ -56,44 +47,94 @@ class WikiACL
      */
     public function check()
     {
-        /*
-        structure
-        array(4) {
-            [0]=> array(5) { 
-                ["id"]=> int(14) 
-                ["access"]=> string(4) "read" 
-                ["condition"]=> string(12) "member:admin" 
-                ["action"]=> string(5) "allow" 
-                ["expired"]=> int(0) 
-            } [1]=> array(5) { 
-                ["id"]=> int(21) 
-                ["access"]=> string(4) "edit" ["condition"]=> string(13) "aclgroup:TEST" ["action"]=> string(4) "deny" ["expired"]=> int(0) } [2]=> array(5) { ["id"]=> int(28) ["access"]=> string(4) "read" ["condition"]=> string(17) "ip:119.194.133.12" ["action"]=> string(5) "allow" ["expired"]=> int(0) } [3]=> array(5) { ["id"]=> int(34) ["access"]=> string(4) "read" ["condition"]=> string(23) "aclgroup:PressDo-tester" ["action"]=> string(5) "allow" ["expired"]=> int(0) } } string(8) "document" string(29) "문법 테스트/나무마크" array(0) { }
-         */
-
-        $acl_doc = Models::fetch_doc_acl(Models::get_doc_id($this->namespace, $this->title), $this->access);
-        $acl_ns = Models::fetch_ns_acl($this->namespace, $this->access);
-
         self::$docid = Models::get_doc_id($this->namespace, $this->title);
 
-        self::$acc_perms = self::$doc_perms = [];
-        self::$status = self::$user_in = null;
-        $this->scan($acl_doc);
+        // fetch acl settings of action
+        $acl_doc = Models::fetch_doc_acl(self::$docid, $this->access);
+        $acl_ns = Models::fetch_ns_acl($this->namespace, $this->access);
 
-        // no rules in document ACL or gotons
-        if(self::$status === 'gotons' || count($acl_doc) < 1){
-            // scan namespace
-            self::$status = null;
+        if(count($acl_doc) > 0){
+            $this->scan($acl_doc);
+        }
+        if(count($acl_ns) > 0){
             $this->scan($acl_ns);
         }
-        
-        // return error if denied
-        if(self::$status === 'deny'){
+
+        // undefined allowed people in acl
+        if(self::$status === null && count(self::$allow_list) < 1){
+            self::$status = 'deny';
+            $this->error = (object) [
+                'code' => 'permission_'.$this->access,
+                'message' => Lang::get('msg')['aclerr_no_rules'],
+                'errbox' => false 
+            ];
+        }elseif(self::$status === 'deny'){
             $error = $this->error;
             $error->message = str_replace(
                 ['@1@', '@2@', '@3@', '@4@', '@5@', '@6@', '@7@'], 
-                [$this->access, $this->title, implode(' OR ', self::$allowed), $aclgroupid, $until, $reason, self::format_cond($cond)], 
-                $error->message
+                [$this->access, $this->title, implode(' OR ', self::$allow_list), $error->target->id, $error->target->until, $error->target->reason, self::format_cond($error->cond)], 
+                Lang::get('msg')[$error->message]
             );
+        }
+    }
+
+    private function scan(array $acls): void
+    {
+        // into each rule
+        foreach($acls as $acl) {
+            $cond = explode(':', $acl['condition']);
+            switch($cond[0]) {
+                case 'perm':
+                    $this->handle_action(self::check_perms($cond[1], $this->session, $this->title), $acl['condition'], $acl['action']);
+                    break;
+                case 'member':
+                    $this->handle_action(($this->username === $cond[1]), $acl['condition'], $acl['action']);
+                    break;
+                case 'ip':
+                    $this->handle_action(($this->ip === $cond[1]), $acl['condition'], $acl['action']);
+                    break;
+                case 'geoip':
+                    $this->handle_action(($this->geoip === $cond[1]), $acl['condition'], $acl['action']);
+                    break;
+                case 'aclgroup':
+                    $this->handle_action(Models::in_aclgroup($this->session, $cond[1]), $acl['condition'], $acl['action']);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * handle action of each ACL settings
+     * 
+     * @param bool|array $in_cond     if user meets condition / aclgroup data
+     * @param string $cond      condition
+     * @param string $action    allow, deny or gotons
+     */
+    private function handle_action(bool|array $in_cond, string $cond, string $action)
+    {
+        // set status only when status is not set and user meets condition
+        if(self::$status === null && $in_cond !== false){
+            self::$status = $action;
+        }
+
+        switch($action) {
+            case 'allow':
+                array_push(self::$allow_list, $cond);
+                break;
+            case 'deny':
+                $this->error = (object) [
+                    'code' => 'permission_'.$this->access,
+                    'message' => 'aclerr_in_target',
+                    'cond' => $cond,
+                    'errbox' => false
+                ];
+                if(is_array($in_cond)){
+                    $this->error->message = 'aclerr_in_aclgroup';
+                    $this->error->target = (object) $in_cond;
+                }
+                break;
+            case 'gotons':
+                break;
         }
     }
 
@@ -130,72 +171,8 @@ class WikiACL
             return false;
     }
 
-    private function scan(array $acls, bool $ns = false) : void
+    private static function format_cond($cond)
     {
-        // into each rule
-        foreach($acls as $acl) {
-            $cond = explode(':', $acl['condition']);
-            switch($cond[0]) {
-                case 'perm':
-                    $this->handle_action(self::check_perms($cond[1], $this->session, $this->title), $acl['condition'], $acl['action']);
-                    break;
-                case 'member':
-                    $this->handle_action(($this->username === $cond[1]), $acl['condition'], $acl['action']);
-                    break;
-                case 'ip':
-                    $this->handle_action(($this->ip === $cond[1]), $acl['condition'], $acl['action']);
-                    break;
-                case 'geoip':
-                    $this->handle_action(($this->geoip === $cond[1]), $acl['condition'], $acl['action']);
-                    break;
-                case 'aclgroup':
-                    $this->handle_action(Models::in_aclgroup($this->session, $cond[1]), $acl['condition'], $acl['action']);
-                    break;
-            }
-        }
-        
-        // make gotons when not exist in doc
-        if(self::$status === null)
-            self::$status = 'gotons';
 
-        // rules not exist in ns
-        if($ns && self::$status === null){
-            self::$status = 'deny';
-            $this->error = (object) [
-                'code' => 'permission_'.$this->access,
-                'message' => Lang::get('msg')['aclerr_no_rules'],
-                'errbox' => false 
-            ];
-        }
-    }
-
-    /**
-     * handle action of each ACL settings
-     * 
-     * @param bool $in_cond     if user meets condition
-     * @param string $cond      condition
-     * @param string $action    allow, deny or gotons
-     */
-    private function handle_action(bool $in_cond, string $cond, string $action)
-    {
-        // set status only when status is not set and user meets condition
-        if(self::$status === null && $in_cond === true){
-            self::$status = $action;
-        }
-
-        switch($action) {
-            case 'allow':
-                array_push(self::$allowed, $cond);
-                break;
-            case 'deny':
-                $this->error = (object) [
-                    'code' => 'permission_'.$this->access,
-                    'message' => 'aclerr_in_target',
-                    'errbox' => false 
-                ];
-                break;
-            case 'gotons':
-                break;
-        }
     }
 }

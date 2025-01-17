@@ -13,6 +13,7 @@ class WikiPage extends WikiCore
         $logtypes = [
             'normal_thread',
             'old_thread',
+            'pause_thread',
             'closed_thread',
             'open_editrequest',
             'accepted_editrequest',
@@ -28,7 +29,7 @@ class WikiPage extends WikiCore
 
         if($lot[0] == 'closed')
             $status = 'close';
-        elseif($lot[0] == 'open' || $lot[0] == 'accepted')
+        elseif($lot[0] == 'open' || $lot[0] == 'accepted' || $lot[0] == 'pause')
             $status = $lot[0];
         elseif($lot[0] == 'old' && $lot[1] == 'editrequest')
             $status = 'open';
@@ -40,12 +41,22 @@ class WikiPage extends WikiCore
         $fetch = Models::RecentDiscuss($from, $status, $order);
         $resultSet = [];
         foreach ($fetch as $f){
+            $contr = explode(':', $f['last_author']);
+            if($contr[0] == 'm'){
+                $author = $contr[1];
+                $ip = null;
+            }else{
+                $ip = $contr[1];
+                $author = null;
+            }
             $rs = array(
                 'slug' => $f['urlstr'],
                 'document' => ['namespace' => Namespaces::get($f['namespace']), 'title' => $f['title']],
                 'topic' => $f['topic'],
                 'date' => $f['last_comment'],
                 'logtype' => $f['logtype'],
+                'ip' => $ip,
+                'author' => $author,
                 'user_mode' => []
             );
             array_push($resultSet, $rs);

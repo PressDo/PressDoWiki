@@ -7,7 +7,7 @@ class Router {
     public static function handle_uri($request_uri, $query_string) : object|null
     {   
         if($request_uri == '/'):
-            Header('Location: /w/'.rawurlencode(Config::get('frontpage')));
+            Header('Location: /w/'.rawurlencode(Config::get('wiki')['front_page']));
             exit;
         endif;
 

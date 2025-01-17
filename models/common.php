@@ -226,6 +226,7 @@ class baseModels {
         $db = self::db();
         try {
             $d = $db->prepare("SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_document` WHERE `docid`=? AND ".($access!==null? "`access`=? AND": "")." (`until`>=? OR `until`=0) AND `deleted`=0 ORDER BY `id` ASC");
+            //var_dump($db);
             $d->execute(
                 ($access===null? [$docid, $_SERVER['REQUEST_TIME']]:[$docid, $access, $_SERVER['REQUEST_TIME']])
             );
@@ -262,9 +263,9 @@ class baseModels {
      * 
      * @param object $session   session object
      * @param string $aclgroup  name of aclgroup
-     * @return bool             if this user is in aclgroup
+     * @return array|bool         if this user is in aclgroup / id in aclgroup
      */
-    public static function in_aclgroup(object $session, string $aclgroup, $mode=null): bool
+    public static function in_aclgroup(object $session, string $aclgroup, $mode=null): array|bool
     {
         $db = self::db();
         $username = ($session->member)? $session->member->username : null;
@@ -312,7 +313,7 @@ class baseModels {
         if(intval($b['cnt']) < 1)
             return false;
         else
-            return true;
+            return $b;
     }
     
     /**
