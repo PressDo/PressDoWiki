@@ -9,6 +9,13 @@ use PressDo\Models;
 use PressDo\WikiACL;
 class WikiPage extends WikiCore
 {
+    public function update_linktable(int $docid, array $links)
+    {
+        // [target_ns: target_name: method:]
+        // [link: ]
+        $old_links = Models::get_forlinks($docid);
+    }
+
     public function make_data(): array
     {
         list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
@@ -76,6 +83,8 @@ class WikiPage extends WikiCore
                 'namespace' => Namespaces::all(),
                 'thread' => false
             ]);
+
+            //backlink_check($docid, self::reorder_links($content['links']));
 
             $page['data'] = [
                 'starred' => $this->session->member?Models::if_starred($docid,$this->session->member->username):false,

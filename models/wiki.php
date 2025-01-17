@@ -14,7 +14,7 @@ class Models extends baseModels
      * @param string $username  username
      * @return bool
      */
-    public static function if_starred(int $docid, string $username) : bool
+    public static function if_starred(int $docid, string $username): bool
     {
         $db = self::db();
         try {
@@ -33,7 +33,7 @@ class Models extends baseModels
      * @param int $docid        Document ID
      * @return int
      */
-    public static function count_stars(int $docid) : int
+    public static function count_stars(int $docid): int
     {
         $db = self::db();
         try {
@@ -43,5 +43,17 @@ class Models extends baseModels
             throw new ErrorException($err->getMessage().': 별표개수 조회 중 오류 발생');
         }
         return intval($d->fetch()['cnt']);
+    }
+
+    public static function get_forlinks(int $docid)
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT `target_ns`, `target_name`, `method` FROM `links` WHERE `did`=?");
+            $d->execute([$docid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 별표개수 조회 중 오류 발생');
+        }
+        return $d->fetchAll();
     }
 }

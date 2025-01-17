@@ -1,10 +1,18 @@
 .pressdo-dark-mode {
+    .textfield{background-color: #282829;border-color: #484848;}
+    .chkbox{background-color: #282829; border-color: #484848;}
+    .error-input{--focus-outline-color: #8b3f46!important;border-color: #861520;}
+
     /* Button */
-    .pressdo-btn:not([disabled]):active, .pressdo-btn:not([disabled]):hover {background-color: #2d2f34;border-color: #383b40;}
-    .pressdo-btn{background-color: #282828;border-color: #484848;color: #e0e0e0 !important;color: var(--dark-text-color, var(--text-color, #e0e0e0)) !important;}
-    .btn-round{border-color: #484848;}
-    .pressdo-btn[disabled][role=button]{background-color: #373737;border-color: #424242;color: #777;}
+    .pressdo-btn:not([disabled]):active{background-color: #515151;}
     .pressdo-btn:not([disabled]):hover {background-color:#555;}
+    .pressdo-btn{background-color: #282828;border-color: #484848;color: #e0e0e0 !important;color: var(--dark-text-color, var(--text-color, #e0e0e0)) !important;}
+    
+    .btn-blue:not([disabled]){background-color: #1555b5;border-color: #052e6d;}
+    .btn-blue:not([disabled]):hover{background-color: #1e5ebd;}
+    
+    .pressdo-btn[disabled][role=button]{background-color: #373737;border-color: #424242;color: #777;}
+    .btn-round{border-color: #484848;}
 
     form input.pressdo-form {background-color: #27292d;border-color: #383b40;color: var(--dark-text-color, var(--text-color, #e0e0e0));}
 
@@ -37,7 +45,6 @@
 
     /* History */
     .history-goto span{color: hsla(0, 0%, 88%, .749);color: var(--text-color, hsla(0, 0%, 88%, .749));}
-    .history-goto input{background-color: #282829;border-color: #484848;}
 
     /* Discuss */
     input[data-pressdo-thread], textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}

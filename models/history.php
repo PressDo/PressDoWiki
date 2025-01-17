@@ -27,7 +27,6 @@ class Models extends baseModels
                 $str = 'ASC LIMIT '.$until-1 .',';
             else
                 $str = 'DESC LIMIT';
-
             $d = $db->prepare("SELECT `comment`, `action`, `reverted_version`, `contributor`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
             $d->execute([$id]);
         } catch (PDOException $err) {

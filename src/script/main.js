@@ -192,10 +192,18 @@ if(g('chkmail')){
     e(g('chkmail'),'click', () => {
         if(g("email").value=="") {
             v.b('errmail')
+            c.a(g('email'),'error-input')
             return false
         }else{
             v.n('errmail')
-            document.regform.submit()
+            c.r(g('email'),'error-input')
+            if(document.regform.agree.checked === false){
+                v.b('erragree')
+                return false
+            }else{
+                v.n('errmail')
+                document.regform.submit()
+            }
         }
     })
 }
