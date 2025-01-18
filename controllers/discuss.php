@@ -11,9 +11,9 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
 
-        $ACL = new WikiACL($rawns, $title, 'read', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();
         $d_perms = [];
         $perms = ['delete_thread', 'update_thread_status', 'hide_thread_comment', 'update_thread_document', 'update_thread_topic'];
@@ -24,7 +24,7 @@ class WikiPage extends WikiCore
         }
 
         foreach ($actions as $a){
-            $ACL = new WikiACL($rawns, $title, $a, $this->session, $this->error);
+            $ACL = new WikiACL($namespace, $title, $a, $this->session, $this->error);
             $ACL->check();
             if ($this->error->code !== 'permission_'.$a)
             array_push($d_perms, $a);
@@ -32,7 +32,7 @@ class WikiPage extends WikiCore
 
         if($this->uri_data->query->state == 'close' || $this->uri_data->query->state == 'closed_edit_requests'){
             // 닫힌 00 목록
-            $threads = Models::get_doc_thread($rawns, $title, 'closed');
+            $threads = Models::get_doc_thread($namespace, $title, 'closed');
             $page = [
                 'view_name' => 'discuss_list',
                 'title' => $this->uri_data->title,
@@ -51,7 +51,7 @@ class WikiPage extends WikiCore
                 ]
             ];
         }else{
-            $thr = Models::get_doc_thread($rawns,$title);
+            $thr = Models::get_doc_thread($namespace,$title);
             $threads = [];
             foreach ($thr as $t){
                 $com = Models::getLatestComments($t['urlstr']);

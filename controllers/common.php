@@ -152,32 +152,33 @@ class WikiCore
      * Parse namespace and title in full title.
      * 
      * @param string $title     Full title of document
-     * @return array            array(raw namespace, Namespace, Title)
+     * @return array            array(Namespace, Title)
      */
     public static function parse_title(string $title) : array
     {
         $_ns = Namespaces::all();
         preg_match('/^('.implode('|',$_ns).'):(.*)$/', $title, $get_ns);
+        
         if(!$get_ns)
-            return ['document', $_ns['document'], $title];
+            return ['문서', $title];
         else
-            return [array_search($get_ns[1], $_ns), $get_ns[1], $get_ns[2]];
+            return [$get_ns[1], $get_ns[2]];
     }
 
     /**
      * Parse namespace and title in full title.
      * 
-     * @param string $rawNS     raw namespace of document
+     * @param string $namespace     raw namespace of document
      * @param string $title     title of document
      * @return string           formed title
      */
-    public static function make_title(string $rawns, string $title): string
+    public static function make_title(string $namespace, string $title): string
     {
         global $lang, $_ns;
-        if($rawns == 'document' && Config::get('force_show_namespace') === false)
+        if($namespace == '문서' && Config::get('force_show_namespace') === false)
             return $title;
         else 
-            return Namespaces::get($rawns).':'.$title;
+            return $namespace.':'.$title;
     }
 
     /**
@@ -255,5 +256,19 @@ class WikiCore
     public static function geoip(string $ip): string
     {
         return 'KR';//json_decode(file_get_contents('http://ip-api.com/json/'.$ip), true)['countryCode']; 
+    }
+
+    public static function uuid_generate(): string
+    {
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+           mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+           mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000,
+           mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+         );
+    }
+
+    public static function uuid_addhyphen(string $uuid): string
+    {
+        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16);
     }
 }

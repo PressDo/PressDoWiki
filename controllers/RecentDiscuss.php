@@ -51,7 +51,7 @@ class WikiPage extends WikiCore
             }
             $rs = array(
                 'slug' => $f['urlstr'],
-                'document' => ['namespace' => Namespaces::get($f['namespace']), 'title' => $f['title']],
+                'document' => ['namespace' => $f['namespace'], 'title' => $f['title']],
                 'topic' => $f['topic'],
                 'date' => $f['last_comment'],
                 'logtype' => $f['logtype'],

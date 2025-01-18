@@ -2,11 +2,12 @@
     .textfield{background-color: #282829;border-color: #484848;}
     .chkbox{background-color: #282829; border-color: #484848;}
     .error-input{--focus-outline-color: #8b3f46!important;border-color: #861520;}
+    .pagelist-menu select {background-color: #282829;background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Cpath fill=%27%23434343%27 d=%27M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z%27/%3E%3C/svg%3E");border-color: #484848;}
 
     /* Button */
     .pressdo-btn:not([disabled]):active{background-color: #515151;}
     .pressdo-btn:not([disabled]):hover {background-color:#555;}
-    .pressdo-btn{background-color: #282828;border-color: #484848;color: #e0e0e0 !important;color: var(--dark-text-color, var(--text-color, #e0e0e0)) !important;}
+    .pressdo-btn{background-color: #282828;border-color: #484848;color: #e0e0e0;color: var(--dark-text-color, var(--text-color, #e0e0e0));}
     
     .btn-blue:not([disabled]){background-color: #1555b5;border-color: #052e6d;}
     .btn-blue:not([disabled]):hover{background-color: #1e5ebd;}
@@ -45,6 +46,9 @@
 
     /* History */
     .history-goto span{color: hsla(0, 0%, 88%, .749);color: var(--text-color, hsla(0, 0%, 88%, .749));}
+
+    /* Pages */
+    .pagelist-menu{border-color:#484848;}
 
     /* Discuss */
     input[data-pressdo-thread], textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}

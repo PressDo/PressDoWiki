@@ -46,7 +46,7 @@ class WikiPage extends WikiCore
             }
             $_e = Models::get_doc_title($f['docid']);
             $rs = array(
-                'document' => ['namespace' => Namespaces::get($_e['namespace']), 'title' => $_e['title']],
+                'document' => ['namespace' => $_e['namespace'], 'title' => $_e['title']],
                 'date' => $f['datetime'],
                 'log' => $f['comment'],
                 'author' => $author,

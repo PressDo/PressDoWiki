@@ -9,22 +9,22 @@ use PressDo\Models;
 use PressDo\WikiACL;
 class WikiPage extends WikiCore
 {
-    public function update_linktable(int $docid, array $links)
+    public function update_linktable(string $uuid, array $links)
     {
-        // [target_ns: target_name: method:]
-        // [link: ]
-        $old_links = Models::get_forlinks($docid);
+        if(count($links['link']) > 0 || count($links['redirect']) > 0 || count($links['include']) > 0 || count($links['file']) > 0)
+            Models::update_forlinks($uuid, $links);
     }
 
     public function make_data(): array
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
 
-        $ACL = new WikiACL($rawns, $title, 'read', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();
         $page = [
             'view_name' => 'wiki',
             'title' => $this->uri_data->title,
+            'subtitle' => '',
             'data' => [
                 'starred' => null,
                 'star_count' => null,
@@ -52,13 +52,13 @@ class WikiPage extends WikiCore
         }
 
         # If Not Found
-        if(!Models::exist($rawns,$title)){
+        if(!Models::exist($namespace,$title, $backlinkrefreshed)){
             $page = [
                 'view_name' => 'notfound',
                 'title' => $this->uri_data->title,
                 'data' => [
                     'discuss_progress' => false,
-                    'user' => ($namespace == Namespaces::get('user')),
+                    'user' => ($namespace == '사용자'),
                     'menus' => [],
                     'customData' => []
                 ]
@@ -70,25 +70,28 @@ class WikiPage extends WikiCore
             ];
         }else{
             # If found
-            $discussions = Models::get_doc_thread($rawns,$title);
-            $docid = Models::get_doc_id($rawns,$title);
-            $lver = Models::get_version($rawns,$title);
+            $discussions = Models::get_doc_thread($namespace,$title);
+            $uuid = str_replace('-', '', Models::get_doc_uuid($namespace,$title));
+            //$lver = Models::get_version($namespace,$title);
+            $rev = isset($_GET['rev'])?intval($_GET['rev']):null;
 
             
-            $doc = Models::load($rawns, $title, null);
+            $doc = Models::load($namespace, $title, $rev);
             $content = $this::readSyntax($doc['content'], Config::get('mark'), [
                 'title' => $this->uri_data->title,
                 'noredirect' => $this->uri_data->query->noredirect,
                 'db' => DB::getInstance(),
-                'namespace' => Namespaces::all(),
                 'thread' => false
             ]);
 
-            //backlink_check($docid, self::reorder_links($content['links']));
+            if(!$backlinkrefreshed)
+                self::update_linktable($uuid, $content['links']);
 
+            if($rev !== null)
+                $page['subtitle'] = str_replace('@1@', $rev, Lang::get('document')['rev']);
             $page['data'] = [
-                'starred' => $this->session->member?Models::if_starred($docid,$this->session->member->username):false,
-                'star_count' => Models::count_stars($docid),
+                'starred' => $this->session->member ? Models::if_starred($uuid,$this->session->member->username):false,
+                'star_count' => Models::count_stars($uuid),
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
@@ -97,9 +100,9 @@ class WikiPage extends WikiCore
                 ],
                 'discuss_progress' => (isset($discussions[0])),
                 'date' => $doc['datetime'],
-                'rev' => isset($_GET['rev'])?$_GET['rev']:null,
-                'user' => ($namespace == Namespaces::get('user')),
-                'userData' => ($namespace == Namespaces::get('user'))?[
+                'rev' => $rev,
+                'user' => ($namespace == '사용자'),
+                'userData' => ($namespace == '사용자')?[
                     'admin' => WikiACL::check_perms('admin', $this->session, $title),
                     'block' => [
                         'blocked' => false,

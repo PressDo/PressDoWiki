@@ -38,7 +38,7 @@ global $conf, $lang, $uri, $_ns; ?>
                     'ShortestPages' => '('.$d['length'].$lang['letters'].')'
                 ];
 
-                if($conf['ForceShowNameSpace'] === false && $d['namespace'] == $_ns['document'])
+                if($conf['ForceShowNameSpace'] === false && $d['namespace'] == '문서')
                     $title = $d['title'];
                 else
                     $title = $d['namespace'].':'.$d['title'];

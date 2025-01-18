@@ -14,8 +14,8 @@ class Models extends baseModels
         $docid = self::get_doc_id($rawns,$title);
 
         try {
-            $d = $db->query("UPDATE `document` SET `is_latest`='false' WHERE `docid`=$docid AND `is_latest`='true'");
-            $g = $db->prepare("INSERT INTO `document`(docid, content, length, comment, datetime, action, rev, count, contributor, is_hidden,is_latest) VALUES(?,?,?,?,?,'modify',?,?,?,'false', 'true')");
+            $d = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`=$docid AND `is_latest`='true'");
+            $g = $db->prepare("INSERT INTO `history`(docid, content, length, comment, datetime, action, rev, count, contributor, is_hidden,is_latest) VALUES(?,?,?,?,?,'modify',?,?,?,'false', 'true')");
             $g->execute([$docid, $content, iconv_strlen($content), $comment, $_SERVER['REQUEST_TIME'], $baserev+1, $cnt, $identifier]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 편집 저장 중 오류 발생');
@@ -29,7 +29,7 @@ class Models extends baseModels
         $cnt = iconv_strlen($content);
 
         try {
-            $d = $db->prepare("INSERT INTO `live_document_list`(namespace,title) VALUES(?,?)");
+            $d = $db->prepare("INSERT INTO `document`(namespace,title) VALUES(?,?)");
             $d->execute([$rawns, $title]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 생성 중 오류 발생');
@@ -38,7 +38,7 @@ class Models extends baseModels
         $docid = self::get_doc_id($rawns,$title);
 
         try {
-            $g = $db->prepare("INSERT INTO `document`(docid, content, length, comment, datetime, action, rev, count, contributor, is_hidden,is_latest) VALUES(?,?,?,?,?,'create','1',?,?,'false', 'true')");
+            $g = $db->prepare("INSERT INTO `history`(docid, content, length, comment, datetime, action, rev, count, contributor, is_hidden,is_latest) VALUES(?,?,?,?,?,'create','1',?,?,'false', 'true')");
             $g->execute([$docid, $content, iconv_strlen($content), $comment, $_SERVER['REQUEST_TIME'], $cnt, $identifier]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 저장 중 오류 발생');

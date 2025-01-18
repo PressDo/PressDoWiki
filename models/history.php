@@ -27,7 +27,7 @@ class Models extends baseModels
                 $str = 'ASC LIMIT '.$until-1 .',';
             else
                 $str = 'DESC LIMIT';
-            $d = $db->prepare("SELECT `comment`, `action`, `reverted_version`, `contributor`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
+            $d = $db->prepare("SELECT `comment`, `action`, `reverted_version`, `contributor`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `history` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
             $d->execute([$id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 역사 조회 중 오류 발생');
@@ -46,7 +46,7 @@ class Models extends baseModels
         $db = self::db();
         try {
             $id = Models::get_doc_id($rawns, $title);
-            $d = $db->prepare("SELECT `datetime` FROM `document` WHERE `docid`=? AND `rev`=?");
+            $d = $db->prepare("SELECT `datetime` FROM `history` WHERE `docid`=? AND `rev`=?");
             $d->execute([$id,$rev]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 리비전 시각 조회 중 오류 발생');

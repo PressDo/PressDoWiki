@@ -14,7 +14,7 @@ class Models extends baseModels
         list($fromNSraw, $fromNS, $fromT) = WikiPage::parse_title($from);
         $c = self::load($fromNSraw, $fromT); // 편집기록에 들어갈 문서 데이터
 
-        $a = $db->prepare("UPDATE `live_document_list` SET `namespace`=?, `title`=? WHERE `docid`=?");
+        $a = $db->prepare("UPDATE `document` SET `namespace`=?, `title`=? WHERE `docid`=?");
         $a->execute([$toNSraw, $toT, $did]);
 
         $d = [
@@ -31,8 +31,8 @@ class Models extends baseModels
             $to
         ];
 
-        $a = $db->query("UPDATE `document` SET `is_latest`='false' WHERE `docid`='".$did."' AND `is_latest`='true'");
-        $b = $db->prepare("INSERT INTO `document`(docid,content,length,comment,datetime,action,rev,count,contributor,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+        $a = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`='".$did."' AND `is_latest`='true'");
+        $b = $db->prepare("INSERT INTO `history`(docid,content,length,comment,datetime,action,rev,count,contributor,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
         $b->execute($d);
     }
 }

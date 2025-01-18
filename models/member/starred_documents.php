@@ -30,7 +30,7 @@ class Models extends baseModels
         $db = self::db();
         try{
             $ORSTATEMENT = str_repeat(',?', count($docidset) - 1);
-            $d = $db->prepare("SELECT `docid`, `datetime` FROM `document` WHERE `is_latest`='true' AND `docid` IN (?".$ORSTATEMENT.") ORDER BY `datetime`");
+            $d = $db->prepare("SELECT `docid`, `datetime` FROM `history` WHERE `is_latest`='true' AND `docid` IN (?".$ORSTATEMENT.") ORDER BY `datetime`");
             $d->execute($docidset);
             return $d->fetchAll(\PDO::FETCH_ASSOC);
         } catch (PDOException $err) {

@@ -11,9 +11,9 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
 
-        $ACL = new WikiACL($rawns, $title, 'read', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();
         $page = [
             'view_name' => 'raw',
@@ -39,8 +39,8 @@ class WikiPage extends WikiCore
             return $page;
         }
 
-        if(Models::exist($rawns,$title)){
-            $lver = Models::get_version($rawns,$title);
+        if(Models::exist($namespace,$title)){
+            $lver = Models::get_version($namespace,$title);
             if(!$this->uri_data->query->rev)
                 $rev = $lver;
             else
@@ -56,7 +56,7 @@ class WikiPage extends WikiCore
                 return $page;
             }
 
-            $doc = Models::load($rawns, $title, $rev);
+            $doc = Models::load($namespace, $title, $rev);
             $page['subtitle'] .= 'r'.$rev.' RAW';
             $page['data']['rev'] = $rev;
             $page['data']['text'] = $doc['content'];

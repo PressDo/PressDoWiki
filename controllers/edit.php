@@ -11,11 +11,11 @@ class WikiPage extends WikICore
 {
     public function make_data()
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
         if(!$this->error) $this->error = null;
-        $exist = Models::exist($rawns,$title);
+        $exist = Models::exist($namespace,$title);
 
-        $ACL = new WikiACL($rawns, $title, 'edit', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'edit', $this->session, $this->error);
         $ACL->check();
 
         // Edit Submission
@@ -41,18 +41,18 @@ class WikiPage extends WikICore
                 }
 
                 if($exist){
-                    Models::save_document($rawns,$title,$this->post->content,$this->post->comment,$id,$this->session->baserev,iconv_strlen($this->session->raw));
+                    Models::save_document($namespace,$title,$this->post->content,$this->post->comment,$id,$this->session->baserev,iconv_strlen($this->session->raw));
                 }else{
-                    Models::create_document($rawns,$title,$this->post->content,$this->post->comment,$id);
+                    Models::create_document($namespace,$title,$this->post->content,$this->post->comment,$id);
                 }
 
                 Header('Location: /w/'.$this->uri_data->title);
             }
         }
 
-        $doc = Models::load($rawns, $title, $this->uri_data->query->rev);
+        $doc = Models::load($namespace, $title, $this->uri_data->query->rev);
 
-        $this->session->baserev = ($exist) ? Models::get_version($rawns, $title) : 0;
+        $this->session->baserev = ($exist) ? Models::get_version($namespace, $title) : 0;
         $this->session->raw = ($exist) ? $doc['content'] : '';
         $section = $this->uri_data->query->section;
 
@@ -71,7 +71,7 @@ class WikiPage extends WikICore
                     'title' => $title,
                     'ForceShowNameSpace' => Config::get('ForceShowNameSpace')
                 ],
-                'user' => ($namespace == Namespaces::get('user')),
+                'user' => ($namespace == '사용자'),
                 'token' => self::rand(64)
             //   'customData' => $ad_set
             ]
@@ -79,7 +79,7 @@ class WikiPage extends WikICore
 
         // 편집권한이 없으면 편집 요청 권한 확인
         if ($this->error && ($this->error->code == 'permission_read' || $this->error->code == 'permission_edit')){
-            $ACL = new WikiACL($rawns, $title, 'edit_request', $this->session, $this->error);
+            $ACL = new WikiACL($namespace, $title, 'edit_request', $this->session, $this->error);
             $ACL->check();
             if ($this->error->code == 'permission_edit_request')
                 return $page;

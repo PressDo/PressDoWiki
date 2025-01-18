@@ -27,7 +27,7 @@ class WikiACL
     /**
      * Initialize ACL object
      *
-     * @param string $rawns     RAW namespace of document
+     * @param string $namespace     namespace of document
      * @param string $title     title of document without namespace
      * @param string $access    type of access
      * @param object $session   session object

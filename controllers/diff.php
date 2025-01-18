@@ -11,9 +11,9 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
 
-        $ACL = new WikiACL($rawns, $title, 'read', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();
         $page = [
             'view_name' => 'diff',
@@ -41,8 +41,8 @@ class WikiPage extends WikiCore
             return $page;
         }
 
-        if(Models::exist($rawns,$title)){
-            $lver = Models::get_version($rawns,$title);
+        if(Models::exist($namespace,$title)){
+            $lver = Models::get_version($namespace,$title);
             $rev = $this->uri_data->query->rev;
             $oldrev = $this->uri_data->query->oldrev;
 
@@ -51,8 +51,8 @@ class WikiPage extends WikiCore
                 return $page;
             }
 
-            $old = Models::load($rawns, $title, $oldrev)['content'];
-            $new = Models::load($rawns, $title, $rev)['content'];
+            $old = Models::load($namespace, $title, $oldrev)['content'];
+            $new = Models::load($namespace, $title, $rev)['content'];
 
             $page['data']['oldrev'] = $oldrev;
             $page['data']['rev'] = $rev;

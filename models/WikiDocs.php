@@ -27,19 +27,19 @@ class Models {
     {
         global $db;
         $c_nt = iconv_strlen($con)-$prevlen;
-        $d = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE BINARY `namespace`=? AND BINARY `title`=?");
+        $d = $db->prepare("SELECT `docid` FROM `document` WHERE BINARY `namespace`=? AND BINARY `title`=?");
         $d->execute([$ns,$t]);
         if($d->rowCount() < 1){
-            $e = $db->prepare("INSERT INTO `live_document_list`(namespace,title) VALUES(?,?)");
+            $e = $db->prepare("INSERT INTO `document`(namespace,title) VALUES(?,?)");
             $e->execute([$ns,$t]);
-            $f = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE BINARY `namespace`=? AND BINARY `title`=?");
+            $f = $db->prepare("SELECT `docid` FROM `document` WHERE BINARY `namespace`=? AND BINARY `title`=?");
             $f->execute([$ns,$t]);
             $did = $f->fetch()[0]; 
         }else
             $did = $d->fetch()[0];
 
-        $a = $db->query("UPDATE `document` SET `is_latest`='false' WHERE `docid`=$did AND `is_latest`='true'");
-        $g = $db->prepare("INSERT INTO `document`(docid, content, length, comment, datetime, action, rev, count, contributor_m, contributor_i, is_hidden,is_latest) VALUES(?,?,?,?,?,?,?,?,?,?,'false', 'true')");
+        $a = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`=$did AND `is_latest`='true'");
+        $g = $db->prepare("INSERT INTO `history`(docid, content, length, comment, datetime, action, rev, count, contributor_m, contributor_i, is_hidden,is_latest) VALUES(?,?,?,?,?,?,?,?,?,?,'false', 'true')");
         $g->execute([$did, $con, iconv_strlen($con), $com, $_SERVER['REQUEST_TIME'], $act, $baserev+1, $c_nt, $id, $ip]);
         unset($d, $e, $f, $g);
     }
@@ -54,7 +54,7 @@ class Models {
         if(!$did || $c['content'] === null || $c['action'] == 'delete')
             die;
 
-        $a = $db->prepare("UPDATE `live_document_list` SET `namespace`=?, `title`=? WHERE `docid`=(SELECT `docid` FROM `live_document_list` WHERE `namespace`=? AND BINARY `title`=?)");
+        $a = $db->prepare("UPDATE `document` SET `namespace`=?, `title`=? WHERE `docid`=(SELECT `docid` FROM `document` WHERE `namespace`=? AND BINARY `title`=?)");
         $a->execute([$toNSraw, $toT, $fromNSraw, $fromT]);
 
         $d = [
@@ -72,8 +72,8 @@ class Models {
             $to
         ];
 
-        $a = $db->query("UPDATE `document` SET `is_latest`='false' WHERE `docid`='".$did."' AND `is_latest`='true'");
-        $b = $db->prepare("INSERT INTO `document`(docid,content,length,comment,datetime,action,rev,count,contributor_m,contributor_i,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
+        $a = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`='".$did."' AND `is_latest`='true'");
+        $b = $db->prepare("INSERT INTO `history`(docid,content,length,comment,datetime,action,rev,count,contributor_m,contributor_i,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
         $b->execute($d);
         
     }
@@ -100,7 +100,7 @@ class Models {
         global $db;
         if($Title !== null){
             $nv = Docs::getVersion($ns, $Title);
-            $c = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE BINARY `namespace`=? AND BINARY `title`=?");
+            $c = $db->prepare("SELECT `docid` FROM `document` WHERE BINARY `namespace`=? AND BINARY `title`=?");
             $c->execute([$ns, $Title]);
             if($c->rowCount() < 1) return null;
             
@@ -114,14 +114,14 @@ class Models {
                 $str = 'DESC LIMIT';
             
 
-            $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
+            $d = $db->prepare("SELECT `length`, `comment`, `action`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `history` WHERE BINARY `docid`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
             $d->execute([$docid]);
             if($until !== null)
                 $ra = array_reverse($d->fetchAll());
             else
                 $ra = $d->fetchAll();
         }else{
-            $d = $db->query("SELECT `docid`, `length`, `comment`, `action`, `rev`, `count`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `document` WHERE BINARY `is_hidden`='false' $option ORDER BY `datetime` DESC LIMIT 100");
+            $d = $db->query("SELECT `docid`, `length`, `comment`, `action`, `rev`, `count`, `reverted_version`, `contributor_m`, `contributor_i`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri` FROM `history` WHERE BINARY `is_hidden`='false' $option ORDER BY `datetime` DESC LIMIT 100");
             $ra = $d->fetchAll();
         }
         return $ra;
@@ -130,7 +130,7 @@ class Models {
     public static function hideHistory($docid, $timestamp)
     {
         global $db;
-        $d = $db->prepare("UPDATE `document` SET `is_hidden`='true' WHERE `docid`=? AND `datetime`=?");
+        $d = $db->prepare("UPDATE `history` SET `is_hidden`='true' WHERE `docid`=? AND `datetime`=?");
         $d->execute([$docid, $timestamp]);
         unset($d);
     }
@@ -138,7 +138,7 @@ class Models {
     public static function unhideHistory($docid, $timestamp)
     {
         global $db;
-        $d = $db->prepare("UPDATE `document` SET `is_hidden`='true' WHERE `docid`=? AND `datetime`=?");
+        $d = $db->prepare("UPDATE `history` SET `is_hidden`='true' WHERE `docid`=? AND `datetime`=?");
         $d->execute([$docid,$timestamp]);
         unset($d);
     }
@@ -158,7 +158,7 @@ class Models {
             's' => "d.length LIMIT 100",
             'o' => "d.datetime LIMIT 100",
         ];
-        $d = $db->prepare("SELECT l.namespace, l.title".$add[$theme]." FROM `document` AS d INNER JOIN live_document_list AS l ON d.docid = l.docid WHERE d.is_latest='true' AND l.namespace=? ORDER BY ".$query[$theme]);
+        $d = $db->prepare("SELECT l.namespace, l.title".$add[$theme]." FROM `history` AS d INNER JOIN live_document_list AS l ON d.docid = l.docid WHERE d.is_latest='true' AND l.namespace=? ORDER BY ".$query[$theme]);
         $d->execute([$ns]);
         return $d->fetchAll($DB_ASSOC);
     }
@@ -187,7 +187,7 @@ class Models {
     public static function editRequest($ns, $t, $con, $com, $id, $ip, $rv, $url)
     {
         global $db;
-        $d = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE BINARY `namespace`=? AND BINARY `title`=?");
+        $d = $db->prepare("SELECT `docid` FROM `document` WHERE BINARY `namespace`=? AND BINARY `title`=?");
         $d->execute([$ns,$t]);
         $docid = $d->fetch()['docid'];
         $e = $db->prepare("INSERT INTO `edit_request`(urlstr,docid,status,comment,content,contributor_m,contributor_i,base_revision,datetime,lastedit) VALUES(?,?,'open',?,?,?,?,?,?,?)");
@@ -210,7 +210,7 @@ class Models {
     {
         global $db, $DB_ASSOC;
         $docid = self::get_doc_id($rawns, $title);
-        $d = $db->prepare("SELECT count(*) as cnt FROM `document` WHERE `docid`=?");
+        $d = $db->prepare("SELECT count(*) as cnt FROM `history` WHERE `docid`=?");
         $d->execute([$docid]);
         return intval($d->fetch($DB_ASSOC)['cnt']);
     }
@@ -218,7 +218,7 @@ class Models {
     public static function findByID(int $id)
     {
         global $db, $DB_ASSOC;
-        $c = $db->query("SELECT `namespace`,`title` FROM `live_document_list` WHERE `docid`=$id");
+        $c = $db->query("SELECT `namespace`,`title` FROM `document` WHERE `docid`=$id");
         return $c->fetch($DB_ASSOC);
     }
     
@@ -294,7 +294,7 @@ class Models {
             $sqlstr .= " `content` LIKE ?";
         array_push($words, '%'.$thisword.'%');
 
-        $c = $db->prepare("SELECT `docid` FROM `document` WHERE `is_latest`='true' AND $sqlstr");
+        $c = $db->prepare("SELECT `docid` FROM `history` WHERE `is_latest`='true' AND $sqlstr");
         $c->execute($words);
         $r = $c->fetchAll($DB_ASSOC);
         return $resSet;

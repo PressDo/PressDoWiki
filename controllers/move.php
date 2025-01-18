@@ -11,9 +11,9 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
 
-        $ACL = new WikiACL($rawns, $title, 'move', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'move', $this->session, $this->error);
         $ACL->check();
         $page = [
             'view_name' => 'move',
@@ -36,7 +36,7 @@ class WikiPage extends WikiCore
         }
 
         // 문서 없음
-        if(!Models::exist($rawns,$title)){
+        if(!Models::exist($namespace,$title)){
             $this->error = (object) ['code' => 'no_such_document'];
             $page = [
                 'view_name' => 'error',
@@ -57,7 +57,7 @@ class WikiPage extends WikiCore
             }else{
                 $id = 'i:'.$this->session->ip;
             }
-            Models::move_document(Models::get_doc_id($rawns, $title), $this->uri_data->title, $this->post->new_title, $id, $this->post->summary);
+            Models::move_document(Models::get_doc_id($namespace, $title), $this->uri_data->title, $this->post->new_title, $id, $this->post->summary);
             Header('Location: /w/'.$this->post->new_title);
         }else{
             $this->session->token = self::rand(64);

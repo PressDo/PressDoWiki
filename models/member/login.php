@@ -21,7 +21,7 @@ class Models extends baseModels
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT count(username) as cnt, `gravatar_url`, `username`, `password`, `skin` FROM `member` WHERE `username`=?");
+            $d = $db->prepare("SELECT count(username) as cnt, `gravatar_url`, `username`, `password`, `skin`, `uuid` FROM `member` WHERE `username`=?");
             $d->execute([$id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 유저 조회 중 오류 발생');
@@ -37,16 +37,16 @@ class Models extends baseModels
             unset($user['cnt']);
         
         try {
-            $d = $db->prepare("INSERT INTO `login_history`(username,ip,datetime) VALUES(?,?,?)");
-            $d->execute([$user['username'], $ip, $dt]);
+            $d = $db->prepare("INSERT INTO `login_history`(uuid,ip,datetime) VALUES(?,?,?)");
+            $d->execute([$user['uuid'], $ip, $dt]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 로그인 기록 중 오류 발생');
         }
         unset($d);
         
         try {
-            $d = $db->prepare("UPDATE `member` SET `last_login_ua`=? WHERE `username`=?");
-            $d->execute([$ua, $user['username']]);
+            $d = $db->prepare("UPDATE `member` SET `last_login_ua`=? WHERE `uuid`=?");
+            $d->execute([$ua, $user['uuid']]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 로그인 처리 중 오류 발생');
         }

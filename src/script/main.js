@@ -94,9 +94,9 @@ qa('.hidden-trigger').forEach(h => {
 })
 
 // 검색창 버튼
-qa("#sb").forEach(sb => {
+qa(".sb").forEach(sb => {
     e(sb,'click',() => {
-        var f = g('search-keyword').value
+        var f = g('searchInput').value
         if(f == '')
             return false
         location.href = a.g(sb,'goto') + f

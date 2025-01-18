@@ -36,7 +36,7 @@ class baseModels {
     }
 
     /**
-     * Get ID of the document.
+     * Get ID of the document. (deprecated)
      *
      * @param   string $rawns     Document namespace (raw)
      * @param   string $title     Document Title
@@ -47,7 +47,7 @@ class baseModels {
         $db = self::db();
 
         try {
-            $c = $db->prepare("SELECT `docid` FROM `live_document_list` WHERE `namespace`=? AND BINARY `title`=?");
+            $c = $db->prepare("SELECT `docid` FROM `document` WHERE `namespace`=? AND BINARY `title`=?");
             $c->execute([$rawns, $title]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 ID 조회 중 오류 발생');
@@ -57,6 +57,32 @@ class baseModels {
             $res = false;
         else
             $res = intval($c->fetch(PDO::FETCH_ASSOC)['docid']);
+        
+        return $res;
+    }
+
+    /**
+     * Get UUID of the document.
+     *
+     * @param   string $rawns     Document namespace (raw)
+     * @param   string $title     Document Title
+     * @return  int|bool       Document ID
+     */
+    public static function get_doc_uuid($rawns, $title): string|bool
+    {
+        $db = self::db();
+
+        try {
+            $c = $db->prepare("SELECT HEX(uuid) as uuid FROM `document` WHERE `namespace`=? AND BINARY `title`=?");
+            $c->execute([$rawns, $title]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 UUID 조회 중 오류 발생');
+        }
+
+        if($c->rowCount() < 1)
+            $res = false;
+        else
+            $res = WikiPage::uuid_addhyphen($c->fetch(PDO::FETCH_ASSOC)['uuid']);
         
         return $res;
     }
@@ -73,7 +99,7 @@ class baseModels {
 
         try {
             $ORSTATEMENT = str_repeat(',?', count($ids) - 1);
-            $c = $db->prepare("SELECT `docid`,`namespace`,`title` FROM `live_document_list` WHERE `docid` IN (?".$ORSTATEMENT.")");
+            $c = $db->prepare("SELECT `docid`,`namespace`,`title` FROM `document` WHERE `docid` IN (?".$ORSTATEMENT.")");
             $c->execute($ids);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ID로 문서명 조회 중 오류 발생');
@@ -95,7 +121,7 @@ class baseModels {
         $db = self::db();
 
         try {
-            $c = $db->prepare("SELECT `namespace`,`title` FROM `live_document_list` WHERE `docid`=?");
+            $c = $db->prepare("SELECT `namespace`,`title` FROM `document` WHERE `docid`=?");
             $c->execute([$id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ID로 문서명 조회 중 오류 발생');
@@ -120,7 +146,7 @@ class baseModels {
     public static function load(string $rawns, string $title, int|null $rev=null): null | array
     {
         $db = self::db();
-        $sql = "SELECT d.content,d.length,d.comment,d.datetime,d.action,d.rev,d.count,d.reverted_version,d.contributor, d.edit_request_uri,d.acl_changed,d.moved_from,d.moved_to,d.is_hidden,d.is_latest FROM `document` as d INNER JOIN `live_document_list` as l ON l.docid = d.docid WHERE BINARY l.`namespace`=? AND BINARY l.`title`=? AND `is_hidden`='false' ORDER BY d.`datetime`";
+        $sql = "SELECT d.content,d.length,d.comment,d.datetime,d.action,d.rev,d.count,d.reverted_version,d.contributor, d.edit_request_uri,d.acl_changed,d.moved_from,d.moved_to,d.is_hidden,d.is_latest FROM `history` as d INNER JOIN `document` as l ON l.docid = d.docid WHERE BINARY l.`namespace`=? AND BINARY l.`title`=? AND `is_hidden`='false' ORDER BY d.`datetime`";
         if($rev === null){
             $d = $db->prepare($sql.' DESC LIMIT 1');
         } else {
@@ -197,9 +223,9 @@ class baseModels {
         $db = self::db();
         $perms = [];
         try {
-            $c = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor`=?");
+            $c = $db->prepare("SELECT count(*) as `cnt` FROM `history` WHERE `contributor`=?");
             $session->member? $c->execute(['m:'.$session->member->username]):$c->execute(['i:'.$session->ip]);
-            $d = $db->prepare("SELECT count(*) as `cnt` FROM `document` WHERE `contributor`=? AND `docid`=?");
+            $d = $db->prepare("SELECT count(*) as `cnt` FROM `history` WHERE `contributor`=? AND `docid`=?");
             $session->member? $d->execute(['m:'.$session->member->username, $docid]):$d->execute(['i:'.$session->ip, $docid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 권한 목록 조회 중 오류 발생');
@@ -328,7 +354,7 @@ class baseModels {
         $db = self::db();
         $id = self::get_doc_id($rawns, $title);
         try {
-            $d = $db->prepare("SELECT `rev` FROM `document` WHERE `docid`=? ORDER BY `rev` DESC LIMIT 1");
+            $d = $db->prepare("SELECT `rev` FROM `history` WHERE `docid`=? ORDER BY `rev` DESC LIMIT 1");
             $d->execute([$id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 버전 조회 중 오류 발생');
@@ -339,18 +365,20 @@ class baseModels {
     /**
      * Get if certain document exists.
      */
-    public static function exist(string $rawns, string $title): bool
+    public static function exist(string $rawns, string $title, &$backlinkrefreshed = false): bool
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT count(*) as cnt FROM `live_document_list` WHERE `namespace`=? AND `title`=?");
+            $d = $db->prepare("SELECT count(*) as cnt, backlink_updated FROM `document` WHERE `namespace`=? AND `title`=?");
             $d->execute([$rawns,$title]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 검색 중 오류 발생');
         }
-        if(intval($d->fetch(PDO::FETCH_ASSOC)['cnt']) > 0)
+        $f = $d->fetch(PDO::FETCH_ASSOC);
+        if(intval($f['cnt']) > 0){
+            $backlinkrefreshed = boolval($f['backlink_updated']);
             return true;
-        else
+        }else
             return false;
     }
     

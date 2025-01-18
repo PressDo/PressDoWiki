@@ -12,9 +12,9 @@ class WikiPage extends WikiCore
     public function make_data()
     {
         $info = Models::get_thread_info($this->uri_data->title);
-        list($rawns, $namespace, $title) = [$info['namespace'], Namespaces::get($info['namespace']), $info['title']];
+        list($namespace, $title) = [$info['namespace'], $info['namespace'], $info['title']];
 
-        $ACL = new WikiACL($rawns, $title, 'read', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();
 
         if ($this->error->code == 'permission_read'){
@@ -31,7 +31,7 @@ class WikiPage extends WikiCore
         $threads = [];
         $d_perms = [];
 
-        $doctitle = self::make_title($rawns, $title);
+        $doctitle = self::make_title($namespace, $title);
            
         foreach ($com as $c){
             if($c['type'] == 'status' || $c['type'] == 'topic' || $c['type'] == 'document')

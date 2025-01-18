@@ -140,7 +140,7 @@
         "document_not_found": "해당 문서를 찾을 수 없습니다.",
         "no_revision": "해당 리비전이 존재하지 않습니다.",
         "no_such_document": "문서를 찾을 수 없습니다.",
-        "unlogined_edit": "비로그인 상태로 편집합니다. 편집 역사에 IP(@1@)가 영구히 기록됩니다.",
+        "unlogined_edit": "비로그인 상태로 편집합니다. 로그인하지 않은 상태로 문서 편집을 저장하면, 편집 역사에 본인이 사용하는 IP(@1@) 주소 전체가 영구히 기록됩니다.",
         "unlogined_create": "[알림] 비로그인 상태로 토론 주제를 생성합니다. 토론 내역에 IP(@1@)가 영구히 기록됩니다.",
         "unlogined_comment": "[알림] 비로그인 상태로 토론에 참여합니다. 토론 내역에 IP(@1@)가 영구히 기록됩니다.",
         "goto_edit_request": "문서를 편집할 권한이 없기 때문에 편집 요청으로 이동되었습니다.",
@@ -193,7 +193,8 @@
         "this_is_blocked": "이 사용자는 차단된 사용자입니다.",
         "this_is_blocked_user": "이 사용자는 @1@에 @2@ 차단되었습니다.",
         "search_go_directly": "&nbsp; 찾는 문서가 없나요? 문서로 바로 갈 수 있습니다. ",
-        "user_discuss_exists": "현재 진행중인 <a href=\"/discuss/@1@\">사용자 토론</a>이 있습니다."
+        "user_discuss_exists": "현재 진행중인 <a href=\"/discuss/@1@\">사용자 토론</a>이 있습니다.",
+        "no_backlinks": "해당 문서의 역링크가 존재하지 않습니다."
     },
     "mail":{
         "signup_title": "[@1@] 계정 생성 이메일 주소 인증.",
@@ -238,6 +239,7 @@
         "grant": "권한 부여",
         "edit": "편집",
         "history": "역사",
+        "backlink": "역링크",
         "delete": "삭제",
         "move": "이동",
         "edit_request": "편집 요청",

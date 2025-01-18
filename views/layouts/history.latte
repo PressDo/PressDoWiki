@@ -1,5 +1,5 @@
 <div class="history-menu">
-    <div class="bt-g history-menu-area">
+    <div class="bt-g history-menu-area bt-g-top page-btn-area">
         {if !$wiki['page']['data']['prev_ver']}
             {var $ptag = 'span'}
             {var $phref = null}
@@ -24,7 +24,7 @@
         </a>
     </div>
     <form>
-        <div class="history-menu-area history-goto">
+        <div class="history-menu-area history-goto page-btn-area">
             <input class="textfield" type="number" name="from" pattern="\d+" required>
             <span>r</span>
             <button class="pressdo-btn" type="submit">

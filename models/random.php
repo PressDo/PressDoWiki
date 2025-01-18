@@ -11,7 +11,7 @@ class Models extends baseModels
     {
         $db = self::db();
         try {
-            $d = $db->query("SELECT `namespace`,`title` FROM `live_document_list` WHERE `namespace`='document' ORDER BY RAND() LIMIT 1");
+            $d = $db->query("SELECT `namespace`,`title` FROM `document` WHERE `namespace`='문서' ORDER BY RAND() LIMIT 1");
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 무작위 문서 불러오기 중 오류 발생');
         }

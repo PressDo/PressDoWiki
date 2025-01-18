@@ -11,9 +11,9 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($rawns, $namespace, $title) = self::parse_title($this->uri_data->title);
+        list($namespace, $title) = self::parse_title($this->uri_data->title);
 
-        $ACL = new WikiACL($rawns, $title, 'read', $this->session, $this->error);
+        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();
         $page = [
             'view_name' => 'history',
@@ -39,12 +39,12 @@ class WikiPage extends WikiCore
             return $page;//$this::make_error();
         }
 
-        if(Models::exist($rawns,$title)){
+        if(Models::exist($namespace,$title)){
             if(isset($_GET['from'])) $from = $_GET['from'];
             if(isset($_GET['until'])) $until = $_GET['until'];
-            $fetch = Models::loadHistory($rawns,$title, $from, $until);
-            $ver = Models::get_version($rawns,$title);
-            $l = Models::get_rev_time($rawns,$title, 1);
+            $fetch = Models::loadHistory($namespace,$title, $from, $until);
+            $ver = Models::get_version($namespace,$title);
+            $l = Models::get_rev_time($namespace,$title, 1);
             $localConfig = [];
             $cn = count($fetch);
             $cl = ($cn < 31)? $cn:$cn-1;
