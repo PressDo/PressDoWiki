@@ -1,7 +1,7 @@
 <form class="pagelist-menu" method=""get>
     <label for="namespaceSelect">이름공간:</label>
     <select n:inner-foreach="$wiki['page']['data']['backlink_count'] as $cnt" class="selfield" id="namespaceSelect" name="namespace" value="문서">
-        <option value="{$cnt['namespace']}">{$cnt['namespace']} ({$cnt['count']})</option>
+        <option value="{$cnt['namespace']}" n:attr="selected: $uri_data['query']->namespace == $cnt['namespace']">{$cnt['namespace']} ({$cnt['count']})</option>
     </select>
     <select class="selfield" name="flag" value="0">
         <option value="0" n:attr="selected: $uri_data['query']->flag == 0">(전체)</option>

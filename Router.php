@@ -11,13 +11,13 @@ class Router {
             exit;
         endif;
 
-        // 0/1/2/3
+        // (0)/1/2/3
         $uriset = explode('/', explode('?', $request_uri)[0]);
         $uri_data = (object) [
             'page' => $uriset[1]=='w'?'wiki':$uriset[1]
         ];
 
-        if(count($uriset) > 2 && $uri_data->page !== 'member'){
+        if(count($uriset) > 2 && !in_array($uri_data->page, ['member', 'admin', 'api'])){
             $uri_data->title = urldecode(implode('/', array_slice($uriset, 2)));
             $uri_data->titleurl = implode('/', array_slice($uriset, 2));
         }else{

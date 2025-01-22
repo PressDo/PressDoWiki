@@ -3,7 +3,7 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/history.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 
 use PressDo\Models;
 use PressDo\WikiACL;
@@ -11,10 +11,12 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
-        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
-        $ACL->check();
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
+        $ACL->check('read');
+
         $page = [
             'view_name' => 'history',
             'title' => $this->uri_data->title,
@@ -39,34 +41,37 @@ class WikiPage extends WikiCore
             return $page;//$this::make_error();
         }
 
-        if(Models::exist($namespace,$title)){
+        if($uuid !== false){
             if(isset($_GET['from'])) $from = $_GET['from'];
             if(isset($_GET['until'])) $until = $_GET['until'];
-            $fetch = Models::loadHistory($namespace,$title, $from, $until);
-            $ver = Models::get_version($namespace,$title);
+
+            $fetch = Models::loadHistory($uuid, $from, $until);
+            $ver = Models::get_version($uuid);
             $l = Models::get_rev_time($namespace,$title, 1);
             $localConfig = [];
             $cn = count($fetch);
             $cl = ($cn < 31)? $cn:$cn-1;
 
             foreach($fetch as $f){
-                $contr = explode(':', $f['contributor']);
-                if($contr[0] == 'm'){
-                    $author = $contr[1];
-                    $ip = null;
-                }else{
-                    $ip = $contr[1];
-                    $author = null;
+                if($f['contributor_i'] !== null){
+                    $uuid = Models::bin2uuid($f['contributor_i']);
+                    $ip = Models::ip_lookup($uuid);
+                }elseif($f['contributor_m'] !== null){
+                    $uuid = Models::bin2uuid($f['contributor_m']);
+                    $member = Models::member_lookup($uuid);
                 }
+
                 array_push($page['data']['history'], [
                     'rev' => $f['rev'],
+                    'uuid' => Models::bin2uuid($f['uuid']),
                     'log' => $f['comment'],
                     'date' => $f['datetime'],
                     'count' => $f['count'],
                     'logtype' => $f['action'],
                     'target_rev' => $f['reverted_version'],
-                    'author' => $author,
+                    'author' => $member,
                     'ip' => $ip,
+                    'contributor_uuid' => $uuid,
                     'style' => null,
                     'blocked' => null,
                     'edit_request' => $f['edit_request_uri'],

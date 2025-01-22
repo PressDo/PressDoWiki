@@ -3,7 +3,7 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/blank.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 
 use PressDo\Models;
 use PressDo\WikiACL;
@@ -11,10 +11,11 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
-        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
-        $ACL->check();
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
+        $ACL->check('read');
         $page = [
             'view_name' => 'diff',
             'title' => $this->uri_data->title,
@@ -41,22 +42,25 @@ class WikiPage extends WikiCore
             return $page;
         }
 
-        if(Models::exist($namespace,$title)){
-            $lver = Models::get_version($namespace,$title);
-            $rev = $this->uri_data->query->rev;
-            $oldrev = $this->uri_data->query->oldrev;
-
-            if(!$this->uri_data->query->rev || !$this->uri_data->query->oldrev || !is_numeric($rev) || !is_numeric($oldrev) || $rev > $lver || $oldrev < 1 || $rev <= $oldrev){
+        if($uuid !== false){
+            if(!$this->uri_data->query->uuid){
                 $this->error->code = 'no_such_revision';
                 return $page;
             }
+            $target_uuid = $this->uri_data->query->uuid;
+            $new = Models::load($uuid, $target_uuid);
+            
+            if(!$this->uri_data->query->olduuid){
+                $old_uuid = Models::get_before_uuid($uuid, $new['rev']);
+            }else{
+                $old_uuid = $this->uri_data->query->olduuid;
+            }
 
-            $old = Models::load($namespace, $title, $oldrev)['content'];
-            $new = Models::load($namespace, $title, $rev)['content'];
+            $old = Models::load($uuid, $old_uuid);
 
-            $page['data']['oldrev'] = $oldrev;
-            $page['data']['rev'] = $rev;
-            $page['data']['diff'] = self::load_diff($old, $new, $oldrev, $rev);
+            $page['data']['old_uuid'] = $old_uuid;
+            $page['data']['rev_uuid'] = $target_uuid;
+            $page['data']['diff'] = self::load_diff($old['content'], $new['content'], $old['rev'], $new['rev']);
             //'debug' => $this->uri_data
             return $page;
         }else{

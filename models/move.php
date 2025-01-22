@@ -31,7 +31,7 @@ class Models extends baseModels
             $to
         ];
 
-        $a = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`='".$did."' AND `is_latest`='true'");
+        //$a = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`='".$did."' AND `is_latest`='true'");
         $b = $db->prepare("INSERT INTO `history`(docid,content,length,comment,datetime,action,rev,count,contributor,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
         $b->execute($d);
     }

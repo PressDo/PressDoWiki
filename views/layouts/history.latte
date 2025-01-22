@@ -5,7 +5,7 @@
             {var $phref = null}
         {else}
             {var $ptag = null}
-            {var $phref = 'href="/history/'.$uri_data['title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
+            {var $phref = '/history/'.$uri_data['title'].'?until='.$wiki['page']['data']['prev_ver']}
         {/if}
         <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
             <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
@@ -16,7 +16,7 @@
             {var $nhref = null}
         {else}
             {var $ntag = null}
-            {var $nhref = 'href="/history/'.$uri_data['title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
+            {var $nhref = '/history/'.$uri_data['title'].'?from='.$wiki['page']['data']['next_ver']}
         {/if}
         <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
             <span>{$lang['history']['next']}</span>
@@ -49,18 +49,18 @@
                 {var $flag = ''}
             {/if}
             <li data-pressdo-history><time datetime="{$d['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$d['date']|date: 'Y-m-d H:i:s'}</time> 
-                <span data-pressdo-history-menu>(<a href="/w/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['view']}</a> | 
-                <a href="/raw/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">RAW</a> | 
-                {*<a href="<?=$uri['blame'].$Doc.$uri['prefix'].'rev={$d['rev']}">Blame</a> | *}
-                <a href="/revert/{$uri_data['title']|escapeUrl}?rev={$d['rev']}">{$lang['history']['revert']}</a>{if $d['rev'] > 1} | 
-                <a href="/diff/{$uri_data['title']|escapeUrl}?rev={$d['rev']}&oldrev={=$d['rev'] - 1}">{$lang['history']['diff']}</a>{/if}{if !empty($d['ip']) && $d['ip'] == $wiki['session']['ip'] && !empty($wiki['session']['member']['username'])} | 
+                <span data-pressdo-history-menu>(<a href="/w/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['view']}</a> | 
+                <a href="/raw/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">RAW</a> | 
+                {*<a href="<?=$uri['blame'].$Doc.$uri['prefix'].'uuid={$d['uuid']}">Blame</a> | *}
+                <a href="/revert/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['revert']}</a>{if $d['rev'] > 1} | 
+                <a href="/diff/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['diff']}</a>{/if}{if !empty($d['ip']) && $d['ip'] == $wiki['session']['ip'] && !empty($wiki['session']['member']['username'])} | 
                 <a href="/move_ip/{$uri_data['title']|escapeUrl}?dt={$d['date']}">{$lang['history']['move_ip']}</a>{/if}
                 {*if(Data::inACLgroup($user['typename'], 'admin')){
                 ?> | 
-                        <a href="<?=$uri['hide'].$Doc.'?rev='.$d['rev']?>">숨기기</a>
+                        <a href="<?=$uri['hide'].$Doc.'?uuid='.$d['uuid']?>">숨기기</a>
                 }*})
                 </span>
-                <input data-pressdo-history-radio type="radio" name="oldrev" value="{$d['rev']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="rev" value="{$d['rev']}" v="inline-block">
+                <input data-pressdo-history-radio type="radio" name="olduuid" value="{$d['uuid']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="uuid" value="{$d['uuid']}" v="inline-block">
                 <i>{switch $d['logtype']}
                     {case 'revert'}
                         ({=$lang['log']['revert']|replace: '@1@', $d['target_rev']})

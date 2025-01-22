@@ -11,7 +11,7 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
 
         $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();

@@ -20,7 +20,7 @@ class WikiPage extends WikiCore
                 $menus = [];
                 $SP = ['aclgroup', 'grant', 'login_history'];
                 $link = ['aclgroup' => '/aclgroup', 'grant' => '/admin/grant', 'login_history' => '/admin/login_history'];
-                $sps = Models::special_perms($l['username']);
+                $sps = Models::special_perms($l['uuid']);
                 foreach ($SP as $prm){
                     if(in_array($prm, $sps))
                         array_push($menus, ['l' => $link[$prm], 't' => $prm]);
@@ -30,8 +30,9 @@ class WikiPage extends WikiCore
                         
                 $this->session->member = (object) [
                     'user_document_discuss' => null,
+                    'uuid' => $l['uuid'],
                     'username' => $l['username'],
-                    'gravatar_url' => $l['gravatar_url'],
+                    'gravatar_url' => '//www.gravatar.com/avatar/'.md5($l['email']).'?d=retro',
                     'admin' => (in_array('admin', $sps))? true:false,
                     'settings' => ['skin' => $l['skin']]
                 ];

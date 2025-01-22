@@ -3,7 +3,7 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/wiki.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 
 use PressDo\Models;
 use PressDo\WikiACL;
@@ -17,10 +17,12 @@ class WikiPage extends WikiCore
 
     public function make_data(): array
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
-        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
-        $ACL->check();
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
+        $ACL->check('read');
+        
         $page = [
             'view_name' => 'wiki',
             'title' => $this->uri_data->title,
@@ -52,7 +54,7 @@ class WikiPage extends WikiCore
         }
 
         # If Not Found
-        if(!Models::exist($namespace,$title, $backlinkrefreshed)){
+        if(!$uuid){
             $page = [
                 'view_name' => 'notfound',
                 'title' => $this->uri_data->title,
@@ -70,13 +72,12 @@ class WikiPage extends WikiCore
             ];
         }else{
             # If found
-            $discussions = Models::get_doc_thread($namespace,$title);
-            $uuid = str_replace('-', '', Models::get_doc_uuid($namespace,$title));
-            //$lver = Models::get_version($namespace,$title);
-            $rev = isset($_GET['rev'])?intval($_GET['rev']):null;
+            $discussions = Models::get_doc_thread($uuid);
+            //$lver = Models::get_version($uuid);
+            $rev_uuid = isset($_GET['uuid'])?$_GET['uuid']:null;
 
             
-            $doc = Models::load($namespace, $title, $rev);
+            $doc = Models::load($uuid, $rev_uuid);
             $content = $this::readSyntax($doc['content'], Config::get('mark'), [
                 'title' => $this->uri_data->title,
                 'noredirect' => $this->uri_data->query->noredirect,
@@ -87,10 +88,11 @@ class WikiPage extends WikiCore
             if(!$backlinkrefreshed)
                 self::update_linktable($uuid, $content['links']);
 
-            if($rev !== null)
-                $page['subtitle'] = str_replace('@1@', $rev, Lang::get('document')['rev']);
+            if($rev_uuid !== null)
+                $page['subtitle'] = str_replace('@1@', $doc['rev'], Lang::get('document')['rev']);
+
             $page['data'] = [
-                'starred' => $this->session->member ? Models::if_starred($uuid,$this->session->member->username):false,
+                'starred' => $this->session->member ? Models::if_starred($uuid,$this->session->member->uuid):false,
                 'star_count' => Models::count_stars($uuid),
                 'document' => [
                     'namespace' => $namespace,
@@ -100,10 +102,10 @@ class WikiPage extends WikiCore
                 ],
                 'discuss_progress' => (isset($discussions[0])),
                 'date' => $doc['datetime'],
-                'rev' => $rev,
+                'rev' => $doc['rev'],
                 'user' => ($namespace == '사용자'),
                 'userData' => ($namespace == '사용자')?[
-                    'admin' => WikiACL::check_perms('admin', $this->session, $title),
+                    'admin' => in_array('admin', $ACL->perms),
                     'block' => [
                         'blocked' => false,
                         'seq',

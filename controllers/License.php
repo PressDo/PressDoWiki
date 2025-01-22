@@ -11,7 +11,7 @@ class WikiPage extends WikiCore
     {
         
         if (!empty($this->session->member) && in_array('admin', Models::special_perms($this->session->member->username)))
-            $updated = '7/10/2021, 15:11:00 PM';
+            $updated = '1/18/2025, 15:11:00 PM';
         else
             $updated = null;
             
@@ -19,9 +19,9 @@ class WikiPage extends WikiCore
             'view_name' => 'License',
             'title' => Lang::get('page')['License'],
             'data' => [
-                'version' => '2107a',
+                'version' => '2501c',
                 'updated' => $updated,
-                'hash' => 'ffede52'
+                'hash' => '38aacf4'
             ],
             'menus' => [],
             'customData' => []

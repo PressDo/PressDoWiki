@@ -7,39 +7,38 @@ use PDOException;
 
 class Models extends baseModels
 {
-    public static function save_document(string $rawns, string $title, string $content, string $comment, string $identifier, int $baserev, int $prevlen): void
+    public static function save_document(string $uuid, string $content, string $comment, string $cont_m, string $cont_i, int $baserev, int $prevlen): void
     {
         $db = self::db();
         $cnt = iconv_strlen($content)-$prevlen;
-        $docid = self::get_doc_id($rawns,$title);
+        $cont_i = self::uuid2bin($cont_i);
+        $uuid = self::uuid2bin($uuid);
 
         try {
-            $d = $db->query("UPDATE `history` SET `is_latest`='false' WHERE `docid`=$docid AND `is_latest`='true'");
-            $g = $db->prepare("INSERT INTO `history`(docid, content, length, comment, datetime, action, rev, count, contributor, is_hidden,is_latest) VALUES(?,?,?,?,?,'modify',?,?,?,'false', 'true')");
-            $g->execute([$docid, $content, iconv_strlen($content), $comment, $_SERVER['REQUEST_TIME'], $baserev+1, $cnt, $identifier]);
+            $g = $db->prepare("INSERT INTO `history`(uuid, document, content, length, comment, datetime, action, rev, count, contributor_m, contributor_i) VALUES(?,?,?,?,?,?,'modify',?,?,?,?)");
+            $g->execute([self::uuid2bin(self::uuid_generate()), $uuid, $content, iconv_strlen($content), $comment, $_SERVER['REQUEST_TIME'], $baserev+1, $cnt, $cont_m, $cont_i]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 편집 저장 중 오류 발생');
         }
         unset($d, $g);
     }
 
-    public static function create_document(string $rawns, string $title, string $content, string $comment, string $identifier): void
+    public static function create_document(string $namespace, string $title, string $content, string $comment, string $cont_m, string $cont_i): void
     {
         $db = self::db();
         $cnt = iconv_strlen($content);
+        $uuid = self::uuid2bin(self::uuid_generate());
 
         try {
-            $d = $db->prepare("INSERT INTO `document`(namespace,title) VALUES(?,?)");
-            $d->execute([$rawns, $title]);
+            $d = $db->prepare("INSERT INTO `document`(uuid,namespace,title) VALUES(?,?,?)");
+            $d->execute([$uuid, $namespace, $title]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 생성 중 오류 발생');
         }
 
-        $docid = self::get_doc_id($rawns,$title);
-
         try {
-            $g = $db->prepare("INSERT INTO `history`(docid, content, length, comment, datetime, action, rev, count, contributor, is_hidden,is_latest) VALUES(?,?,?,?,?,'create','1',?,?,'false', 'true')");
-            $g->execute([$docid, $content, iconv_strlen($content), $comment, $_SERVER['REQUEST_TIME'], $cnt, $identifier]);
+            $g = $db->prepare("INSERT INTO `history`(uuid, document, content, length, comment, datetime, action, rev, count, contributor_m, contributor_i) VALUES(?,?,?,?,?,?,'create','1',?,?,?)");
+            $g->execute([self::uuid2bin(self::uuid_generate()), $uuid, $content, iconv_strlen($content), $comment, $_SERVER['REQUEST_TIME'], $cnt, $cont_m, $cont_i]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 저장 중 오류 발생');
         }

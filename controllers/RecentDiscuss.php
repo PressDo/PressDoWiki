@@ -41,22 +41,22 @@ class WikiPage extends WikiCore
         $fetch = Models::RecentDiscuss($from, $status, $order);
         $resultSet = [];
         foreach ($fetch as $f){
-            $contr = explode(':', $f['last_author']);
-            if($contr[0] == 'm'){
-                $author = $contr[1];
-                $ip = null;
+            if(!$f['last_contributor_m']){
+                $uuid = Models::bin2uuid($f['last_contributor_i']);
+                $ip = Models::ip_lookup($uuid);
             }else{
-                $ip = $contr[1];
-                $author = null;
+                $uuid = Models::bin2uuid($f['last_contributor_m']);
+                $member = Models::member_lookup($uuid);
             }
+            $_e = Models::get_doc_title(Models::bin2uuid($f['document']));
             $rs = array(
                 'slug' => $f['urlstr'],
-                'document' => ['namespace' => $f['namespace'], 'title' => $f['title']],
+                'document' => ['namespace' => $_e['namespace'], 'title' => $_e['title']],
                 'topic' => $f['topic'],
                 'date' => $f['last_comment'],
                 'logtype' => $f['logtype'],
                 'ip' => $ip,
-                'author' => $author,
+                'author' => $member,
                 'user_mode' => []
             );
             array_push($resultSet, $rs);

@@ -2,7 +2,7 @@
 namespace PressDo;
 
 require 'controllers/common.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 require 'models/blank.php';
 
 use PressDo\Models;
@@ -11,24 +11,19 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
-
-        
-
-        $doc = Models::load($namespace, $title, $this->uri_data->rev);
-
-        
-        $discussions = Models::get_doc_thread($namespace,$title);
-        $docid = Models::get_doc_id($namespace, $title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
+        //$doc = Models::load($uuid, $this->uri_data->rev);
+        //$discussions = Models::get_doc_thread($uuid);
 
         $ACL = new WikiACL($namespace, $title, 'acl', $this->session, $this->error);
-        $ACL->check();
+        $ACL->check('acl');
 
         $doc_editable = $this->error?->code == 'permission_acl' ? false : true;
-        $ns_editable = WikiACL::check_perms('nsacl', $this->session, $title) === true ? true:false;
+        $ns_editable = in_array('nsacl', $ACL->perms);
         
-        $acl_doc = Models::fetch_doc_acl(Models::get_doc_id($namespace, $title));
-        $acl_ns = Models::fetch_ns_acl($namespace);
+        $acl_doc = ACLModels::fetch_doc_acl($uuid);
+        $acl_ns = ACLModels::fetch_ns_acl($namespace);
 
         $doc_acl = $ns_acl = ['read' => [], 'edit' => [], 'move' => [], 'delete' => [], 'create_thread' => [], 'write_thread_comment' => [], 'edit_request' => [], 'acl' => []];
         
@@ -64,7 +59,7 @@ class WikiPage extends WikiCore
                 'ACLTypes' => ['read', 'edit', 'move', 'delete', 'create_thread', 'write_thread_comment', 'edit_request', 'acl']
             ],
             'menus' => [],
-            'debug' => Models::get_doc_id($namespace, $title),
+            //'debug' => Models::get_doc_uuid($namespace, $title),
             'customData' => []
         ];
         return $page;

@@ -3,7 +3,7 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/edit.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 
 use PressDo\Models;
 use PressDo\WikiACL;
@@ -11,12 +11,35 @@ class WikiPage extends WikICore
 {
     public function make_data()
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
         if(!$this->error) $this->error = null;
-        $exist = Models::exist($namespace,$title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
-        $ACL = new WikiACL($namespace, $title, 'edit', $this->session, $this->error);
-        $ACL->check();
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
+        $ACL->check('read');
+        if ($this->error->code == 'permission_read'){
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
+            return $page;//$this::make_error();
+        }
+        $ACL->check('edit');
+
+        // 편집권한이 없으면 편집 요청 권한 확인
+        if ($this->error?->code == 'permission_edit'){
+            $ACL->check('edit_request');
+            if ($this->error->code == 'permission_edit_request'){
+                $page = [
+                    'view_name' => 'error',
+                    'title' => Lang::get('page')['error'],
+                    'data' => (array) $this->error
+                ];
+                return $page;
+            }else
+                Header('Location: /edit_request/'.$this->uri_data->title);
+        }
 
         // Edit Submission
         if(isset($this->post->token) && isset($this->post->content)){
@@ -35,25 +58,25 @@ class WikiPage extends WikICore
             }else{
                 // Approve Edit
                 if(!empty($this->session->member)){
-                    $id = 'm:'.$this->session->member->username;
+                    $id = 'm:'.$this->session->member->uuid;
                 }else{
                     $id = 'i:'.$this->session->ip;
                 }
 
-                if($exist){
-                    Models::save_document($namespace,$title,$this->post->content,$this->post->comment,$id,$this->session->baserev,iconv_strlen($this->session->raw));
+                if($uuid !== false){
+                    Models::save_document($uuid,$this->post->content,$this->post->comment,$this->session->member->uuid,$this->session->ip,$this->session->baserev,iconv_strlen($this->session->raw));
                 }else{
-                    Models::create_document($namespace,$title,$this->post->content,$this->post->comment,$id);
+                    Models::create_document($namespace, $title,$this->post->content,$this->post->comment,$this->session->member->uuid,$this->session->ip);
                 }
 
                 Header('Location: /w/'.$this->uri_data->title);
             }
         }
 
-        $doc = Models::load($namespace, $title, $this->uri_data->query->rev);
+        $doc = Models::load($uuid);
 
-        $this->session->baserev = ($exist) ? Models::get_version($namespace, $title) : 0;
-        $this->session->raw = ($exist) ? $doc['content'] : '';
+        $this->session->baserev = ($uuid) ? Models::get_version($uuid) : 0;
+        $this->session->raw = ($uuid) ? $doc['content'] : '';
         $section = $this->uri_data->query->section;
 
         $page = [
@@ -77,15 +100,7 @@ class WikiPage extends WikICore
             ]
         ];
 
-        // 편집권한이 없으면 편집 요청 권한 확인
-        if ($this->error && ($this->error->code == 'permission_read' || $this->error->code == 'permission_edit')){
-            $ACL = new WikiACL($namespace, $title, 'edit_request', $this->session, $this->error);
-            $ACL->check();
-            if ($this->error->code == 'permission_edit_request')
-                return $page;
-            else
-                Header('Location: /edit_request/'.$this->uri_data->titleurl);
-        }elseif($this->error->code !== 'err_csrf_token'){
+        if($this->error->code !== 'err_csrf_token'){
             return $page;
         }
 

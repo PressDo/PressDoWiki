@@ -27,5 +27,6 @@ $Wiki->page = $Wiki->make_data();
 $Wiki->make_page();
 
 // call page
-echo $Wiki->get_page();
+if($uri->page !== 'api')
+    echo $Wiki->get_page();
 $_SESSION['session'] = $Wiki->session;

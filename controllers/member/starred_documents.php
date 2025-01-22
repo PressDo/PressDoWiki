@@ -24,10 +24,10 @@ class WikiPage extends WikiCore
 
             $cnt = count($starred);
             for($i=0; $i<$cnt; $i++){
-                $starred_doc[$starred_mod[$i]['docid']]['datetime'] = $starred_mod[$i]['datetime'];
+                $starred_doc[$starred_mod[$i]['uuid']]['datetime'] = $starred_mod[$i]['datetime'];
             }
             for($i=0; $i<$cnt; $i++){
-                $starred_doc[$starred_name[$i]['docid']]['title'] = $this->make_title($starred_name[$i]['namespace'], $starred_name[$i]['title']);
+                $starred_doc[$starred_name[$i]['uuid']]['title'] = $this->make_title($starred_name[$i]['namespace'], $starred_name[$i]['title']);
             }
         }else
             $starred_doc = null;

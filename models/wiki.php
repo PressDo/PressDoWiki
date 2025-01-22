@@ -1,6 +1,6 @@
 <?php
 namespace PressDo;
-require 'models/common.php';
+require_once 'models/common.php';
 
 use ErrorException;
 use PDOException;
@@ -10,16 +10,18 @@ class Models extends baseModels
     /**
      * get boolean if document is starred
      * 
-     * @param int $uuid        Document ID
-     * @param string $username  username
+     * @param int $uuid        Document UUID
+     * @param string $user     User UUID
      * @return bool
      */
-    public static function if_starred(int $uuid, string $username): bool
+    public static function if_starred(string $uuid, string $user): bool
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        $user = self::uuid2bin($user);
         try {
-            $d = $db->prepare("SELECT `docid` FROM `starred` WHERE `document`=? AND `user`=?");
-            $d->execute([$uuid, $username]);
+            $d = $db->prepare("SELECT * FROM `starred` WHERE `document`=? AND `user`=?");
+            $d->execute([$uuid, $user]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 별표여부 조회 중 오류 발생');
         }
@@ -36,6 +38,7 @@ class Models extends baseModels
     public static function count_stars(string $uuid): int
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
         try {
             $d = $db->prepare("SELECT count(*) as cnt FROM `starred` WHERE `document`=?");
             $d->execute([$uuid]);
@@ -48,8 +51,9 @@ class Models extends baseModels
     public static function get_forlinks(string $uuid)
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
         try {
-            $d = $db->prepare("SELECT `type`, `namespace`, `title` FROM `links` WHERE `from_uuid`=UNHEX(?)");
+            $d = $db->prepare("SELECT `type`, `namespace`, `title` FROM `links` WHERE `from_uuid`=?");
             $d->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 순링크 조회 중 오류 발생');
@@ -60,32 +64,33 @@ class Models extends baseModels
     public static function update_forlinks(string $uuid, array $links)
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
         $addvals = [];
         $parvals = [];
         if(count($links['redirect']) > 0){
             // 리다이렉트 문서 (링크가 항상 하나임)
-            array_push($addvals, '(?,?,UNHEX(?),?)');
+            array_push($addvals, '(?,?,?,?)');
             list($namespace, $title) = WikiPage::parse_title($links['redirect'][0]);
             array_push($parvals, $namespace, $title, $uuid, 'redirect');
         }else{
             foreach($links['link'] as $l){
-                array_push($addvals, '(?,?,UNHEX(?),?)');
+                array_push($addvals, '(?,?,?,?)');
                 list($namespace, $title) = WikiPage::parse_title($l);
                 array_push($parvals, $namespace, $title, $uuid, 'link');
             }
             foreach($links['file'] as $l){
-                array_push($addvals, '(?,?,UNHEX(?),?)');
+                array_push($addvals, '(?,?,?,?)');
                 list($namespace, $title) = WikiPage::parse_title($l);
                 array_push($parvals, $namespace, $title, $uuid, 'file');
             }
             foreach($links['include'] as $l){
-                array_push($addvals, '(?,?,UNHEX(?),?)');
+                array_push($addvals, '(?,?,?,?)');
                 list($namespace, $title) = WikiPage::parse_title($l);
                 array_push($parvals, $namespace, $title, $uuid, 'include');
             }
         }
         try {
-            $d = $db->prepare("DELETE FROM `links` WHERE `from_uuid`=UNHEX(?)");
+            $d = $db->prepare("DELETE FROM `links` WHERE `from_uuid`=?");
             $d->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 기존 순링크 삭제 중 오류 발생');
@@ -97,7 +102,7 @@ class Models extends baseModels
             throw new ErrorException($err->getMessage().': 순링크 갱신 중 오류 발생');
         }
         try {
-            $d = $db->prepare("UPDATE `document` SET `backlink_updated`='1' WHERE `uuid`=UNHEX(?)");
+            $d = $db->prepare("UPDATE `document` SET `backlink_updated`='1' WHERE `uuid`=?");
             $d->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 링크 갱신 반영 중 오류 발생');

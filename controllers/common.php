@@ -1,7 +1,6 @@
 <?php
 namespace PressDo;
 use \stdClass as stdClass;
-use PressDo\WikiParams as WP;
 
 /**
  * Wiki Main Class
@@ -239,16 +238,6 @@ class WikiCore
         return $s;
     }
 
-    public static function ipv62long(string $ip) : string
-    {
-        $pton = inet_pton($ip);
-            $number = '';
-            foreach (unpack('C*', $pton) as $byte)
-                $number .= str_pad(decbin($byte), 8, '0', STR_PAD_LEFT);
-            
-            return base_convert(ltrim($number, '0'), 2, 10);
-    }
-
     /**
      * get country of location
      * 너무 느려져서 일시 비활성화함
@@ -256,19 +245,5 @@ class WikiCore
     public static function geoip(string $ip): string
     {
         return 'KR';//json_decode(file_get_contents('http://ip-api.com/json/'.$ip), true)['countryCode']; 
-    }
-
-    public static function uuid_generate(): string
-    {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-           mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-           mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000,
-           mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-         );
-    }
-
-    public static function uuid_addhyphen(string $uuid): string
-    {
-        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16);
     }
 }

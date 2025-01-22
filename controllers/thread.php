@@ -12,7 +12,7 @@ class WikiPage extends WikiCore
     public function make_data()
     {
         $info = Models::get_thread_info($this->uri_data->title);
-        list($namespace, $title) = [$info['namespace'], $info['namespace'], $info['title']];
+        [$namespace, $title] = [$info['namespace'], $info['namespace'], $info['title']];
 
         $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
         $ACL->check();

@@ -21,20 +21,17 @@ class Models extends baseModels
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT count(username) as cnt, `gravatar_url`, `username`, `password`, `skin`, `uuid` FROM `member` WHERE `username`=?");
-            $d->execute([$id]);
+            $d = $db->prepare("SELECT `username`, `password`, `skin`, `uuid`,`email` FROM `member` WHERE `username`=? OR email=?");
+            $d->execute([$id, $id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 유저 조회 중 오류 발생');
         }
         
         $user = $d->fetch(\PDO::FETCH_ASSOC);
-        unset($d);
         
         // not found
-        if($user['cnt'] !== 1 || !password_verify($pw, $user['password']))
+        if($d->rowCount() !== 1 || !password_verify($pw, $user['password']))
             return false;
-        else
-            unset($user['cnt']);
         
         try {
             $d = $db->prepare("INSERT INTO `login_history`(uuid,ip,datetime) VALUES(?,?,?)");
@@ -50,6 +47,7 @@ class Models extends baseModels
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 로그인 처리 중 오류 발생');
         }
+        $user['uuid'] = self::bin2uuid($user['uuid']);
         
         return $user;
     }

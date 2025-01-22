@@ -41,7 +41,11 @@
     .recent-toolbox>:first-of-type{border-left-color: #575757;}
     .recent-toolbox>:last-of-type{border-right-color:#575757;}
     .recent-menu-current{--navigation-item-underline-color: var(--brand-bright-color-1, #45474b);}
-    .recent-menu{color:#e0e0e0; color: var(--dark-text-color, var(--text-color, #e0e0e0));}
+    .recent-menu{
+        color:#e0e0e0; color: var(--dark-text-color, var(--text-color, #e0e0e0));
+        &:not(.recent-menu-current):hover {--navigation-item-underline-color: var(--brand-bright-color-2,#45474b);}
+        &
+    }
     .recent-document-title{color:#e0e0e0; color:var(--dark-text-color, var(--text-color, #e0e0e0));}
 
     /* History */

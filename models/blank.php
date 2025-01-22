@@ -1,6 +1,6 @@
 <?php
 namespace PressDo;
-require 'models/common.php';
+require_once 'models/common.php';
 
 use ErrorException;
 use PDOException;

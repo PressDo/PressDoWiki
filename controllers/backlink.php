@@ -3,18 +3,16 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/backlink.php';
-require 'controllers/WikiACL.php';
 
 use PressDo\Models;
-use PressDo\WikiACL;
+
 class WikiPage extends WikiCore
 {
     public function make_data(): array
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace,$title);
 
-        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
-        $ACL->check();
         $page = [
             'view_name' => 'backlink',
             'title' => $this->uri_data->title,
@@ -31,17 +29,7 @@ class WikiPage extends WikiCore
             'customData' => []
         ];
 
-        if ($this->error->code == 'permission_read'){
-            $page = [
-                'view_name' => 'error',
-                'title' => Lang::get('page')['error'],
-                'data' => (array) $this->error
-            ];
-            return $page;
-        }
-
-        if(Models::exist($namespace,$title)){
-            $uuid = Models::get_doc_uuid($namespace,$title);
+        if($uuid !== false){
             $page['subtitle'] .= Lang::get('page')['backlink'];
             if(isset($_GET['flag']) && in_array(intval($_GET['flag']), [0, 1, 2, 4, 8])){
                 $flag = [
@@ -62,7 +50,7 @@ class WikiPage extends WikiCore
                 array_push($page['data']['backlink_count'], ['namespace' => $b['namespace'], 'count' => $b['cnt']]);
             }
 
-            if(isset($_GET['namespace']) && in_array(intval($_GET['namespace']), Namespaces::all())){
+            if(isset($_GET['namespace']) && in_array($_GET['namespace'], Namespaces::all())){
                 $target_ns = $_GET['namespace'];
             }else{
                 $target_ns = $bl_count[0]['namespace'];

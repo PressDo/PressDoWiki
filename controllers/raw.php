@@ -3,7 +3,7 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/blank.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 
 use PressDo\Models;
 use PressDo\WikiACL;
@@ -11,10 +11,11 @@ class WikiPage extends WikiCore
 {
     public function make_data()
     {
-        list($namespace, $title) = self::parse_title($this->uri_data->title);
+        [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
-        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
-        $ACL->check();
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
+        $ACL->check('read');
         $page = [
             'view_name' => 'raw',
             'title' => $this->uri_data->title,
@@ -39,14 +40,15 @@ class WikiPage extends WikiCore
             return $page;
         }
 
-        if(Models::exist($namespace,$title)){
-            $lver = Models::get_version($namespace,$title);
-            if(!$this->uri_data->query->rev)
-                $rev = $lver;
+        if($uuid !== false){
+            if(!$this->uri_data->query->uuid)
+                $rev = $uuid;
             else
-                $rev = $this->uri_data->query->rev;
+                $rev = $this->uri_data->query->uuid;
 
-            if(!is_numeric($rev) || $rev > $lver || $rev < 1){
+            $doc = Models::load($uuid, $rev);
+
+            if($doc === null){
                 $this->error = (object) ['code' => 'no_such_revision'];
                 $page = [
                     'view_name' => 'error',
@@ -56,9 +58,8 @@ class WikiPage extends WikiCore
                 return $page;
             }
 
-            $doc = Models::load($namespace, $title, $rev);
-            $page['subtitle'] .= 'r'.$rev.' RAW';
-            $page['data']['rev'] = $rev;
+            $page['subtitle'] .= 'r'.$doc['rev'].' RAW';
+            $page['data']['rev'] = $doc['rev'];
             $page['data']['text'] = $doc['content'];
             //'debug' => $this->uri_data
         }

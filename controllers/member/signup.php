@@ -9,10 +9,12 @@ class WikiPage extends WikiCore
 {
     public function make_data(): array
     {
-        if(in_array($this->post->email, Config::get('member')['whitelist_email_host'])){
+        if(isset($this->post->email)){
+            if(in_array($this->post->email, Config::get('member')['whitelist_email_host'])){
             
-        }else{
-            $error = 'err_mail_whitelist';
+            }else{
+                $error = 'err_mail_whitelist';
+            }
         }
 
         $page = [
