@@ -53,7 +53,7 @@ class baseModels {
             $d->execute([self::uuid2bin($uuid),inet_pton($ip)]);
             return $uuid;
         }else
-            return inet_ntop($data['ip']);
+            return self::bin2uuid($data['uuid']);
     }
 
     /**

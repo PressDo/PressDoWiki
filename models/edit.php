@@ -7,11 +7,15 @@ use PDOException;
 
 class Models extends baseModels
 {
-    public static function save_document(string $uuid, string $content, string $comment, string $cont_m, string $cont_i, int $baserev, int $prevlen): void
+    public static function save_document(string $uuid, string $content, string $comment, string|null $cont_m, string|null $cont_i, int $baserev, int $prevlen): void
     {
         $db = self::db();
         $cnt = iconv_strlen($content)-$prevlen;
-        $cont_i = self::uuid2bin($cont_i);
+        if($cont_m !== null){
+            $cont_m = self::uuid2bin($cont_m);
+            $cont_i = null;
+        }else
+            $cont_i = self::uuid2bin(self::get_ip_uuid($cont_i));
         $uuid = self::uuid2bin($uuid);
 
         try {
@@ -23,10 +27,15 @@ class Models extends baseModels
         unset($d, $g);
     }
 
-    public static function create_document(string $namespace, string $title, string $content, string $comment, string $cont_m, string $cont_i): void
+    public static function create_document(string $namespace, string $title, string $content, string $comment, string|null $cont_m, string|null $cont_i): void
     {
         $db = self::db();
         $cnt = iconv_strlen($content);
+        if($cont_m !== null){
+            $cont_m = self::uuid2bin($cont_m);
+            $cont_i = null;
+        }else
+            $cont_i = self::uuid2bin(self::get_ip_uuid($cont_i));
         $uuid = self::uuid2bin(self::uuid_generate());
 
         try {

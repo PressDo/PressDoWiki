@@ -3,18 +3,18 @@ namespace PressDo;
 
 require 'controllers/common.php';
 require 'models/discuss.php';
-require 'controllers/WikiACL.php';
+require 'controllers/lib/libacl.php';
 
-use PressDo\Models;
-use PressDo\WikiACL;
+use PressDo\{Models,WikiACL};
 class WikiPage extends WikiCore
 {
     public function make_data()
     {
         [$namespace, $title] = self::parse_title($this->uri_data->title);
+        $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
-        $ACL = new WikiACL($namespace, $title, 'read', $this->session, $this->error);
-        $ACL->check();
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
+        $ACL->check('read');
         $d_perms = [];
         $perms = ['delete_thread', 'update_thread_status', 'hide_thread_comment', 'update_thread_document', 'update_thread_topic'];
         $actions = ['create_thread', 'write_thread_comment'];

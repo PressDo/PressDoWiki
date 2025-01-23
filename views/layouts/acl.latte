@@ -4,38 +4,38 @@
 <div class="wiki-content">
     {var $acls = ['doc' => $wiki['page']['data']['docACL']['acls'], 'ns' => $wiki['page']['data']['nsACL']['acls']]}
     {var $types = ['doc', 'ns']}
-    <div n:foreach="$types as $a" data-pressdo-acl-partarea>
+    <div n:foreach="$types as $a" class="pressdo-table"area>
         <h2 data-pressdo-acl-title>{$lang['acl'][$a.'acl']}</h2>
         {foreach $wiki['page']['data']['ACLTypes'] as $A}
             <h4 data-pressdo-acl-type>{$lang['acl'][$A]}</h4>
-            <div data-pressdo-acl-part>
-                <table data-pressdo-acl-part>
-                    <colgroup data-pressdo-acl-part>
-                        <col data-pressdo-acl-part style="width:60px;">
-                        <col data-pressdo-acl-part>
-                        <col data-pressdo-acl-part style="width:80px;">
-                        <col data-pressdo-acl-part style="width:200px;">
-                        <col data-pressdo-acl-part style="width:60px;">
+            <div class="pressdo-table">
+                <table class="pressdo-table">
+                    <colgroup>
+                        <col style="width:60px;">
+                        <col>
+                        <col style="width:80px;">
+                        <col style="width:200px;">
+                        <col style="width:60px;">
                     </colgroup>
-                    <thead data-pressdo-acl-part>
-                        <tr data-pressdo-acl-part>
-                            <th data-pressdo-acl-part>No</th>
-                            <th data-pressdo-acl-part>Condition</th>
-                            <th data-pressdo-acl-part>Action</th>
-                            <th data-pressdo-acl-part>Expiration</th>
-                            <th data-pressdo-acl-part></th>
+                    <thead>
+                        <tr class="pressdo-table">
+                            <th class="pressdo-table">No</th>
+                            <th class="pressdo-table">Condition</th>
+                            <th class="pressdo-table">Action</th>
+                            <th class="pressdo-table">Expiration</th>
+                            <th class="pressdo-table"></th>
                         </tr>
                     </thead>
-                    <tbody data-pressdo-acl-part>
-                        <tr n:if="!$acls[$a][$A][0]" data-pressdo-acl-part><td colspan="5" data-pressdo-acl-part>({$lang['msg']['empty_set_'.$a.'acl']})</td></tr>
+                    <tbody>
+                        <tr n:if="!$acls[$a][$A][0]" class="pressdo-table"><td colspan="5" class="pressdo-table">({$lang['msg']['empty_set_'.$a.'acl']})</td></tr>
                         {var $aclcnt = ($acls[$a][$A]|length)}
                         {for $i=0; $i<$aclcnt; ++$i}
                             {var $acls[$a][$A][$i]['expired'] = ($acls[$a][$A][$i]['expired'] === 0)? $lang['acl']['forever'] : ($acls[$a][$A][$i]['expired']|date: 'Y-m-d H:i:s')}
-                            <tr data-pressdo-acl-part><td data-pressdo-acl-part>
-                                {$i+1}</td><td data-pressdo-acl-part>
-                                {$acls[$a][$A][$i]['condition']}</td><td data-pressdo-acl-part>
-                                {$lang['acl'][$acls[$a][$A][$i]['action']]}</td><td data-pressdo-acl-part>
-                                {$acls[$a][$A][$i]['expired']}</td><td data-pressdo-acl-part>
+                            <tr class="pressdo-table"><td class="pressdo-table">
+                                {$i+1}</td><td class="pressdo-table">
+                                {$acls[$a][$A][$i]['condition']}</td><td class="pressdo-table">
+                                {$lang['acl'][$acls[$a][$A][$i]['action']]}</td><td class="pressdo-table">
+                                {$acls[$a][$A][$i]['expired']}</td><td class="pressdo-table">
                                 <button n:if="$allow[$a] === true" delete-info="{$a}.{$acls[$a][$A][$i]['id']}" msg="{$lang['msg']['acl_delete_confirm']}" type="button" class="pressdo-btn btn-red d">{$lang['acl']['delete']}</button></td>
                             </tr>
                         {/for}

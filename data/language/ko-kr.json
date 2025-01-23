@@ -90,7 +90,8 @@
         "discuss_list": "토론 목록",
         "diff": "비교",
         "revert": "되돌리기",
-        "blame": "blame"
+        "blame": "blame",
+        "issue": "발급"
     },
     "log":{
         "create": "새 문서",
@@ -194,7 +195,8 @@
         "this_is_blocked_user": "이 사용자는 @1@에 @2@ 차단되었습니다.",
         "search_go_directly": "&nbsp; 찾는 문서가 없나요? 문서로 바로 갈 수 있습니다. ",
         "user_discuss_exists": "현재 진행중인 <a href=\"/discuss/@1@\">사용자 토론</a>이 있습니다.",
-        "no_backlinks": "해당 문서의 역링크가 존재하지 않습니다."
+        "no_backlinks": "해당 문서의 역링크가 존재하지 않습니다.",
+        "force_2fa":"확인되지 않은 기기에서 로그인하셨습니다. 2단계 인증 앱에서 코드를 입력해주세요."
     },
     "mail":{
         "signup_title": "[@1@] 계정 생성 이메일 주소 인증.",
@@ -267,9 +269,9 @@
     "auth":{
         "last_login_ua": "마지막 로그인 UA",
         "email": "이메일",
-        "username": "사용자 ID",
-        "password": "암호",
-        "password2": "암호 확인",
+        "username": "사용자 이름",
+        "password": "비밀번호",
+        "password2": "비밀번호 확인",
         "login": "로그인",
         "signup": "계정 만들기",
         "signup_submit": "가입",
@@ -277,7 +279,21 @@
         "recover_password": "비밀번호를 잊으셨나요?",
         "autologin": "자동 로그인",
         "agree": "동의",
-        "Iagree": "동의합니다."
+        "Iagree": "동의합니다.",
+        "trust": "이 기기를 신뢰",
+        "perms": "권한",
+        "change_username": "이름 변경",
+        "change_email": "이메일 변경",
+        "change_password": "비밀번호 변경",
+        "skin": "스킨",
+        "skin_default": "기본 스킨",
+        "2fa": "이중인증",
+        "disable_2fa": "TOTP 비활성화",
+        "enable_2fa": "TOTP 활성화",
+        "webauthn_add": "PassKey 추가",
+        "webauthn_name": "이름",
+        "webauthn_registered": "등록일",
+        "webauthn_lastused": "마지막 사용"
     },
     "history":{
         "compare_revision": "선택 리비전 비교",

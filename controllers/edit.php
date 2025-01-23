@@ -5,8 +5,7 @@ require 'controllers/common.php';
 require 'models/edit.php';
 require 'controllers/lib/libacl.php';
 
-use PressDo\Models;
-use PressDo\WikiACL;
+use PressDo\{Models,WikiACL};
 class WikiPage extends WikICore
 {
     public function make_data()
@@ -43,6 +42,7 @@ class WikiPage extends WikICore
 
         // Edit Submission
         if(isset($this->post->token) && isset($this->post->content)){
+            $this->post->content = htmlspecialchars_decode($this->post->content);
             if($this->post->token !== $this->session->token){
                 // Reject: wrong anti-CSRF token
                 $this->error = (object) [

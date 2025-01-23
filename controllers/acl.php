@@ -5,8 +5,7 @@ require 'controllers/common.php';
 require 'controllers/lib/libacl.php';
 require 'models/blank.php';
 
-use PressDo\Models;
-use PressDo\WikiACL;
+use PressDo\{Models,WikiACL};
 class WikiPage extends WikiCore
 {
     public function make_data()

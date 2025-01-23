@@ -5,8 +5,7 @@ require 'controllers/common.php';
 require 'models/wiki.php';
 require 'controllers/lib/libacl.php';
 
-use PressDo\Models;
-use PressDo\WikiACL;
+use PressDo\{Models,WikiACL};
 class WikiPage extends WikiCore
 {
     public function update_linktable(string $uuid, array $links)

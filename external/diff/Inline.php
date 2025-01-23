@@ -44,6 +44,7 @@ require dirname(__FILE__).'/Array.php';
 
 class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 {
+	public $oldrev, $newrev, $linecnt;
 	/**
 	 * Render a and return diff with changes between the two sequences
 	 * displayed inline (under each other)
@@ -132,8 +133,9 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 				}
 			}
 
+			
 			// Skipped lines after changes.
-			$x = count($changes) -1;
+			$x = count($blocks) -1;
 			if($i === $x && $blocks[$x]['base']['offset'] + count($blocks[$x]['base']['lines']) + 1 < $this->linecnt[0] && 
 							$blocks[$x]['changed']['offset'] + count($blocks[$x]['changed']['lines']) + 1 < $this->linecnt[1]) {
 				$html .= '<tr>';

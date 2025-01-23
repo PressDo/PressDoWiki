@@ -2,6 +2,24 @@
     <strong>{$lang['msg']['error']}</strong>
     <span>{$lang['msg'][$wiki['page']['data']['error']]}</span>
 </div>
+    {if $wiki['page']['data']['force_2fa']}
+<form id="loginform" class="authform" name="loginform" method="POST" action="/member/login/pin?redirect={$wiki['page']['data']['redirect']|escapeUrl}">
+    <!--action = member/login/pin-->
+    <p>{$lang['msg']['force_2fa']|noescape}</p>
+    <div class="form-sheet">
+        <label for="pinInput">PIN</label>
+        <input class="textfield" type="text" id="pinInput" name="pin" maxlength="6" inputmode="numeric" pattern="[0-9]*" required>
+    </div>
+    <div class="form-sheet form-action">
+        <label name="trust" class="chkbox-label">
+            <input class="chkbox" type="checkbox" name="trust"><span>{$lang['auth']['trust']}</span>
+        </label>
+    </div>
+    <div class="form-sheet form-action">
+        <button type="submit" class="btn-blue pressdo-btn" id="log-in">{$lang['auth']['login']}</button>
+        <button type="button" class="btn-blue pressdo-btn" id="webauthn">Webauthn Login</button>
+    </div>
+    {else}
 <form id="loginform" class="authform" name="loginform" method="POST" action="/member/login?redirect={$wiki['page']['data']['redirect']|escapeUrl}">
     <div class="form-sheet">
         <label for="username">Email</label>
@@ -24,4 +42,5 @@
         </div>
     </div>
     <div><!-- captcha --></div>
+    {/if}
 </form>
