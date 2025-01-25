@@ -41,7 +41,7 @@ class WikiCore
     /**
      * Initialize Frontend.
      */
-    private function fe_init() : void
+    private function fe_init(): void
     {
         $this->latte = new \Latte\Engine;
         $this->latte->setTempDirectory('temp');
@@ -83,7 +83,7 @@ class WikiCore
      * Returns HTML.
      * @return string
      */
-    public function get_page() : string
+    public function get_page(): string
     {
         $paramSet = [
             'wiki' => $this->dataset, 
@@ -123,9 +123,8 @@ class WikiCore
     /**
      * Initialize Page.
      */
-    public function make_page() : void
+    public function make_page(): void
     {
-
         $this->dataset = [
             'config' => $this->api_config,
             //'local_config' => $local_config,
@@ -134,7 +133,7 @@ class WikiCore
         ];
     }
 
-    public static function make_error($msg) : array
+    public static function make_error($msg): array
     {
         $page = [
             'view_name' => 'error',
@@ -153,7 +152,7 @@ class WikiCore
      * @param string $title     Full title of document
      * @return array            array(Namespace, Title)
      */
-    public static function parse_title(string $title) : array
+    public static function parse_title(string $title): array
     {
         $_ns = Namespaces::all();
         preg_match('/^('.implode('|',$_ns).'):(.*)$/', $title, $get_ns);
@@ -173,17 +172,36 @@ class WikiCore
      */
     public static function make_title(string $namespace, string $title): string
     {
-        global $lang, $_ns;
         if($namespace == '문서' && Config::get('force_show_namespace') === false)
             return $title;
         else 
             return $namespace.':'.$title;
     }
 
+    public static function mail_send(string $recipient, string $title, string $content): bool
+    {
+        $mail = Config::get('mail');
+        $mailer = new \yidas\socketMailer\Mailer([
+            'host' => $mail['smtp_host'],
+            'username' => $mail['smtp_username'],
+            'password' => $mail['smtp_password'],
+            'port' => $mail['smtp_port'],
+            'encryption' => strtolower($mail['smtp_protocol'])
+        ]);
+        $result = $mailer
+            ->setSubject($title)
+            ->setBody($content)
+            ->setTo([$recipient])
+            ->setFrom([$mail['smtp_address'] => Config::get('wiki')['site_name_en']])
+            ->send();
+
+        return $result;
+    }
+
     /**
      * Get IP of user.
      */
-    public static function get_ip() : string
+    public static function get_ip(): string
     {
         $ipaddress = '';
         if (getenv('HTTP_CLIENT_IP'))
@@ -224,7 +242,7 @@ class WikiCore
      * @param string $add additional string included to generated one.
      * @return string   generated string
      */
-    public static function rand(int $len=16, bool $u=false, string $add='') : string
+    public static function rand(int $len=16, bool $u=false, string $add=''): string
     {
         $c = '0123456789abcdefghijklmnopqrstuvwxyz';
         if($u) $c .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

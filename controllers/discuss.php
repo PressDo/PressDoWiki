@@ -19,20 +19,22 @@ class WikiPage extends WikiCore
         $perms = ['delete_thread', 'update_thread_status', 'hide_thread_comment', 'update_thread_document', 'update_thread_topic'];
         $actions = ['create_thread', 'write_thread_comment'];
         foreach ($perms as $p){
-            if($ACL::check_perms($p, $this->session, $title) === true)
+            if(in_array($p, $ACL->perms))
                 array_push($d_perms, $p);
         }
 
         foreach ($actions as $a){
-            $ACL = new WikiACL($namespace, $title, $a, $this->session, $this->error);
-            $ACL->check();
+            $ACL->check($a);
             if ($this->error->code !== 'permission_'.$a)
-            array_push($d_perms, $a);
+                array_push($d_perms, $a);
         }
 
         if($this->uri_data->query->state == 'close' || $this->uri_data->query->state == 'closed_edit_requests'){
             // 닫힌 00 목록
-            $threads = Models::get_doc_thread($namespace, $title, 'closed');
+            if($this->uri_data->query->state == 'closed_edit_requests')
+                $threads = Models::get_doc_editrequest($uuid, 'closed');
+            else
+                $threads = Models::get_doc_thread($uuid, 'closed');
             $page = [
                 'view_name' => 'discuss_list',
                 'title' => $this->uri_data->title,
@@ -51,7 +53,7 @@ class WikiPage extends WikiCore
                 ]
             ];
         }else{
-            $thr = Models::get_doc_thread($namespace,$title);
+            $thr = Models::get_doc_thread($uuid);
             $threads = [];
             foreach ($thr as $t){
                 $com = Models::getLatestComments($t['urlstr']);
@@ -79,7 +81,7 @@ class WikiPage extends WikiCore
                         'date' => $c['datetime'],
                         'hide_author' => $c['blind'],
                         'type' => $c['type'],
-                        'admin' => $ACL::check_perms('admin',$this->session,$title),
+                        'admin' => in_array('admin',$ACL->perms),
                         'blocked' => $blocked
                     ]);
                 }

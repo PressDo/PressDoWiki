@@ -43,7 +43,7 @@ class WikiPage extends WikiCore
 
         if($uuid !== false){
             if(!$this->uri_data->query->uuid){
-                $this->error->code = 'no_such_revision';
+                $this->error = (object) ['code' => 'no_such_revision'];
                 return $page;
             }
             $target_uuid = $this->uri_data->query->uuid;

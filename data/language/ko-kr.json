@@ -91,7 +91,8 @@
         "diff": "비교",
         "revert": "되돌리기",
         "blame": "blame",
-        "issue": "발급"
+        "issue": "발급",
+        "activate": "활성화"
     },
     "log":{
         "create": "새 문서",
@@ -156,6 +157,9 @@
         "err_same_contents": "문서 내용이 같습니다.",
         "err_csrf_token": "CSRF 방지 토큰이 일치하지 않습니다.",
         "err_mail_whitelist": "이메일 허용 목록에 있는 이메일이 아닙니다.",
+        "err_already_sent": "해당 이메일로 이미 계정 생성 인증 메일을 보냈습니다.",
+        "err_invalid_code": "인증 요청이 만료되었거나 올바르지 않습니다.",
+        "err_ip_differs": "보안 상의 이유로 요청한 아이피 주소와 현재 아이피 주소가 같아야 합니다.",
         "err_required_input": "@1@의 값은 필수입니다.",
         "err_invalid_url": "인증 요청이 만료되었거나 올바르지 않습니다.",
         "err_email_exists": "이메일이 이미 존재합니다.",
@@ -196,7 +200,12 @@
         "search_go_directly": "&nbsp; 찾는 문서가 없나요? 문서로 바로 갈 수 있습니다. ",
         "user_discuss_exists": "현재 진행중인 <a href=\"/discuss/@1@\">사용자 토론</a>이 있습니다.",
         "no_backlinks": "해당 문서의 역링크가 존재하지 않습니다.",
-        "force_2fa":"확인되지 않은 기기에서 로그인하셨습니다. 2단계 인증 앱에서 코드를 입력해주세요."
+        "force_2fa":"확인되지 않은 기기에서 로그인하셨습니다. 2단계 인증 앱에서 코드를 입력해주세요.",
+        "activate_otp_1": "휴대 전화에 <b>2단계 인증 앱</b>을 설치합니다.",
+        "activate_otp_2": "앱을 열고 바코드 스캔을 클릭해서 아래 QR코드를 스캔합니다.",
+        "activate_otp_3": "표시되는 코드를 아래에 입력해서 활성화 합니다.",
+        "err_mail_not_send": "이메일 발송에 실패했습니다.",
+        "err_invalid_username": "사용자 이름의 값을 형식에 맞게 입력해주세요."
     },
     "mail":{
         "signup_title": "[@1@] 계정 생성 이메일 주소 인증.",
@@ -253,6 +262,7 @@
         "discuss": "토론",
         "thread": "토론",
         "mypage": "내 정보",
+        "activate_otp": "OTP 활성화",
         "contribution": "기여내역",
         "error": "오류",
         "login": "로그인",

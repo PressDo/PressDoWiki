@@ -18,25 +18,19 @@ class WikiPage extends WikiCore
             'menus' => [],
             'customData' => []
         ];
-        
-        $lt = [
-            'create' => "AND `action`='create'",
-            'revert' => "AND `action`='revert'",
-            'move' => "AND `action`='move'",
-            'delete' => "AND `action`='delete'",
-            '' => ''
-        ];
 
-        if(!isset($lt[$this->uri_data->query->logtype]))
-            $ltq = '';
+        if(in_array($this->uri_data->query->logtype, ['create', 'revert', 'move', 'delete']))
+            $lt = $this->uri_data->query->logtype;
         else
-            $ltq = $this->uri_data->query->logtype;
+            $lt = 'all';
 
-        $fetch = Models::RecentChanges($lt[$ltq]);
+        $fetch = Models::RecentChanges($lt);
         $resultSet = [];
 
         foreach($fetch as $f){
-            if(!$f['contributor_m']){
+            $ip = $member = null;
+
+            if(empty($f['contributor_m'])){
                 $uuid = Models::bin2uuid($f['contributor_i']);
                 $ip = Models::ip_lookup($uuid);
             }else{
@@ -46,7 +40,7 @@ class WikiPage extends WikiCore
 
             $_e = Models::get_doc_title(Models::bin2uuid($f['document']));
             $rs = array(
-                'uuid' => $f['uuid'],
+                'uuid' => Models::bin2uuid($f['uuid']),
                 'document' => ['namespace' => $_e['namespace'], 'title' => $_e['title']],
                 'date' => $f['datetime'],
                 'log' => $f['comment'],

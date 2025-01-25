@@ -168,7 +168,7 @@ a[data-pressdo-history-null],button[disabled]{cursor: not-allowed!important; opa
 
 label{vertical-align:middle; word-break: keep-all;}
 a[data-pressdo-button] {display: inline-block;font-size: 1rem;font-weight: 400;line-height: 1.5;text-align: center;white-space: nowrap;vertical-align: middle;touch-action: manipulation;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;padding: .2rem .7rem;color: #373a3c!important;background-color: #fff;border: .0625rem solid #ccc;font-size: .9rem;text-decoration: none!important;}
-form button[data-pressdo-button-2]{float: right;width: 5rem;margin-top: 2rem;}
+form button.btn-right{float: right;width: 5rem;margin-top: 2rem;}
 .errmsg{color:red; margin: 0;}
 .error-input{--focus-outline-color: #f1c7cc!important;border-color: #b42e3b;}
 img[data-pressdo-usermenu]{width: 2rem;height: 2rem;border-radius: 0.35rem;margin: 0;border: 1px solid #e1e8ed;}

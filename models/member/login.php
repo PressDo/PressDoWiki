@@ -8,7 +8,7 @@ use PDOException;
 class Models extends baseModels
 {
     /**
-     * get boolean if document is starred
+     * login user
      * 
      * @param string $id        username
      * @param string $pw      userpw

@@ -22,32 +22,33 @@ class DB
     protected static function init()
     {
         if(!static::$instance) {
-            switch(Config::get('db_type')){
+            $db = Config::get('database');
+            switch($db['type']){
                 case 'mysql':
                 case 'pgsql':
                 case 'cubrid':
-                    $dsn = Config::get('db_type').':dbname='.Config::get('db_name').';host='.Config::get('db_host').';port='.Config::get('db_port').';charset:utf8';
+                    $dsn = $db['type'].':dbname='.$db['name'].';host='.$db['host'].';port='.$db['port'].';charset:utf8';
                     break;
                 case 'oracle':
-                    $dsn = 'oci:dbname='.Config::get('db_host').'/'.Config::get('db_name').';charset=utf8';
+                    $dsn = 'oci:dbname='.$db['host'].'/'.$db['name'].';charset=utf8';
                     break;
                 case 'mssql':
-                    $dsn = 'dblib:dbname='.Config::get('db_name').';host='.Config::get('db_host').';port='.Config::get('db_port').';charset:utf8';
+                    $dsn = 'dblib:dbname='.$db['name'].';host='.$db['host'].';port='.$db['port'].';charset:utf8';
                     break;
                 case 'firebird':
-                    $dsn = 'firebird:dbname='.Config::get('db_host').':'.Config::get('db_name').';charset:utf8';
+                    $dsn = 'firebird:dbname='.$db['host'].':'.$db['name'].';charset:utf8';
                     break;
                 case 'db2':
-                    $dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE='.Config::get('db_name').';HOSTNAME='.Config::get('db_host').';PORT='.Config::get('db_port').';PROTOCOL=TCPIP;UID='.Config::get('db_user').';PWD='.Config::get('db_pass');
+                    $dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE='.$db['name'].';HOSTNAME='.$db['host'].';PORT='.$db['port'].';PROTOCOL=TCPIP;UID='.$db['user'].';PWD='.$db['password'];
                     break;
                 case 'sqlite':
-                    $dsn = 'sqlite:'.Config::get('db_name');
+                    $dsn = 'sqlite:'.$db['name'];
                     break;
                 default:
                     break;
             }
             
-            static::$instance = (Config::get('db_type') !== 'db2')? new \PDO($dsn, Config::get('db_user'), Config::get('db_pass')): new \PDO($dsn, '', '');
+            static::$instance = ($db['type'] !== 'db2')? new \PDO($dsn, $db['user'], $db['password']): new \PDO($dsn, '', '');
             
             if(!static::$instance){
                 throw new ErrorException('ERROR_DBCONNECT');

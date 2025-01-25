@@ -23,16 +23,25 @@ class baseModels {
             return self::$db;
     }
 
-    public static function member_exist($username): string|bool
+    public static function member_exist($username='', $email=''): array|bool
     {
         $db = self::db();
-        $d = $db->prepare("SELECT username, count(*) as cnt FROM member WHERE username=?");
-        $d->execute([$username]);
+        try{
+            if(empty($email)){
+                $d = $db->prepare("SELECT username, email FROM member WHERE username=?");
+                $d->execute([$username]);
+            }else{
+                $d = $db->prepare("SELECT username, email FROM member WHERE email=? AND username IS NOT NULL");
+                $d->execute([$email]);
+            }
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 사용자 조회 중 오류 발생');
+        }
         $data = $d->fetch(PDO::FETCH_ASSOC);
-        if($data['cnt'] < 1)
+        if($d->rowCount() < 1)
             return false;
         else
-            return $data['username'];
+            return $data;
     }
 
     /**
@@ -224,6 +233,23 @@ class baseModels {
             $d->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 토론 목록 조회 중 오류 발생');
+        }
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public static function get_doc_editrequest(string $uuid, $mode='normal'): array
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        try {
+            if($mode === 'normal'){
+                $d = $db->prepare("SELECT urlstr FROM `editrequest` WHERE `document`=? AND (`status`='normal' OR `status`='pause')");
+            }elseif($mode === 'closed'){
+                $d = $db->prepare("SELECT urlstr FROM `editrequest` WHERE `document`=? AND `status`='close'");
+            }
+            $d->execute([$uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 편집 요청 목록 조회 중 오류 발생');
         }
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }
