@@ -14,7 +14,26 @@ class WikiPage extends WikiCore
         $uuid = Models::get_doc_uuid($namespace, $title, $backlinkrefreshed);
 
         $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $this->error);
-        $ACL->check('move');
+        $ACL->check('read');
+        if($this->error->code !== 'permission_read'){
+            $ACL->check('edit');
+            if($this->error->code !== 'permission_edit')
+                $ACL->check('move');
+        }
+
+        // 문서 없음
+        if(!$uuid)
+            $this->error = (object) ['code' => 'no_such_document'];
+        
+        if(!$uuid || $this->error->code == 'permission_read' || $this->error->code == 'permission_edit' || $this->error->code == 'permission_move'){
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
+            return $page;
+        }
+
         $page = [
             'view_name' => 'move',
             'title' => $this->uri_data->title,
@@ -30,21 +49,6 @@ class WikiPage extends WikiCore
             'menus' => [],
             'customData' => []
         ];
-
-        if ($this->error->code == 'permission_read' || $this->error->code == 'permission_edit' || $this->error->code == 'permission_move'){
-            return $page;
-        }
-
-        // 문서 없음
-        if(!$uuid){
-            $this->error = (object) ['code' => 'no_such_document'];
-            $page = [
-                'view_name' => 'error',
-                'title' => Lang::get('page')['error'],
-                'data' => (array) $this->error
-            ];
-            return $page;
-        }
 
         if(isset($this->post->token) && $this->session->token !== $this->post->token){
             $this->error = (object) [

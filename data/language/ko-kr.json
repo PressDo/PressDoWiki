@@ -54,7 +54,8 @@
         "action": "작업",
         "group_add": "ACL그룹 생성",
         "group_name": "그룹 이름",
-        "username": "사용자 이름"
+        "username": "사용자 이름",
+        "specific_user": "특정 사용자"
     },
     "perm":{
         "any": "아무나",

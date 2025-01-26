@@ -1,7 +1,7 @@
 <div class="wiki-content">
     <div n:if="$error['errbox']" class="a e">
         <strong>{$lang['msg']['error']}</strong>
-        <span>{$error['message'].$error['code']|noescape}</span>
+        <span>{$error['message']|noescape}</span>
     </div>
     <div n:if="$wiki['alert']['alertbox']" class="a">
         <strong>{$lang['msg']['alert']}</strong>
@@ -10,23 +10,26 @@
     {if strpos($wiki['session']['ua'], 'Mobile') !== false || strpos($wiki['session']['ua'], 'Android') !== false}
         {var $mobile = true}
         {var $toolbarinit = 'none'}
-    {else}
-        {var $mobile = false}
-        {var $toolbarinit = false}
     {/if}
+    {if $error['code'] == 'permission_edit'}
+        {var $readonly = true}
+    {/if}
+    {default $readonly = false}
+    {default $mobile = false}
+    {default $toolbarinit = false}
     <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
-        <input type="hidden" name="token" value="{$wiki['page']['data']['token']}">
+        <input n:if="!$readonly" type="hidden" name="token" value="{$wiki['page']['data']['token']}">
         <ul class="editor top">
             <li class="editor top">
-                <button n:class="!$mobile ? a, e, tr, editor, top" id="m" type="button">{$lang['editor']['monaco']}</button>
+                <button n:if="!$readonly" n:class="!$mobile && !$readonly ? a, e, tr, editor, top" id="m" type="button">{$lang['editor']['monaco']}</button>
             </li>
             <li class="editor top">
-                <button n:class="$mobile ? a, e, editor, top" id="r" type="button">{$lang['editor']['raw']}</button>
+                <button n:class="$mobile || $readonly ? a, e, editor, top" id="r" type="button">{$lang['editor']['raw']}</button>
             </li>
             <li class="editor top">
-                <button id="p" class="e editor top" type="button">{$lang['editor']['preview']}</button>
+                <button n:if="!$readonly" id="p" class="e editor top" type="button">{$lang['editor']['preview']}</button>
             </li>
-            <li n:attr="v: $toolbarinit" class="t editor top">
+            <li n:if="!$readonly" n:attr="v: $toolbarinit" class="t editor top">
                 <div class="editor top">
                     <button id="btn-bold" class="editor top" type="button">{$lang['editor']['bold']}</button>
                 </div><div class="editor top">
@@ -45,19 +48,20 @@
             </li>
         </ul>
         <div class="c editor">
-            <div n:class="!$mobile ? a, editor" id="m">
+            <div n:if="!$readonly" n:class="!$mobile && !$readonly ? a, editor" id="m">
                 <div id="monaco" class="editor showUnused"></div>
-            </div><div n:class="$mobile ? a, editor" id="r">
+            </div><div n:class="$mobile || $readonly ? a, editor" id="r">
                 <textarea class="editor" id="pressdo-anchor" name="content">{$wiki['page']['data']['editor']['raw']|noescape}</textarea>
-            </div><div id="p" class="p editor"><div class="w"></div></div>
+            </div><div n:if="!$readonly" id="p" class="p editor"><div class="w"></div></div>
         </div>
-        <div class="g comment">
-            <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
-            <input data-pressdo-edit-summary type="text" name="comment" id="logInput">
-        </div>
-        <label><input type="checkbox" name="agree" id="agree"> <span>{stripslashes($config['wiki']['editagree_text'])|noescape}</span></label>
-        <p n:if="!$wiki['session']['member']['username']" class="unlogined">{=$lang['msg']['unlogined_edit']|replace: '@1@', $wiki['session']['ip']}</p>
-        <button class="btn-blue pressdo-btn btn-wideright editor" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
-        <div class="clearfix"></div>
+        {if !$readonly}
+            <div class="g comment">
+                <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
+                <input data-pressdo-edit-summary type="text" name="comment" id="logInput">
+            </div>
+            <label><input type="checkbox" name="agree" id="agree"> <span>{stripslashes($config['wiki']['editagree_text'])|noescape}</span></label>
+            <p n:if="!$wiki['session']['member']['username']" class="unlogined">{=$lang['msg']['unlogined_edit']|replace: '@1@', $wiki['session']['ip']}</p>
+            <button class="btn-blue pressdo-btn btn-wideright editor" type="button" id="ef" editor-msg="{$lang['msg']['please_agree']}">저장</button>
+        {/if}
     </form>
 </div>

@@ -18,7 +18,7 @@
     form input.pressdo-form {background-color: #27292d;border-color: #383b40;color: var(--dark-text-color, var(--text-color, #e0e0e0));}
 
     /* Editor */
-    form li button.a.editor.top{background-color: #383b40;}
+    form li button.a.editor.top{background-color: #383b40;color: #ddd}
     form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
     form input[data-pressdo-edit-summary],  form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
     form div.c.editor,  form ul.editor.top {border-color: #383b40;}

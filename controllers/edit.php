@@ -28,16 +28,12 @@ class WikiPage extends WikICore
 
         // 편집권한이 없으면 편집 요청 권한 확인
         if ($this->error?->code == 'permission_edit'){
+            $error = $this->error;
             $ACL->check('edit_request');
-            if ($this->error->code == 'permission_edit_request'){
-                $page = [
-                    'view_name' => 'error',
-                    'title' => Lang::get('page')['error'],
-                    'data' => (array) $this->error
-                ];
-                return $page;
-            }else
+            if ($this->error->code !== 'permission_edit_request')
                 Header('Location: /edit_request/'.$this->uri_data->title);
+            else
+                $this->error = $error;
         }
 
         // Edit Submission
@@ -64,7 +60,15 @@ class WikiPage extends WikICore
                 }
 
                 if($uuid !== false){
-                    Models::save_document($uuid,$this->post->content,$this->post->comment,$this->session->member->uuid,$this->session->ip,$this->session->baserev,iconv_strlen($this->session->raw));
+                    Models::save_document(
+                        $uuid,
+                        $this->post->content,
+                        $this->post->comment,
+                        $this->session->member->uuid,
+                        $this->session->ip,
+                        $this->session->baserev,
+                        iconv_strlen($this->session->raw)
+                    );
                 }else{
                     Models::create_document($namespace, $title,$this->post->content,$this->post->comment,$this->session->member->uuid,$this->session->ip);
                 }
@@ -100,12 +104,7 @@ class WikiPage extends WikICore
             ]
         ];
 
-        if($this->error->code !== 'err_csrf_token'){
-            return $page;
-        }
-
         $this->session->token = $page['data']['token'];
-
         return $page;
     }
 }
