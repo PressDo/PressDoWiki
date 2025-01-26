@@ -40,37 +40,37 @@ class WikiPage extends WikiCore
                     8 => 'redirect'
                 ];
                 $type = $flag[intval($_GET['flag'])];
-            }else{
+            }else
                 $type = null;
-            }
 
             $bl_count = Models::count_backlink($namespace, $title);
             
-            foreach($bl_count as $b){
+            foreach($bl_count as $b)
                 array_push($page['data']['backlink_count'], ['namespace' => $b['namespace'], 'count' => $b['cnt']]);
-            }
+            
 
-            if(isset($_GET['namespace']) && in_array($_GET['namespace'], Namespaces::all())){
+            if(isset($_GET['namespace']) && in_array($_GET['namespace'], Namespaces::all()))
                 $target_ns = $_GET['namespace'];
-            }else{
+            else
                 $target_ns = $bl_count[0]['namespace'];
-            }
-            if($target_ns !== null){
-                $backlinks = Models::get_backlink($namespace, $title, $target_ns, $type);
-                ksort($backlinks);
-                foreach($backlinks as $title => $b){
-                    // backlink 정렬
-                    $firstchar = iconv_substr($title, 0, 1);
-                    if(self::is_hangeul($firstchar))
-                        $head = self::ko_head($firstchar);
-                    else
-                        $head = $firstchar;
+            
+            $backlinks = Models::get_backlink($namespace, $title, $target_ns, $type);
+            ksort($backlinks);
+            foreach($backlinks as $title => $b){
+                // backlink 정렬
+                $firstchar = iconv_substr($title, 0, 1);
+                $head = (self::is_hangeul($firstchar))? self::ko_head($firstchar) : $firstchar;
 
-                    if(!isset($page['data']['backlink'][$head]))
-                        $page['data']['backlink'][$head] = [];
-                    
-                    array_push($page['data']['backlink'][$head], ['document' => ['namespace' => $b[0]['namespace'], 'title' => $title, 'force_show_namespace' => Config::get('force_show_namespace')], 'type' => $b[0]['type']]);
-                }
+                if(!isset($page['data']['backlink'][$head]))
+                    $page['data']['backlink'][$head] = [];
+                
+                array_push($page['data']['backlink'][$head], [
+                    'document' => [
+                        'namespace' => $b[0]['namespace'], 
+                        'title' => $title, 
+                        'force_show_namespace' => Config::get('force_show_namespace')], 
+                        'type' => $b[0]['type']
+                ]);
             }
         }else{
             $this->error = (object) ['code' => 'no_such_document'];

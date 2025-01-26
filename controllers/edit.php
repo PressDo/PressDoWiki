@@ -53,25 +53,25 @@ class WikiPage extends WikICore
                 ];
             }else{
                 // Approve Edit
-                if(!empty($this->session->member)){
-                    $id = 'm:'.$this->session->member->uuid;
-                }else{
-                    $id = 'i:'.$this->session->ip;
-                }
+                $member = $this->session->member->uuid ?? null;
+                $ip = (!$member? $this->session->ip : null);
 
-                if($uuid !== false){
-                    Models::save_document(
-                        $uuid,
-                        $this->post->content,
-                        $this->post->comment,
-                        $this->session->member->uuid,
-                        $this->session->ip,
-                        $this->session->baserev,
-                        iconv_strlen($this->session->raw)
-                    );
-                }else{
-                    Models::create_document($namespace, $title,$this->post->content,$this->post->comment,$this->session->member->uuid,$this->session->ip);
+                if(!$uuid){
+                    $uuid = Models::create_document($namespace, $title);
+                    $action = 'create';
                 }
+                
+                Models::save_document(
+                    $uuid,
+                    $this->post->content,
+                    $this->post->comment,
+                    $member,
+                    $ip,
+                    $this->session->baserev,
+                    iconv_strlen($this->session->raw),
+                    $action ?? 'modify'
+                );
+                
 
                 Header('Location: /w/'.$this->uri_data->title);
             }

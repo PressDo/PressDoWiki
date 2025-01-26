@@ -73,7 +73,7 @@ class WikiPage extends WikiCore
             # If found
             $discussions = Models::get_doc_thread($uuid);
             //$lver = Models::get_version($uuid);
-            $rev_uuid = isset($_GET['uuid'])?$_GET['uuid']:null;
+            $rev_uuid = $_GET['uuid'] ?? null;
 
             
             $doc = Models::load($uuid, $rev_uuid);

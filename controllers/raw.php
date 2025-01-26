@@ -39,12 +39,15 @@ class WikiPage extends WikiCore
             return $page;
         }
 
-        if($uuid !== false){
-            if(!$this->uri_data->query->uuid)
-                $rev = $uuid;
-            else
-                $rev = $this->uri_data->query->uuid;
-
+        if(!$uuid){
+            $this->error = (object) ['code' => 'no_such_document'];
+            $page = [
+                'view_name' => 'error',
+                'title' => Lang::get('page')['error'],
+                'data' => (array) $this->error
+            ];
+        }else{
+            $rev = $this->uri_data->query->uuid ?? $uuid;
             $doc = Models::load($uuid, $rev);
 
             if($doc === null){

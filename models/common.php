@@ -192,8 +192,9 @@ class baseModels {
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);
-        $sql = "SELECT h.uuid,h.content,h.length,h.comment,h.datetime,h.action,h.rev,h.count,h.reverted_version,h.contributor_m,h.contributor_i, h.edit_request_uri,h.acl_changed,h.moved_from,h.moved_to,h.is_hidden
+        $sql = "SELECT h.uuid,h.content,h.comment,h.datetime,h.action,h.rev,h.count,h.reverted_version,h.contributor_m,h.contributor_i, h.edit_request_uri,h.acl_changed,h.moved_from,h.moved_to,h.is_hidden
         FROM `history` as h INNER JOIN `document` as d ON d.uuid = h.document WHERE h.`document`=?";
+
         if($rev === null){
             $sql .= " AND h.`is_hidden`='false' ORDER BY h.`datetime` DESC LIMIT 1";
             $param = [$uuid];
@@ -202,7 +203,7 @@ class baseModels {
             $sql .= " AND h.uuid=? ";
             $param = [$uuid, $rev];
         }
-        //$sql .= " AND `is_hidden`='false' ORDER BY h.`datetime`";
+        
         $d = $db->prepare($sql);
 
         try {
@@ -211,8 +212,25 @@ class baseModels {
             throw new ErrorException($err->getMessage().': 문서 데이터 조회 중 오류 발생');
         }
 
+        if($d->rowCount() < 1)
+            $res = null;
+        else{
+            $res = $d->fetch(PDO::FETCH_ASSOC);
+            if($res['content'] == null && $res['rev'] !== 1){
+                $q = $db->prepare("SELECT content FROM history WHERE content IS NOT NULL AND document=? AND rev < ? ORDER BY `datetime` DESC LIMIT 1");
+                try{
+                    $q->execute([$uuid, $res['rev']]);
+                } catch (PDOException $err) {
+                    throw new ErrorException($err->getMessage().': 문서 본문 조회 중 오류 발생');
+                }
+
+                if($q->rowCount() === 1)
+                    $res['content'] = $q->fetch(PDO::FETCH_ASSOC)['content'];               
+            }
+        }
+
         # return null if not found
-        return ($d->rowCount() < 1)? null : $d->fetch(PDO::FETCH_ASSOC);
+        return $res;
     }
 
     /**

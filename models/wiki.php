@@ -25,8 +25,7 @@ class Models extends baseModels
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 별표여부 조회 중 오류 발생');
         }
-        $bool = ($d->rowCount() < 1)? false : true;
-        return $bool;
+        return !($d->rowCount() < 1);
     }
 
     /**

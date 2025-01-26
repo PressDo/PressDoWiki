@@ -49,12 +49,7 @@ class WikiPage extends WikiCore
             $target_uuid = $this->uri_data->query->uuid;
             $new = Models::load($uuid, $target_uuid);
             
-            if(!$this->uri_data->query->olduuid){
-                $old_uuid = Models::get_before_uuid($uuid, $new['rev']);
-            }else{
-                $old_uuid = $this->uri_data->query->olduuid;
-            }
-
+            $old_uuid = $this->uri_data->query->olduuid ?? Models::get_before_uuid($uuid, $new['rev']);
             $old = Models::load($uuid, $old_uuid);
 
             $page['data']['old_uuid'] = $old_uuid;

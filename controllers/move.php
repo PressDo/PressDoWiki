@@ -50,18 +50,23 @@ class WikiPage extends WikiCore
             'customData' => []
         ];
 
-        if(isset($this->post->token) && $this->session->token !== $this->post->token){
+        if(!empty($this->post->token) && $this->session->token !== $this->post->token){
             $this->error = (object) [
                 'code' => 'err_csrf_token',
                 'errbox' => true
             ];
         }elseif(isset($this->post->token) && $this->session->token == $this->post->token && isset($this->post->new_title)){
-            if(!empty($this->session->member)){
-                $id = 'm:'.$this->session->member->username;
-            }else{
-                $id = 'i:'.$this->session->ip;
-            }
-            Models::move_document($uuid, $this->uri_data->title, $this->post->new_title, $id, $this->post->summary);
+            // Approve Move
+            $member = $this->session->member->uuid ?? null;
+            $ip = !$member? $this->session->ip : null;
+
+            Models::move_document(
+                $uuid, 
+                $this->uri_data->title, 
+                $this->post->new_title, 
+                $member,
+                $ip,
+                $this->post->summary);
             Header('Location: /w/'.$this->post->new_title);
         }else{
             $this->session->token = self::rand(64);
