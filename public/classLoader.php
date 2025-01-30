@@ -1,0 +1,60 @@
+<?php
+namespace PressDo;
+
+use PressDo\app\Helpers\Config;
+
+function loadClass($page, $menu) {
+    $DIR = '../app/Models/';
+    $HDIR = '../app/Helpers/Mark/';
+
+    require $DIR.'ACL.php';
+
+    switch ($page) {
+        case 'wiki':
+            require $DIR.'Star.php';
+            require $HDIR.Config::get('mark').'/Loader.php';
+            // no break
+        case 'backlink':
+            require $DIR.'Document.php';
+            require $DIR.'Backlink.php';
+            break;
+        case 'RecentDiscuss':
+            require $DIR.'Thread.php';
+            require $DIR.'Member.php';
+            // no break
+        case 'edit':
+        case 'move':
+        case 'acl':
+        case 'raw':
+        case 'random':
+            require $DIR.'Document.php';
+            break;
+        case 'RecentChanges':
+        case 'history':
+            require $DIR.'Member.php';
+            // no break
+        case 'diff':
+            require $DIR.'Document.php';
+            require $DIR.'History.php';
+        break;
+        case 'discuss':
+            require $DIR.'EditRequest.php';
+        case 'thread':
+            require $DIR.'Member.php';
+            require $DIR.'Document.php';
+            require $DIR.'Thread.php';
+        case 'api':
+            if ($menu == 'preview' || $page == 'thread')
+                require $HDIR.Config::get('mark').'/Loader.php';
+            break;
+        case 'member':
+            if ($menu == 'unstar' || $menu == 'star') {
+                require $DIR.'Document.php';
+                require $DIR.'Star.php';
+            }
+            // no break 
+        case 'License':
+            require $DIR.'Member.php';
+            break;
+    }
+}
