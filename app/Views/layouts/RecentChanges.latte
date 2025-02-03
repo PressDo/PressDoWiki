@@ -83,6 +83,8 @@
                                 ({$lang['log'][$he['logtype']]})
                             {case 'move'}
                                 ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
+                            {case 'acl'}
+                                ({=$lang['log']['acl']|replace: '@1@', $he['acl']})
                         {/switch}
                         </i>
                     </div>

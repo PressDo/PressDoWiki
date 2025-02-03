@@ -55,16 +55,17 @@ class Member extends \PressDo\app\Core\Model
         $db = self::db();
         try{
             if (empty($email)) {
-                $d = $db->prepare("SELECT username, email FROM member WHERE username=?");
+                $d = $db->prepare("SELECT uuid, username, email FROM member WHERE username=?");
                 $d->execute([$username]);
             } else {
-                $d = $db->prepare("SELECT username, email FROM member WHERE email=? AND username IS NOT NULL");
+                $d = $db->prepare("SELECT uuid, username, email FROM member WHERE email=? AND username IS NOT NULL");
                 $d->execute([$email]);
             }
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 사용자 조회 중 오류 발생');
         }
         $data = $d->fetch(PDO::FETCH_ASSOC);
+        $data['uuid'] = self::bin2uuid($data['uuid']);
         if($d->rowCount() < 1)
             return false;
         else
@@ -240,9 +241,9 @@ class Member extends \PressDo\app\Core\Model
     /**
      * find username by uuid
      * @param string $uuid
-     * @return mixed
+     * @return mixed username (false if not exist)
      */
-    public static function lookup($uuid)
+    public static function lookup($uuid): string|bool
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);

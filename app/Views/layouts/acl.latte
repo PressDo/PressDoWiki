@@ -7,6 +7,7 @@
     <div n:foreach="$types as $a" class="pressdo-table"area>
         <h2 data-pressdo-acl-title>{$lang['acl'][$a.'acl']}</h2>
         {foreach $wiki['page']['data']['ACLTypes'] as $A}
+            {continueIf $a == 'doc' && $A == 'read'}
             <h4 data-pressdo-acl-type>{$lang['acl'][$A]}</h4>
             <div class="pressdo-table">
                 <table class="pressdo-table">
@@ -36,7 +37,7 @@
                                 {$acls[$a][$A][$i]['condition']}</td><td class="pressdo-table">
                                 {$lang['acl'][$acls[$a][$A][$i]['action']]}</td><td class="pressdo-table">
                                 {$acls[$a][$A][$i]['expired']}</td><td class="pressdo-table">
-                                <button n:if="$wiki['page']['data'][$a.'ACL']['editable'] === true" delete-info="{$a}.{$acls[$a][$A][$i]['id']}" msg="{$lang['msg']['acl_delete_confirm']}" type="button" class="pressdo-btn btn-red d">{$lang['acl']['delete']}</button></td>
+                                <button n:if="$wiki['page']['data'][$a.'ACL']['editable'] === true" delete-info="{$a}.{$acls[$a][$A][$i]['id']}" msg="{$lang['msg']['acl_delete_confirm']}" type="button" class="pressdo-btn-nonflex btn-red d">{$lang['acl']['delete']}</button></td>
                             </tr>
                         {/for}
                     </tbody>

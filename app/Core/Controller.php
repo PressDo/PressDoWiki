@@ -189,13 +189,4 @@ class Controller
         
         return $s;
     }
-
-    /**
-     * get country of location
-     * 너무 느려져서 일시 비활성화함
-     */
-    protected static function geoip(string $ip): string
-    {
-        return 'KR';//json_decode(file_get_contents('http://ip-api.com/json/'.$ip), true)['countryCode']; 
-    }
 }

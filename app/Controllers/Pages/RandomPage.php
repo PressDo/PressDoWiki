@@ -1,23 +1,26 @@
 <?php
-namespace PressDo;
+namespace PressDo\app\Controllers\Pages;
 
-require 'controllers/common.php';
-require 'models/RandomPage.php';
+use PressDo\app\Models\Document;
+use PressDo\app\Core\Controller;
+use PressDo\app\Helpers\{Languages,Namespaces};
 
-use PressDo\Models;
-class WikiPage extends WikiCore
+class RandomPage extends Controller
 {
-    public function make_data()
+    public function makeData(): array
     {
+        $namespace = in_array($_GET['namespace'], Namespaces::all()) ? $_GET['namespace'] : '문서';
         $page = [
             'view_name' => 'RandomPage',
-            'title' => Lang::get('page')['RandomPage'],
+            'title' => Languages::get('page', 'RandomPage'),
             'data' => [
+                'namespace' => $namespace,
                 'content' => []
             ],
             'menus' => [],
             'customData' => []
         ];
+        $resultSet = Document::getRandom($namespace, 20);
 
         $page['data']['content'] = $resultSet;
 

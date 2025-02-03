@@ -101,6 +101,9 @@ class Model {
         return explode(',', $d->fetch(PDO::FETCH_ASSOC)['perm']);
     }
 
+    /**
+     * Generate new UUID4 String.
+     */
     public static function generateUuid(): string
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

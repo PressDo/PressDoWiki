@@ -8,16 +8,16 @@ use PressDo\app\Models\Document;
 
 class ACL extends \PressDo\app\Core\Model
 {
-    public static function aclgroups($id)
+    public static function aclgroups(): array
     {
         $db = self::db();
 
         try {
-            $a = $db->query("SELECT * FROM aclgroups", PDO::FETCH_ASSOC);
+            $a = $db->query("SELECT `groupid`, `name` FROM aclgroups");
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ACLGroup 목록 조회 중 오류 발생');
         }
-        return $a;
+        return $a->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_ASSOC);
     }
 
     /**
@@ -113,10 +113,10 @@ class ACL extends \PressDo\app\Core\Model
     public static function fetchDocACL(string $uuid, string $access=null): array
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
         try {
             $d = $db->prepare("SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_document` 
-            WHERE `uuid`=? AND ".($access!==null? "`access`=? AND": "")." (`until`>=? OR `until`=0) AND `deleted`=0 ORDER BY `id` ASC");
-            //var_dump($db);
+            WHERE `uuid`=? AND ".($access!==null? "`access`=? AND": "")." (`until`>=? OR `until`=0) ORDER BY `id` ASC");
             $d->execute(
                 ($access===null? [$uuid, $_SERVER['REQUEST_TIME']]:[$uuid, $access, $_SERVER['REQUEST_TIME']])
             );
@@ -124,6 +124,18 @@ class ACL extends \PressDo\app\Core\Model
             throw new ErrorException($err->getMessage().': 문서 권한 목록 조회 중 오류 발생');
         }
         return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getDocRule(int $id): array
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT `uuid`, `condition`,`access`,`action` FROM `acl_document` WHERE `id`=?");
+            $d->execute([$id]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL 규칙 조회 중 오류 발생');
+        }
+        return $d->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -137,7 +149,7 @@ class ACL extends \PressDo\app\Core\Model
     {
         $db = self::db();
         try {
-            $d = $db->prepare('SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_namespace` WHERE `namespace`=? AND '.($access!==null? "`access`=? AND": "").' (`until`>=? OR `until`=0) AND `deleted`=0 ORDER BY `id` ASC');
+            $d = $db->prepare('SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_namespace` WHERE `namespace`=? AND '.($access!==null? "`access`=? AND": "").' (`until`>=? OR `until`=0) ORDER BY `id` ASC');
             $d->execute(
                 ($access === null ? [$rawns, $_SERVER['REQUEST_TIME']] : [$rawns, $access, $_SERVER['REQUEST_TIME']])
             );
@@ -146,5 +158,102 @@ class ACL extends \PressDo\app\Core\Model
         }
         
         return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get valid ACL settings of document.
+     * 
+     * @param int $uuid        ID of document
+     * @param string $acldata  ACL dataset
+     * @return array ACL set of document
+     */
+    public static function addDocACL(string $uuid, array $acldata, array $editdata): void
+    {
+        $db = self::db();
+        ++$editdata['baserev'];
+
+        $uuid = self::uuid2bin($uuid);
+
+        if($editdata['contributor_m'] !== null)
+            $cont_m = self::uuid2bin($editdata['contributor_m']);
+        elseif($editdata['contributor_i'] !== null)
+            $cont_i = self::uuid2bin(self::getIpUuid($editdata['contributor_i']));
+
+        try {
+            $d = $db->prepare("INSERT INTO `acl_document` (uuid, `condition`,`access`,`action`,`until`) VALUES (?,?,?,?,?)");
+            $d->execute([$uuid, $acldata['condition'], $acldata['access'], $acldata['action'], $acldata['until']]);
+            $h_uuid = self::uuid2bin(self::generateUuid());
+            $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `datetime`, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
+            $d->execute([$h_uuid, $uuid, $editdata['baserev'], time(), $cont_m, $cont_i, $editdata['acl_changed']]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 ACL 추가 중 오류 발생');
+        }
+    }
+
+    /**
+     * Get valid ACL settings of document.
+     * 
+     * @param int $namespace        ID of document
+     * @param string $acldata    type of action
+     * @return array ACL set of document
+     */
+    public static function addNSACL(string $namespace, array $acldata): void
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("INSERT INTO `acl_namespace` (`namespace`,`condition`,`access`,`action`,`until`) VALUES (?,?,?,?,?)");
+            $d->execute([$namespace, $acldata['condition'], $acldata['access'], $acldata['action'], $acldata['until']]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 이름공간 ACL 추가 중 오류 발생');
+        }
+    }
+
+    public static function isDuplicate(string $typ, string $uuid_or_ns, string $access, string $condition): bool
+    {
+        if ($typ == 'doc'){
+            $type = 'document';
+            $uuid_or_ns = self::uuid2bin($uuid_or_ns);
+        }elseif ($typ == 'ns')
+            $type = 'namespace';
+
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT 1 FROM `acl_$type` WHERE ".($type == 'namespace' ? $type : 'uuid')."=? AND `condition`=? AND `access`=?");
+            $d->execute([$uuid_or_ns, $condition, $access]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 이름공간 ACL 추가 중 오류 발생');
+        }
+
+        return ($d->rowCount() > 0);
+    }
+
+    public static function deleteDocACL(int $id, array $editdata): void
+    {
+        $db = self::db();
+        ++$editdata['baserev'];
+
+        if($editdata['contributor_m'] !== null)
+            $cont_m = self::uuid2bin($editdata['contributor_m']);
+        elseif($editdata['contributor_i'] !== null)
+            $cont_i = self::uuid2bin(self::getIpUuid($editdata['contributor_i']));
+
+        try {
+            $db->query("DELETE FROM acl_document WHERE id=$id");
+            $h_uuid = self::uuid2bin(self::generateUuid());
+            $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `datetime`, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
+            $d->execute([$h_uuid, self::uuid2bin($editdata['uuid']), $editdata['baserev'], time(), $cont_m, $cont_i, $editdata['acl_changed']]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 ACL 삭제 중 오류 발생');
+        }
+    }
+
+    public static function deleteNSACL(int $id): void
+    {
+        $db = self::db();
+        try {
+            $db->query("DELETE FROM acl_namespace WHERE id=$id");
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 이름공간 ACL 삭제 중 오류 발생');
+        }
     }
 }

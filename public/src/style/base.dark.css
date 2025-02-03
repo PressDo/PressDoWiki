@@ -20,7 +20,7 @@
     /* Editor */
     form li button.a.editor.top{background-color: #383b40;color: #ddd}
     form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
-    form input[data-pressdo-edit-summary],  form textarea.editor {background-color: #27292d;border-color: #383b40;color: #ddd;}
+    form input[data-pressdo-edit-summary],  form textarea.editor, div.alert a {background-color: #27292d;border-color: #383b40;color: #ddd;}
     form div.c.editor,  form ul.editor.top {border-color: #383b40;}
     textarea.editor {background-color: #000;color: #ddd;}
 
@@ -44,15 +44,20 @@
     .recent-menu{
         color:#e0e0e0; color: var(--dark-text-color, var(--text-color, #e0e0e0));
         &:not(.recent-menu-current):hover {--navigation-item-underline-color: var(--brand-bright-color-2,#45474b);}
-        &
     }
     .recent-document-title{color:#e0e0e0; color:var(--dark-text-color, var(--text-color, #e0e0e0));}
 
     /* History */
     .history-goto span{color: hsla(0, 0%, 88%, .749);color: var(--text-color, hsla(0, 0%, 88%, .749));}
 
+    /* BlockHistory */
+    ul.list-table li{border-color:#434343;}
+
     /* Pages */
     .pagelist-menu{border-color:#484848;}
+
+    /* Category */
+    div.wiki-categories {background-color: #1c1d1f;background-color: var(--dark-article-background-color,var(--article-background-color,#1c1d1f));border-color: #555;}
 
     /* Discuss */
     input[data-pressdo-thread], textarea[data-pressdo-thread]{background-color: #27292d;border-color: #383b40;color: #ddd;}

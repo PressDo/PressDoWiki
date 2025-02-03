@@ -1,9 +1,9 @@
 <?php
 namespace PressDo\app\Controllers;
 
-use PressDo\app\Models\ACL as ACLModels;
+use PressDo\app\Models\{ACL as ACLModels, Member};
 use PressDo\app\Core\Controller;
-use PressDo\app\Helpers\Languages;
+use PressDo\app\Helpers\{Languages,GeoIP};
 
 class ACL extends Controller
 {
@@ -37,7 +37,7 @@ class ACL extends Controller
         else
             array_push($this->perms, 'ip');
 
-        $this->geoip = parent::geoip($this->session['ip']);
+        $this->geoip = GeoIP::get($this->session['ip']);
         $this->aclgroups = ACLModels::getUserAclgroups($this->session);
     }
 
@@ -106,7 +106,7 @@ class ACL extends Controller
                     $this->handleAction(in_array($cond[1], $this->perms), $cond[0], $cond[1], $acl['action']);
                     break;
                 case 'member':
-                    $this->handleAction(($this->session['member']['username'] === $cond[1]), $cond[0], $cond[1], $acl['action']);
+                    $this->handleAction(($this->session['member']['username'] === Member::lookup($cond[1])), $cond[0], $cond[1], $acl['action']);
                     break;
                 case 'ip':
                     $this->handleAction(($this->session['ip'] === $cond[1]), $cond[0], $cond[1], $acl['action']);

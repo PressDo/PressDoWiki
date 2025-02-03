@@ -29,7 +29,7 @@ switch ($router->uri_data->page) {
         // no break
     case 'api':
         $fnClassNm = $router->uri_data->page.'\\'.ucwords($router->uri_data->menu, '_');
-        require '../app/Controllers/Pages/'.ucfirst($router->uri_data->page).'/'.ucwords($router->uri_data->menu, '_').'.php';
+        require '../app/Controllers/Pages/'.$router->uri_data->page.'/'.ucwords($router->uri_data->menu, '_').'.php';
         break;
     case 'acl':
         $fnClassNm = 'ACL';

@@ -36,6 +36,15 @@ class View
     public function renderPage(): string
     {
         switch($this->params['uri_data']['page']){
+            case 'LongestPages':
+            case 'NeededPages':
+            case 'OldPages':
+            case 'OrphanedPages':
+            case 'ShortestPages':
+            case 'UncategorizedPages':
+            case 'RandomPage':
+                $file = '../app/Views/layouts/pagelist.latte';
+                break;
             case 'admin':
             case 'member':
                 $file = '../app/Views/layouts/'.$this->params['uri_data']['page'].'/'.$this->params['uri_data']['menu'].'.latte';
@@ -46,6 +55,8 @@ class View
 
         if($this->params['wiki']['page']['view_name'] == 'error')
             $file = '../app/Views/layouts/error.latte';
+        elseif($this->params['wiki']['page']['view_name'] == 'notfound')
+            $file = '../app/Views/layouts/notfound.latte';
 
         $this->params['innerLayout'] = $this->latte->renderToString($file, $this->params);
         $this->params['body'] = $this->latte->renderToString('skins/'.$this->skin->name.'/layout.latte', $this->params);

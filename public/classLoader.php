@@ -18,6 +18,9 @@ function loadClass($page, $menu) {
             require $DIR.'Document.php';
             require $DIR.'Backlink.php';
             break;
+        case 'BlockHistory':
+            require $DIR.'BlockHistory.php';
+            // no break
         case 'RecentDiscuss':
             require $DIR.'Thread.php';
             require $DIR.'Member.php';
@@ -27,6 +30,12 @@ function loadClass($page, $menu) {
         case 'acl':
         case 'raw':
         case 'random':
+        case 'RandomPage':
+        case 'OldPages':
+        case 'LongestPages':
+        case 'ShortestPages':
+        case 'NeededPages':
+        case 'UncategorizedPages':
             require $DIR.'Document.php';
             break;
         case 'RecentChanges':

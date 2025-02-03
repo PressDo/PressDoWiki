@@ -2,6 +2,7 @@
     "require": {
         "hyungju/readable-url": "^1.2",
         "latte/latte": "^2.10",
-        "yidas/socket-mailer": "^1.1"
+        "yidas/socket-mailer": "^1.1",
+        "geoip2/geoip2": "~2.0"
     }
 }

@@ -5,6 +5,6 @@
     </div>
     <p>{$lang['msg']['document_not_found']}</p>
     <p>
-        <a href="/edit/{$uri_data['title']}">[{$lang['document']['create_document']}]</a>
+        <a href="/edit/{$uri_data['title']|escapeUrl}">[{$lang['document']['create_document']}]</a>
     </p>
 </div>

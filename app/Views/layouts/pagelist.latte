@@ -1,49 +1,65 @@
-list($page,$data,$ns) = $args;
-global $conf, $lang, $uri, $_ns; ?>
-<head>
-<title> <?=$lang[$page]?> - <?=$conf['SiteName']?> </title>
-</head>
-<div data-pressdo-content-header>
-    <h1 data-pressdo-doc-title><?=$lang[$page]?></h1>
-</div>
-<div class="wiki-content">
-    <div><?php if($page == 'RandomPage'){ ?>
-        <fieldset data-pressdo-nsfield>
-            <form method="POST">
-                <div data-pressdo-pagelist>
-                    <label data-pressdo-pagelist><?=$lang['namespace']?> :</label><select data-pressdo-pagelist name="namespace">
-                        <?php foreach ($ns as $n){
-                            if($n == $_GET['namespace'])
-                                $sel = 'selected';
-                            else
-                                $sel = '';
-                            ?><option value="<?=$n?>" <?=$sel?>><?=$n?></option><?php
-                        } ?>
-                        
-                    </select>
-                </div>
-                <div data-pressdo-pagelist class="b">
-                    <button type="submit" class="pressdo-btn btn-blue"><?=$lang['submit']?></button>
-                </div>
-            </form>
-        </fieldset>
-        <?php }else{ ?>
-            <p><?=$lang['msg:'.$page]?></p>
-        <?php }?>
-        <ul data-pressdo-ul>
-            <?php foreach($data as $d){
-                $txt = [
-                    'OldPages' => '('.$lang['modifiedat'].':'.date('Y-m-d H:i:s', $d['datetime']).')',
-                    'LongestPages' => '('.$d['length'].$lang['letters'].')',
-                    'ShortestPages' => '('.$d['length'].$lang['letters'].')'
-                ];
+<div>
+    <form n:if="in_array($wiki['page']['view_name'], ['RandomPage', 'NeededPages', 'OrphanedPages', 'UncategorizedPages'])" class="pagelist-menu" method="get">
+        {var $ns = '?namespace='.$wiki['page']['data']['namespace'].'&'}
+        <label data-pressdo-pagelist>{$lang['namespace']} :</label><select name="namespace">
+            <option n:foreach="$namespace as $n" n:attr="selected: ($n == $wiki['page']['data']['namespace'])" value="{$n}">{$n}</option>
+        </select>
+        <button type="submit" class="pressdo-btn btn-blue">{$lang['submit']}</button>
+    </form>
+    {default $ns = '?'}
+    <p>{$lang['msg'][$wiki['page']['view_name']]}</p>
+        {if !$wiki['page']['data']['prev_ver']}
+            {var $ptag = 'span'}
+            {var $phref = null}
+        {else}
+            {var $ptag = null}
+            {var $phref = '/'.$wiki['page']['view_name'].$ns.'until='.$wiki['page']['data']['prev_ver']}
+        {/if}
+        {if !$wiki['page']['data']['next_ver']}
+            {var $ntag = 'span'}
+            {var $nhref = null}
+        {else}
+            {var $ntag = null}
+            {var $nhref = '/'.$wiki['page']['view_name'].$ns.'from='.$wiki['page']['data']['next_ver']}
+        {/if}
+    <div class="history-menu-area page-btn-area">
+        <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
+            <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
+            <span>{$lang['history']['prev']}</span>
+        </a>
+        <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
+            <span>{$lang['history']['next']}</span>
+            <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg>
+        </a>
+    </div>
+    <ul class="lists">
+        {foreach $wiki['page']['data']['content'] as $d}
+            {if $config['wiki']['force_show_namespace'] === false && $d['namespace'] == '문서'}
+                {var $title = $d['title']}
+            {else}
+                {var $title = $d['namespace'].':'.$d['title']}
+            {/if}
 
-                if($conf['ForceShowNameSpace'] === false && $d['namespace'] == '문서')
-                    $title = $d['title'];
-                else
-                    $title = $d['namespace'].':'.$d['title'];
-                ?><li><a href="<?=$uri['wiki'].$title?>"><?=$title?></a> <?=$txt[$page]?></li><?php
-            } ?>
-        </ul>
+            {switch $wiki['page']['view_name']}
+                {case 'OldPages'}
+                    <li><a href="/w/{$title|escapeUrl}">{$title}</a> ({$lang['document']['modifiedat']}:<time datetime="{$d['dt']|date:'c'}">{$d['dt']|date:'Y-m-d H:i:s'}</time>)</li>
+                {case 'LongestPages', 'ShortestPages'}
+                    <li><a href="/w/{$title|escapeUrl}">{$title}</a> ({$d['len'].$lang['letters']})</li>
+                {case 'NeededPages'}
+                    <li><a href="/w/{$title|escapeUrl}">{$title}</a> <a href="/backlink/{$title|escapeUrl}">[{$lang['btn']['backlink']}]</a></li>
+                {case 'RandomPage', 'UncategorizedPages'}
+                    <li><a href="/w/{$title|escapeUrl}">{$title}</a></li>
+            {/switch}
+        {/foreach}
+    </ul>
+    <div class="history-menu-area page-btn-area">
+        <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
+            <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
+            <span>{$lang['history']['prev']}</span>
+        </a>
+        <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
+            <span>{$lang['history']['next']}</span>
+            <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg>
+        </a>
     </div>
 </div>

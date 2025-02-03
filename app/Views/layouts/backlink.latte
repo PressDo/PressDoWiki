@@ -1,4 +1,4 @@
-<form class="pagelist-menu" method=""get>
+<form class="pagelist-menu" method="get">
     <label for="namespaceSelect">이름공간:</label>
     <select n:inner-foreach="$wiki['page']['data']['backlink_count'] as $cnt" class="selfield" id="namespaceSelect" name="namespace" value="문서">
         <option value="{$cnt['namespace']}" n:attr="selected: $uri_data['query']->namespace == $cnt['namespace']">{$cnt['namespace']} ({$cnt['count']})</option>
@@ -42,13 +42,13 @@
     {/if}
     <div n:foreach="$wiki['page']['data']['backlink'] as $key => $val">
         <h3>{$key}</h3>
-        <ul n:inner-foreach="$val as $v">
+        <ul class="lists" n:inner-foreach="$val as $v">
             {if $v['force_show_namespace'] || $v['document']['namespace'] !== '문서'}
                 {var $ns = $v['document']['namespace'].':'}
             {else}
                 {var $ns = ''}
             {/if}{$v['title']}
-            <li><a href="/w/{$ns.$v['document']['title']}">{$ns.$v['document']['title']}</a> ({$v['type']})</li>
+            <li class="backlinks"><a href="/w/{$ns.$v['document']['title']}">{$ns.$v['document']['title']}</a> ({$v['type']})</li>
         </ul>
     </div>
 </div>

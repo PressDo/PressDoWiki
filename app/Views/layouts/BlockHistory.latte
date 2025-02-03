@@ -1,73 +1,113 @@
-{if !$wiki['page']['data']['prev_page']}
-    {var $p_ = 'data-pressdo-history-null'}
-{else}
-    {var $p_ = 'href=/BlockHistory?until='.$data['prev_page']}
-{/if}
-{if !$wiki['page']['data']['next_page']}
-    {var $f_ = 'data-pressdo-history-null'}
-{else}
-    {var $f_ = 'href=/BlockHistory?until='.$data['next_page']}
-{/if}
 <div class="wiki-content">
     <div>
-        <form method="GET">
+        <form class="pagelist-menu search-form" method="get">
             <input type="hidden" name="page" value="BlockHistory">
-            <select name="target">
+            <select class="selfield" name="target" value="text">
                 <option value="text">{$lang['acl']['text']}</option>
                 <option value="author">{$lang['acl']['author']}</option>
             </select>
-            <input type="text" name="query" placeholder="{$lang['search']}">
-            <input type="submit" value="{$lang['search']}">
+            <input class="textfield" type="text" name="query" placeholder="{$lang['page']['search']}">
+            <div>
+                <button class="pressdo-btn btn-blue" type="submit">{$lang['page']['search']}</button>
+                <a role="button" class="pressdo-btn" href="#">{$lang['btn']['reset']}</a>
+            </div>
         </form>
-        <div class="bt-g">
-            <a {$p_|noescape} data-pressdo-history-mv>
-                <span ionicon ion-arrow-back></span> Prev
+        {if !$wiki['page']['data']['prev_page']}
+            {var $ptag = 'span'}
+            {var $phref = null}
+        {else}
+            {var $ptag = null}
+            {var $phref = '/BlockHistory?until='.$wiki['page']['data']['prev_page']}
+        {/if}
+        {if !$wiki['page']['data']['next_page']}
+            {var $ntag = 'span'}
+            {var $nhref = null}
+        {else}
+            {var $ntag = null}
+            {var $nhref = '/BlockHistory?from='.$wiki['page']['data']['next_page']}
+        {/if}
+        <div class="history-menu-area page-btn-area">
+            <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
+                <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
+                <span>{$lang['history']['prev']}</span>
             </a>
-            <a {$f_|noescape} data-pressdo-history-mv>
-                Next <span ionicon ion-arrow-forward></span>
+            <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
+                <span>{$lang['history']['next']}</span>
+                <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg>
             </a>
         </div>
-        <ul class="lists">
-            <li data-pressdo-blockhistory n:foreach="$wiki['page']['data']['history'] as $h">
-                <time datetime="{$h['datetime']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$h['datetime']|date: "Y-m-d H:i:s"}</time>
-                {if $h['author'] === null}
-                    {var $subject = '<div v="inline"><div v="inline-block"><a data-pressdo-user-ip>'.$h['author_ip'].'</a></div></div>';}
-                {else}
-                    {var $subject = '<a data-pressdo-user-member>'.$h['author'].'</a>';}
-                {/if}
-                {=$lang['msg']['b_user']|replace: ['@1@' => $subject, '@2@' => $h['content']['ip'].$h['content']['member']]|noescape}
-                <i>
-                {switch $h['action']}
-                    {case aclgroup_add, aclgroup_remove}
-                        ({=$lang['msg']['b_'.$h['action']]|replace: '@1@', '<b>'.$h['content']['aclgroup'].'</b>'|noescape})
-                        {var $hid = '#'.$h['content']['target_id'].' '}
-                    {case login_history, grant}
-                        ({$lang['msg']['b_'.$h['action']]|noescape})
-                        {var $hid = ''}
-                {/switch}
-                </i>
-                {if $h['content']['duration'] == 'forever'}
-                    {$hid.$lang['msg']['b_forever']|noescape}
-                {elseif $h['content']['duration'] == null}
-                    {$hid}
-                {else}
-                    {var $timeSet = ''}
-                    {foreach array_keys($h['content']['duration']) as $t}
-                        {if $h['content']['duration'][$t] != 0}
-                            {var $timeSet .= ' '.$h['content']['duration'][$t].$lang['acl'][$t]}
+        <ul class="list-table">
+            <li n:foreach="$wiki['page']['data']['history'] as $h">
+                <div><span n:class="
+                    $h['action'] == 'aclgroup_add' ? bh-green,
+                    $h['action'] == 'aclgroup_remove' ? bh-grey,
+                    $h['action'] == 'grant' ? bh-orange,
+                    $h['action'] == 'login_history' ? bh-purple,
+                    $h['action'] == 'batch_revert' ? bh-blue, list-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path n:if="$h['action'] == 'aclgroup_add'" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"></path>
+                    <path n:if="$h['action'] == 'aclgroup_remove'" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM472 200H616c13.3 0 24 10.7 24 24s-10.7 24-24 24H472c-13.3 0-24-10.7-24-24s10.7-24 24-24z"></path>
+                    <path n:if="$h['action'] == 'grant'" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM625 177L497 305c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L591 143c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path>
+                    <path n:if="$h['action'] == 'login_history'" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                    <path n:if="$h['action'] == 'batch_revert'" d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"></path>
+                </svg></span></div>
+                <div class="list-table-content">
+                    <div>
+                        {if $h['author'] !== null}
+                            {var $target_type = $lang['acl']['member']}
+                        {else}
+                            {var $target_type = 'IP'}
                         {/if}
-                    {/foreach}
-                    {=$hid.$lang['msg']['b_for']|replace: '@1@', $timeSet}
-                {/if}
-                {if $h['action'] !== 'login_history'}<span data-pressdo-history-gray data-pressdo-history-log>{$h['content']['memo'].$h['content']['granted']}</span>{/if}
+                        {var $subject = '<div class="context-menu v-popper v-popper--theme-contextmenu"><a href="/contribution/'.$h['author_uuid'].'/document">'.($h['author'] ?? $h['author_ip']).'</a></div>'}
+
+                        {if $h['content']['duration'] == 'forever'}
+                            {var $timestr = $lang['msg']['b_forever']}
+                        {elseif $h['content']['duration'] == null}
+                            {var $timestr = ''}
+                        {else}
+                            {var $timeSet = ''}
+                            {foreach array_keys($h['content']['duration']) as $t}
+                                {if $h['content']['duration'][$t] != 0}
+                                    {var $timeSet .= ' '.$h['content']['duration'][$t].$lang['acl'][$t]}
+                                {/if}
+                            {/foreach}
+                            {var $timestr = str_replace('@1@', $timeSet, $lang['msg']['b_for'])}
+                        {/if}
+                        
+                        {switch $h['action']}
+                            {case aclgroup_add, aclgroup_remove}
+                                {var $msg = str_replace(['@1@', '@2@'], ['<b>'.$h['content']['aclgroup'].'</b>', $timestr], $lang['msg']['b_'.$h['action']])}
+                                {var $hid = '#'.$h['content']['id']}
+                            {case login_history, grant}
+                                {var $msg = $lang['msg']['b_'.$h['action']]}
+                                {var $hid = ''}
+                        {/switch}
+                        
+                        {=$lang['msg']['b_user']|replace: [
+                            '@1@' => $subject,
+                            '@2@' => ($h['content']['ip'] ?? '<div class="context-menu v-popper v-popper--theme-contextmenu"><a href="/contribution/'.$h['content']['member_uuid'].'/document">'.$h['content']['member'].'</a></div>'),
+                            '@3@' => $target_type,
+                            '@4@' => $msg
+                        ]|noescape}
+                        <span class="bh-id">{$hid}</span>
+                    </div>
+                    <div class="recent-log">
+                        <span n:if="$h['action'] == 'grant'">{$h['content']['granted']}</span>
+                    </div>
+                    <div class="recent-log">
+                        <time datetime="{$h['datetime']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$h['datetime']|date: "Y-m-d H:i:s"}</time>
+                        <span n:if="$h['action'] !== 'login_history' && $h['action'] !== 'grant'">({$h['content']['memo']})</span>
+                    </div>
+                </div>
             </li>
         </ul>
-        <div class="bt-g">
-            <a {$p_|noescape} data-pressdo-history-mv>
-                <span ionicon ion-arrow-back></span> Prev
+        <div class="history-menu-area page-btn-area">
+            <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
+                <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
+                <span>{$lang['history']['prev']}</span>
             </a>
-            <a {$f_|noescape} data-pressdo-history-mv>
-                Next <span ionicon ion-arrow-forward></span>
+            <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
+                <span>{$lang['history']['next']}</span>
+                <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg>
             </a>
         </div>
     </div>

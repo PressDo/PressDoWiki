@@ -17,7 +17,9 @@
  ### 요구 사항
  - PHP
  - php-mysql
+ - composer
  - MySQL, MariaDB, PostgreSQL, CUBRID, Oracle Database, MSSQL, Firebird, IBM DB2, SQLite 중 하나
+ - php-geoip (PECL 확장) 또는 Maxmind GeoIP2 데이터베이스 (country)
 
  ### 지원 스킨
  - ~~senkawa~~ (저작권 문제로 배포하지 않습니다.)

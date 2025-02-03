@@ -40,6 +40,14 @@ class Edit extends Controller
         // Edit Submission
         if (isset($_POST['token']) && isset($_POST['content'])) {
             $_POST['content'] = htmlspecialchars_decode($_POST['content']);
+
+            $content = preg_replace('/^#(redirect|넘겨주기) (.+)$/im', '#redirect $2', $_POST['content']);
+
+            // ignore string after redirect
+            if (preg_match('/^#redirect (.+)$/im', $content, $matches)) {
+                $content = $matches[0];
+            }
+
             if ($_POST['token'] !== $this->session['token']) {
                 // Reject: wrong anti-CSRF token
                 $error = [
@@ -48,7 +56,7 @@ class Edit extends Controller
                     'errbox' => true
                 ];
                 $this->error = $error;
-            } elseif ($this->session['raw'] == $_POST['content']) {
+            } elseif ($this->session['raw'] == $content) {
                 // Reject: same doc content
                 $error = [
                     'code' => 'err_same_contents',
@@ -68,7 +76,7 @@ class Edit extends Controller
                 
                 Document::save(
                     $uuid,
-                    $_POST['content'],
+                    $content,
                     $_POST['comment'],
                     $member,
                     $ip,
@@ -88,10 +96,15 @@ class Edit extends Controller
         $this->session['raw'] = $uuid ? $doc['content'] : '';
         $section = $_GET['section'];
 
+        if ($this->session['baserev'] < 1)
+            $subtitle = Languages::get('editor', 'create');
+        else
+            $subtitle = 'r'.$this->session['baserev'].' '.Languages::get('page', 'edit');
+
         $page = [
             'view_name' => 'edit',
             'title' => $this->uri_data->title,
-            'subtitle' => 'r'.$this->session['baserev'].' '.Languages::get('page', 'edit'),
+            'subtitle' => $subtitle,
             'data' => [
                 'editor' => [
                     'baserev' => $this->session['baserev'],

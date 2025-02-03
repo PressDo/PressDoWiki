@@ -32,13 +32,6 @@ getdoctitle = () => {
 
 LS = JSON.parse(localStorage.getItem('pressdo_settings'))
 
-// Dark Mode
-if(!localStorage.getItem('pressdo_settings') || LS['wiki.theme'] == 'dark'){
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        q('body').classList.add("pressdo-dark-mode")
-    }
-}
-
 before = 0
 Ctrl = Alt = false
 Lock = true
@@ -94,16 +87,6 @@ qa('.hidden-trigger').forEach(h => {
             a.s(g(at),'data-pressdo-toc-fold', 'hide')
             a.s(c,'data-pressdo-toc-fold', 'hide')
         }
-    })
-})
-
-// 검색창 버튼
-qa(".sb").forEach(sb => {
-    e(sb,'click',() => {
-        var f = g('searchInput').value
-        if(f == '')
-            return false
-        location.href = a.g(sb,'goto') + f
     })
 })
 
@@ -321,9 +304,9 @@ qa('#dr_e').forEach(d => {
     var i = a.g(d,'i')
     e(d,'input', (e) => {
         if(isNaN(e.target.value))
-            d.class = 'i'
+            c.a(d, 'wrong')
         else{
-            d.class = ''
+            c.r(d, 'wrong')
             q('#dr[i="'+i+'"]').value = q('#du[i='+i+']').value * e.target.value
         }
     })

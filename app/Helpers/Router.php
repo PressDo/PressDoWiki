@@ -1,7 +1,8 @@
 <?php
 namespace PressDo\app\Helpers;
 
-class Router {
+class Router
+{
     public object $uri_data;
 
     /**

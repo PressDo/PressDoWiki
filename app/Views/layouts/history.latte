@@ -60,7 +60,7 @@
                         <a href="<?=$uri['hide'].$Doc.'?uuid='.$d['uuid']?>">숨기기</a>
                 }*})
                 </span>
-                <input data-pressdo-history-radio type="radio" name="olduuid" value="{$d['uuid']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="uuid" value="{$d['uuid']}" v="inline-block">
+                <span><input data-pressdo-history-radio type="radio" name="olduuid" value="{$d['uuid']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="uuid" value="{$d['uuid']}" v="inline-block"></span>
                 <i>{switch $d['logtype']}
                     {case 'revert'}
                         ({=$lang['log']['revert']|replace: '@1@', $d['target_rev']})
@@ -68,6 +68,8 @@
                         ({$lang['log'][$d['logtype']]})
                     {case 'move'}
                         ({=$lang['log']['move']|replace: ['@1@' => $d['from'], '@2@' => $d['to']]})
+                    {case 'acl'}
+                        ({=$lang['log']['acl']|replace: '@1@', $d['acl']})
                 {/switch}</i>
                 <strong>r{$d['rev']}</strong> <span>(<span class="history-{$color}">{$flag.$d['count']}</span>)</span>
                 <div data-pressdo-history-menu style="display:inline;">
@@ -78,7 +80,7 @@
             </li>
         {/foreach}
     </ul>
-    <div class="bt-g history-menu-area">
+    <div class="bt-g history-menu-area page-btn-area">
         <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
             <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
             <span>{$lang['history']['prev']}</span>

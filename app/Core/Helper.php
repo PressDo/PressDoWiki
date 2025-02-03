@@ -6,3 +6,4 @@ require '../app/Helpers/Database.php';
 require '../app/Helpers/Languages.php';
 require '../app/Helpers/Namespaces.php';
 require '../app/Helpers/Router.php';
+require '../app/Helpers/GeoIP.php';

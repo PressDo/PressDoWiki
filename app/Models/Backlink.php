@@ -75,7 +75,7 @@ class Backlink extends \PressDo\app\Core\Model
         if(count($links['redirect']) > 0){
             // 리다이렉트 문서 (링크가 항상 하나임)
             array_push($addvals, '(?,?,?,?)');
-            list($namespace, $title) = Controller::parseTitle($links['redirect'][0]);
+            [$namespace, $title] = Controller::parseTitle($links['redirect'][0]);
             array_push($parvals, $namespace, $title, $uuid, 'redirect');
         }else{
             foreach($links['link'] as $l){
@@ -92,6 +92,11 @@ class Backlink extends \PressDo\app\Core\Model
                 array_push($addvals, '(?,?,?,?)');
                 list($namespace, $title) = Controller::parseTitle($l);
                 array_push($parvals, $namespace, $title, $uuid, 'include');
+            }
+            foreach(array_keys($links['category']) as $l){
+                array_push($addvals, '(?,?,?,?)');
+                list($namespace, $title) = Controller::parseTitle($l);
+                array_push($parvals, $namespace, $title, $uuid, 'category');
             }
         }
         try {
