@@ -17,7 +17,8 @@ class Signup extends Controller
         if (isset($_POST['email']) && empty($_POST['username'])) {
             $host = substr($_POST['email'],strrpos($_POST['email'], '@') + 1);
 
-            if (in_array($host, Config::get('member')['whitelist_email_host'])) {
+            $weh = Config::get('member.whitelist_email_host');
+            if (is_string($weh) || is_array($weh) && in_array($host, $weh)) {
                 $lang = Languages::get('mail');
                 $content = $lang['signup'];
                 
@@ -35,9 +36,9 @@ class Signup extends Controller
                     $error = $update;
                 else {
                     $code = Member::regCodeAdd($_POST['email'], $this->session['ip'], $update);
-                    $body = str_replace(['@1@', '@2@', '@3@'], [Config::get('wiki')['site_name'], Config::get('wiki')['canonical_url'].'/member/signup?x='.$code, $this->session['ip']], $content);
+                    $body = str_replace(['@1@', '@2@', '@3@'], [Config::get('wiki.site_name'), Config::get('wiki.canonical_url').'/member/signup?x='.$code, $this->session['ip']], $content);
 
-                    $send = self::sendMail($_POST['email'], str_replace('@1@', Config::get('wiki')['site_name'], $lang['signup_title']) ,$body);
+                    $send = self::sendMail($_POST['email'], str_replace('@1@', Config::get('wiki.site_name'), $lang['signup_title']) ,$body);
                     $step = 1;
 
                     // error in mailserver

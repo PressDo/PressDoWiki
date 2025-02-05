@@ -29,7 +29,7 @@ class View
         $this->latte->addFilter('formatTime', fn($time) => Controller::formatTime($time));
 
         $this->skin = new \stdClass;
-        $this->skin->name = $this->session['member']['settings']['skin_name'] ?? Config::get('default_skin');
+        $this->skin->name = $this->session['member']['settings']['skin_name'] ?? Config::get('wiki.default_skin');
         $this->skin->config = json_decode(file_get_contents('skins/'.$this->skin->name.'/config.json'), true);
     }
 

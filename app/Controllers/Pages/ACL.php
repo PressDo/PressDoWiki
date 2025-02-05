@@ -25,7 +25,7 @@ class ACL extends Controller
         $doc_acl = ['edit' => [], 'move' => [], 'delete' => [], 'create_thread' => [], 'write_thread_comment' => [], 'edit_request' => [], 'acl' => []];
         $ns_acl = ['read' => [], 'edit' => [], 'move' => [], 'delete' => [], 'create_thread' => [], 'write_thread_comment' => [], 'edit_request' => [], 'acl' => []];
 
-        $aclgroups = array_map(fn($n) => $n[0]['name'], ACLModels::aclgroups());
+        $aclgroups = array_values(ACLModels::aclgroups());
 
         if (!empty($_POST['acl_target'])) {
             // insert acl

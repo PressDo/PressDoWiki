@@ -75,7 +75,7 @@ class Backlink extends Controller
                         'document' => [
                             'namespace' => $b[0]['namespace'], 
                             'title' => $title, 
-                            'force_show_namespace' => Config::get('force_show_namespace')], 
+                            'force_show_namespace' => Config::get('wiki.force_show_namespace')], 
                             'type' => $b[0]['type']
                     ]);
                 }
@@ -88,39 +88,5 @@ class Backlink extends Controller
             ];
         }
         return $page;
-    }
-
-    private static function utf8_ord($c)
-    {
-        $len = strlen($c);
-        if($len <= 0) return false;
-        $h = ord($c[0]);
-        if ($h <= 0x7F) return $h;
-        if ($h < 0xC2) return false;
-        if ($h <= 0xDF && $len>1) return ($h & 0x1F) <<  6 | (ord($c[1]) & 0x3F);
-        if ($h <= 0xEF && $len>2) return ($h & 0x0F) << 12 | (ord($c[1]) & 0x3F) <<  6 | (ord($c[2]) & 0x3F);		  
-        if ($h <= 0xF4 && $len>3) return ($h & 0x0F) << 18 | (ord($c[1]) & 0x3F) << 12 | (ord($c[2]) & 0x3F) << 6 | (ord($c[3]) & 0x3F);
-        return false;
-    }
-    
-    private static function is_hangeul(string $c)
-    {
-        $o = self::utf8_ord($c);
-        if( 0x1100<=$o && $o<=0x11FF ) return true;
-        if( 0x3130<=$o && $o<=0x318F ) return true;
-        if( 0xAC00<=$o && $o<=0xD7A3 ) return true;
-        return false;
-    }
-
-    private static function ko_head(string $char)
-    {
-        $heads = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-        $code = self::utf8_ord($char) - 44032;
-        if ($code > -1 && $code < 11172) {
-            $result = $heads[$code / 588];
-        }elseif(in_array($char, $heads)) {
-            $result = $char;
-        }
-        return $result;
     }
 }

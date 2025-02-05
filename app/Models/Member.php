@@ -210,14 +210,15 @@ class Member extends \PressDo\app\Core\Model
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function grantPermissions(string $executor, string $username, array $perms, string $record): void
+    public static function grantPermissions(string $executor, string $uuid, array $perms, string $record): void
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
         $c = implode(',', $perms);
-        $e = $db->prepare("UPDATE `member` SET `perm`=? WHERE `username`=?");
-        $e->execute([$c,$username]);
-        $f = $db->prepare("INSERT INTO `BlockHistory` (executor,target_member,datetime,action,granted) VALUES(?,?,?,'grant',?)");
-        $f->execute([$executor, $username, $_SERVER['REQUEST_TIME'], $record]);
+        $e = $db->prepare("UPDATE `member` SET `perm`=? WHERE `uuid`=?");
+        $e->execute([$c,$uuid]);
+        $f = $db->prepare("INSERT INTO `BlockHistory` (executor_m,target_member,datetime,action,granted) VALUES(?,?,?,'grant',?)");
+        $f->execute([$executor, $uuid, $_SERVER['REQUEST_TIME'], $record]);
     }
 
     /**

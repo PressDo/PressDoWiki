@@ -193,7 +193,7 @@
         "b_login_history": "의 로그인 기록 조회",
         "b_batch_revert": "의 기여를 일괄 되돌림",
         "b_grant": "의 권한 설정",
-        "b_forever": "(영구적으로)",
+        "b_forever": "영구적으로",
         "b_for": "@1@ 동안",
         "no_change": "변경 사항이 없습니다.",
         "admin_no_permission": "권한이 부족합니다.",
@@ -347,6 +347,11 @@
         "logtype_accepted_editrequest": "승인된 편집 요청",
         "logtype_closed_editrequest": "닫힌 편집 요청",
         "logtype_old_editrequest": "오래된 편집 요청"
+    },
+    "category": {
+        "subcategories": "하위 분류",
+        "sub_something": "\"@1@\" 분류에 속하는 @2@",
+        "count": "전체 @1@개 문서"
     },
     "blocked_reason": "차단 사유",
     "forever": "영구적으로",

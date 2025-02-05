@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <head>
-    <link href="{$config['wiki']['logo_url']}" rel="SHORTCUT ICON">
+    <link href="{$config['wiki.logo_url']}" rel="SHORTCUT ICON">
     <meta charset="UTF-8">
     <meta name="author" content="PRASEOD-">
-    <meta name="title" content="{$config['wiki']['sitename']}">
-    <meta name="description" content="{$config['description']}">
-    <meta name="monaco-version" content="{$config['editor_version']}">
+    <meta name="title" content="{$config['wiki.site_name']}">
+    <meta name="description" content="{$config['wiki.description']}">
+    <meta name="monaco-version" content="{$config['wiki.editor_version']}">
     <meta http-equiv="Content-Type" content="text/html;">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{$config['wiki']['sitename']}">
-    <meta property="og:description" content="{$config['description']}">
+    <meta property="og:title" content="{$config['wiki.site_name']}">
+    <meta property="og:description" content="{$config['wiki.description']}">
     <meta name="format-detection" content="telephone=no">
     <script defer src="/src/script/main.js"></script>
     <script src="/src/script/jquery-2.2.4.min.js"></script>
     <script src="/src/script/tether.min.js"></script>
     <script src="/src/script/bootstrap.min.js"></script>
-    <title> {$wiki['page']['title']} - {$config['wiki']['site_name']} </title>
+    <title> {$wiki['page']['title']} - {$config['wiki.site_name']} </title>
     {if $wiki['page']['view_name'] == 'wiki'}
         <link rel="stylesheet" href="/src/style/document.css">
         <script defer src="/src/script/document.js"></script>
@@ -25,7 +25,7 @@
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
     {/if}
     {if $wiki['page']['view_name'] == 'edit'}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/{$config['editor_version']}/min/vs/loader.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/{$config['wiki.editor_version']}/min/vs/loader.js"></script>
         <script src="/src/script/monaco.js"></script>
     {/if}
     {foreach $skinConfig['js'] as $sf}

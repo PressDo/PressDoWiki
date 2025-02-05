@@ -7,7 +7,7 @@
     {* 초기화면 *}
     <form class="signup-form authform" method="POST" id="regform" name="regform" action="/member/signup">
         <div class="form-sheet">
-            <textarea class="textfield longtext" readonly value="{$config['member']['tos']}">{$config['member']['tos']}</textarea>
+            <textarea class="textfield longtext" readonly value="{$config['member.tos']}">{$config['member.tos']}</textarea>
         </div>
         <div class="form-sheet form-action">
             <label name="agree" class="chkbox-label">
@@ -21,10 +21,10 @@
             <p id="errmail" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['email']}</p>
         </div>
     
-        {if !empty($config['member']['whitelist_email_host'])}
+        {if !empty($config['member.whitelist_email_host'])}
             <p>{$lang['msg']['use_email_whitelist']|noescape}</p>
             <ul class="list">
-                <li n:foreach="$config['member']['whitelist_email_host'] as $wl">{$wl}</li>
+                <li n:foreach="$config['member.whitelist_email_host'] as $wl">{$wl}</li>
             </ul>
         {/if}
         <div class="form-sheet form-action">

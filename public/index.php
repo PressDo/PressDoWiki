@@ -11,7 +11,7 @@ require 'classLoader.php';
 
 use PressDo\app\Helpers\{Config,Router};
 
-date_default_timezone_set(Config::get('timezone'));
+date_default_timezone_set(Config::get('wiki.timezone'));
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 if(!session_id())
@@ -43,6 +43,11 @@ switch ($router->uri_data->page) {
 // initial
 $wiki = (new \ReflectionClass('PressDo\app\Controllers\Pages\\'.$fnClassNm))->newInstance();
 $wiki->uri_data = $router->uri_data;
+
+header("Content-Security-Policy: default-src 'self'; img-src 'self' *.theseed.io secure.gravatar.com www.google-analytics.com 
+http://tn-skr2.smilevideo.jp data:; media-src *; child-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline' www.google.com www.gstatic.com 
+www.googletagmanager.com www.google-analytics.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; connect-src 'self'; font-src 'self' 
+fonts.gstatic.com data:;");
 
 if(!empty($_SESSION))
     $wiki->session = $_SESSION;

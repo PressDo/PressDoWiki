@@ -55,7 +55,7 @@ class RecentChanges extends Controller
                 'acl' => $f['acl_changed'],
                 'from' => $f['moved_from'],
                 'to' => $f['moved_to'],
-                'ForceShowNameSpace' => Config::get('ForceShowNameSpace'),
+                'ForceShowNameSpace' => Config::get('wiki.force_show_namespace'),
                 'user_mode' => []
             ];
             array_push($resultSet, $rs);

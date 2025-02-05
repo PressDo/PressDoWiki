@@ -21,16 +21,16 @@ class Controller
         ];
 
         $this->api_config = [
-            'force_recaptcha_public' => Config::get('force_recaptcha_public'),
-            'recaptcha_public' => Config::get('recaptcha_public'),
-            'edit_agree_text' => Config::get('edit_agree_text'),
-            'frontpage' => Config::get('frontpage'),
-            'sitename' => Config::get('sitename'),
-            'copyright_url' => Config::get('copyright_url'),
-            'cannonical_url' => Config::get('cannonical_url'),
-            'copyright_text' => Config::get('copyright_text'),
-            'site_notice' => Config::get('site_notice'),
-            'logo_url' => Config::get('logo_url')
+            'force_recaptcha_public' => Config::get('wiki.force_recaptcha_public'),
+            'recaptcha_public' => Config::get('wiki.recaptcha_public'),
+            'editagree_text' => Config::get('wiki.editagree_text'),
+            'front_page' => Config::get('wiki.front_page'),
+            'site_name' => Config::get('wiki.site_name'),
+            'copyright_url' => Config::get('wiki.copyright_url'),
+            'cannonical_url' => Config::get('wiki.canonical_url'),
+            'copyright_text' => Config::get('wiki.copyright_text'),
+            'sitenotice' => Config::get('wiki.sitenotice'),
+            'logo_url' => Config::get('wiki.logo_url')
         ];
     }
 
@@ -122,7 +122,7 @@ class Controller
      */
     public static function makeTitle(string $namespace, string $title): string
     {
-        if ($namespace == Namespaces::DOCUMENT && Config::get('wiki', 'force_show_namespace') === false)
+        if ($namespace == Namespaces::DOCUMENT && Config::get('wiki.force_show_namespace') === false)
             return $title;
         else 
             return $namespace.':'.$title;
@@ -130,19 +130,19 @@ class Controller
 
     protected static function sendMail(string $recipient, string $title, string $content): bool
     {
-        $mail = Config::get('mail');
+        $mail = Config::get('mail.smtp_password');
         $mailer = new Mailer([
-            'host' => $mail['smtp_host'],
-            'username' => $mail['smtp_username'],
-            'password' => $mail['smtp_password'],
-            'port' => $mail['smtp_port'],
-            'encryption' => strtolower($mail['smtp_protocol'])
+            'host' => Config::get('mail.smtp_host'),
+            'username' => Config::get('mail.smtp_username'),
+            'password' => Config::get('mail.smtp_password'),
+            'port' => Config::get('mail.smtp_port'),
+            'encryption' => strtolower(Config::get('mail.smtp_protocol'))
         ]);
         $result = $mailer
             ->setSubject($title)
             ->setBody($content)
             ->setTo([$recipient])
-            ->setFrom([$mail['smtp_address'] => Config::get('wiki', 'site_name_en')])
+            ->setFrom([$mail['smtp_address'] => Config::get('wiki.site_name_en')])
             ->send();
 
         return $result;
@@ -188,5 +188,39 @@ class Controller
             $s .= $c[rand(0, $cl-1)];
         
         return $s;
+    }
+
+    protected static function utf8_ord($c)
+    {
+        $len = strlen($c);
+        if($len <= 0) return false;
+        $h = ord($c[0]);
+        if ($h <= 0x7F) return $h;
+        if ($h < 0xC2) return false;
+        if ($h <= 0xDF && $len>1) return ($h & 0x1F) <<  6 | (ord($c[1]) & 0x3F);
+        if ($h <= 0xEF && $len>2) return ($h & 0x0F) << 12 | (ord($c[1]) & 0x3F) <<  6 | (ord($c[2]) & 0x3F);		  
+        if ($h <= 0xF4 && $len>3) return ($h & 0x0F) << 18 | (ord($c[1]) & 0x3F) << 12 | (ord($c[2]) & 0x3F) << 6 | (ord($c[3]) & 0x3F);
+        return false;
+    }
+    
+    protected static function is_hangeul(string $c)
+    {
+        $o = self::utf8_ord($c);
+        if( 0x1100<=$o && $o<=0x11FF ) return true;
+        if( 0x3130<=$o && $o<=0x318F ) return true;
+        if( 0xAC00<=$o && $o<=0xD7A3 ) return true;
+        return false;
+    }
+
+    protected static function ko_head(string $char)
+    {
+        $heads = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+        $code = self::utf8_ord($char) - 44032;
+        if ($code > -1 && $code < 11172) {
+            $result = $heads[$code / 588];
+        }elseif(in_array($char, $heads)) {
+            $result = $char;
+        }
+        return $result;
     }
 }

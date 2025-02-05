@@ -56,7 +56,7 @@ class BlockHistory extends Controller
             }
 
             if ($d['target_aclgroup']) {
-                $aclgroup = $aclgroups[$d['target_aclgroup']][0]['name'];
+                $aclgroup = $aclgroups[$d['target_aclgroup']];
             }
             
             array_push($dataset, [

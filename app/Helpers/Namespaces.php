@@ -9,6 +9,8 @@ class Namespaces
 
     public const USER = '사용자';
 
+    public const CATEGORY = '분류';
+
     protected static array $Namespaces = [];
 
     /**

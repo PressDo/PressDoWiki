@@ -23,7 +23,7 @@
                 <div class="recent-td">{$lang['recent']['ago']}</div>
             </div>
             {foreach $wiki['page']['data']['content'] as $he}
-                {if $he['document']['namespace'] == '문서' && $config['force_show_namespace'] === false}
+                {if $he['document']['namespace'] == '문서' && $config['wiki.force_show_namespace'] === false}
                     {var $ns = ''}
                 {else}
                     {var $ns = $he['document']['namespace'].':'}

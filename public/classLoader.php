@@ -12,7 +12,7 @@ function loadClass($page, $menu) {
     switch ($page) {
         case 'wiki':
             require $DIR.'Star.php';
-            require $HDIR.Config::get('mark').'/Loader.php';
+            require $HDIR.Config::get('wiki.mark').'/Loader.php';
             // no break
         case 'backlink':
             require $DIR.'Document.php';
@@ -53,8 +53,10 @@ function loadClass($page, $menu) {
             require $DIR.'Document.php';
             require $DIR.'Thread.php';
         case 'api':
-            if ($menu == 'preview' || $page == 'thread')
-                require $HDIR.Config::get('mark').'/Loader.php';
+            if ($menu == 'preview' || $page == 'thread') {
+                require $HDIR.Config::get('wiki.mark').'/Loader.php';
+                require $DIR.'Document.php';
+            }
             break;
         case 'member':
             if ($menu == 'unstar' || $menu == 'star') {
@@ -63,6 +65,7 @@ function loadClass($page, $menu) {
             }
             // no break 
         case 'License':
+        case 'aclgroup':
             require $DIR.'Member.php';
             break;
     }

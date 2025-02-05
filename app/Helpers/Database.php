@@ -11,7 +11,7 @@ class Database
     /**
      * get database instance
      */
-    public static function getInstance() : PDO
+    public static function getInstance(): PDO
     {
         if(!static::$instance) {
             static::$instance = self::init();
@@ -25,38 +25,37 @@ class Database
     private static function init()
     {
         if(!static::$instance) {
-            $db = Config::get('database');
-            switch($db['type']){
+            switch(DefaultConfig::get('database.type')){
                 case 'mysql':
                     // no break
                 case 'pgsql':
                     // no break
                 case 'cubrid':
-                    $dsn = $db['type'].':dbname='.$db['name'].';host='.$db['host'].';port='.$db['port'].';charset:utf8';
+                    $dsn = DefaultConfig::get('database.type').':dbname='.DefaultConfig::get('database.name').';host='.DefaultConfig::get('database.host').';port='.DefaultConfig::get('database.port').';charset:utf8';
                     break;
                 case 'oracle':
-                    $dsn = 'oci:dbname='.$db['host'].'/'.$db['name'].';charset=utf8';
+                    $dsn = 'oci:dbname='.DefaultConfig::get('database.host').'/'.DefaultConfig::get('database.name').';charset=utf8';
                     break;
                 case 'mssql':
-                    $dsn = 'dblib:dbname='.$db['name'].';host='.$db['host'].';port='.$db['port'].';charset:utf8';
+                    $dsn = 'dblib:dbname='.DefaultConfig::get('database.name').';host='.DefaultConfig::get('database.host').';port='.DefaultConfig::get('database.port').';charset:utf8';
                     break;
                 case 'firebird':
-                    $dsn = 'firebird:dbname='.$db['host'].':'.$db['name'].';charset:utf8';
+                    $dsn = 'firebird:dbname='.DefaultConfig::get('database.host').':'.DefaultConfig::get('database.name').';charset:utf8';
                     break;
                 case 'db2':
-                    $dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE='.$db['name'].';HOSTNAME='.$db['host'].';PORT='.$db['port'].';PROTOCOL=TCPIP;UID='.$db['user'].';PWD='.$db['password'];
+                    $dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE='.DefaultConfig::get('database.name').';HOSTNAME='.DefaultConfig::get('database.host').';PORT='.DefaultConfig::get('database.port').';PROTOCOL=TCPIP;UID='.DefaultConfig::get('database.user').';PWD='.DefaultConfig::get('database.password');
                     break;
                 case 'sqlite':
-                    $dsn = 'sqlite:'.$db['name'];
+                    $dsn = 'sqlite:'.DefaultConfig::get('database.name');
                     break;
                 default:
                     break;
             }
             
-            static::$instance = $db['type'] !== 'db2' ? new PDO($dsn, $db['user'], $db['password']) : new PDO($dsn, '', '');
+            static::$instance = DefaultConfig::get('database.type') !== 'db2' ? new PDO($dsn, DefaultConfig::get('database.user'), DefaultConfig::get('database.password')) : new PDO($dsn, '', '');
             
-            if(!static::$instance){
-                throw new ErrorException('ERROR_DBCONNECT');
+            if (!static::$instance) {
+                throw new ErrorException('Cannot connect to database.');
             }
         }
         return static::$instance;

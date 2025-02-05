@@ -55,7 +55,7 @@
                 <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
                 <input data-pressdo-edit-summary type="text" name="summary" id="logInput">
             </div>
-            <span>{stripslashes($config['EditAgreeText'])}</span>
+            <span>{stripslashes($config['wiki.editagree_text'])}</span>
             {if !$wiki['session']['member']['username']}
                 <br><p data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_edit']|replace '@1@', $ip}</p>
             {/if}

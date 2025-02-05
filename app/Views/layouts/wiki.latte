@@ -44,3 +44,24 @@
         <div class="popper__inner"></div>
     </div>
 </div>
+<div class="subcategories" n:foreach="$wiki['page']['data']['category_documents'] as $ns => $cat">
+    <h2>{$ns == '분류' ? $lang['category']['subcategories'] : ($lang['category']['sub_something']|replace: ['@1@' => $wiki['page']['data']['document']['title'], '@2@' => $ns])}</h2>
+    <div>
+        <div>{$lang['category']['count']|replace: '@1@', $cat['count']}</div>
+        {if $cat['count'] > 50}
+            {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
+        {/if}
+        <div n:foreach="$cat as $key => $val">
+            {continueIf $key == 'count'}
+            <h3>{$key}</h3>
+            <ul class="lists" n:inner-foreach="$val as $v">
+                {if $v['force_show_namespace'] || $v['document']['namespace'] !== '문서'}
+                    {var $ns = $v['document']['namespace'].':'}
+                {else}
+                    {var $ns = ''}
+                {/if}{$v['title']}
+                <li class="backlinks"><a href="/w/{$ns.$v['document']['title']}">{$ns.$v['document']['title']}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

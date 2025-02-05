@@ -1,0 +1,25 @@
+<div class="wiki-content">
+    <div n:if="$wiki['page']['data']['errbox']" class="a e">
+        <strong>{$lang['msg']['error']}</strong>
+        <span>{$lang['msg'][$wiki['page']['data']['errbox']]}</span>
+    </div>
+    <form method="GET" action="{$request_uri}">
+        <div class="form c">
+            <label for="usernameInput">Username</label>
+            <input class="pressdo-form" data-pressdo-acl-span type="text" id="usernameInput" name="username">
+        </div>
+        <div class="btn-area">
+            <button class="btn-blue pressdo-btn" type="submit">{$lang['confirm']}</button>
+        </div>
+    </form>
+    <form n:if="$wiki['page']['data']['username']" method="POST" action="{$request_uri}">
+        <h3>{$wiki['page']['data']['username']}</h3>
+        <div n:foreach="$wiki['page']['data']['perms'] as $p" class="c form">
+            <label for="{$p}">{$p}</label>
+            <input type="checkbox" class="pressdo-form" id="{$p}" name="permissions[]" value="{$p}" n:attr="checked: in_array($p, $wiki['page']['data']['have'])">
+        </div>
+        <div class="btn-area">
+            <button class="btn-blue pressdo-btn" type="submit">{$lang['confirm']}</button>
+        </div>
+    </form>
+</div>

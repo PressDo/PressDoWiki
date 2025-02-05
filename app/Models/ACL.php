@@ -13,20 +13,21 @@ class ACL extends \PressDo\app\Core\Model
         $db = self::db();
 
         try {
-            $a = $db->query("SELECT `groupid`, `name` FROM aclgroups");
+            $a = $db->query("SELECT `groupid`, `name` FROM aclgroups ORDER BY groupid");
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ACLGroup 목록 조회 중 오류 발생');
         }
-        return $a->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_ASSOC);
+        
+        return $a->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 
     /**
      * Get perms of user account. (all permissions)
      *
      * @param array $member      member object
-     * @param array $perms      permission array
+     * @param array &$perms      permission array
      * @param $document         document uuid
-     * @return array            list of perms
+     * @return void            list of perms
      */
     public static function getAccountPerms(array $member, array &$perms, $document=null): void
     {
@@ -81,7 +82,7 @@ class ACL extends \PressDo\app\Core\Model
     {
         $db = self::db();
 
-        $sql = "SELECT target_aclgroup,target_id FROM BlockHistory WHERE target_aclgroup IS NOT NULL AND (`until`>=? OR `until`=0) AND ";
+        $sql = "SELECT target_aclgroup FROM BlockHistory WHERE target_aclgroup IS NOT NULL AND (`until`>=? OR `until`=0) AND ";
         if ($session['member']) {
             $sql .= "target_member=?";
             $uparam = self::uuid2bin($session['member']['uuid']);
@@ -89,8 +90,8 @@ class ACL extends \PressDo\app\Core\Model
             $sql .= " (CONV(HEX(?), 16, 10) & ~((1 << (32 - `mask`)) - 1)) = (CONV(HEX(target_ip), 16, 10) & ~((1 << (32 - `mask`)) - 1))";
             $uparam = inet_pton($session['ip']);
         }
-        // target_id가 2개면 add와 remove가 하나씩 있음
-        $sql .= " GROUP BY target_id HAVING COUNT(*) = 1";
+        // id가 2개면 add와 remove가 하나씩 있음
+        $sql .= " GROUP BY id HAVING COUNT(*) = 1";
 
         $a = $db->prepare($sql);
 
@@ -183,8 +184,8 @@ class ACL extends \PressDo\app\Core\Model
             $d = $db->prepare("INSERT INTO `acl_document` (uuid, `condition`,`access`,`action`,`until`) VALUES (?,?,?,?,?)");
             $d->execute([$uuid, $acldata['condition'], $acldata['access'], $acldata['action'], $acldata['until']]);
             $h_uuid = self::uuid2bin(self::generateUuid());
-            $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `datetime`, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
-            $d->execute([$h_uuid, $uuid, $editdata['baserev'], time(), $cont_m, $cont_i, $editdata['acl_changed']]);
+            $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
+            $d->execute([$h_uuid, $uuid, $editdata['baserev'], $cont_m, $cont_i, $editdata['acl_changed']]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 ACL 추가 중 오류 발생');
         }
@@ -240,8 +241,8 @@ class ACL extends \PressDo\app\Core\Model
         try {
             $db->query("DELETE FROM acl_document WHERE id=$id");
             $h_uuid = self::uuid2bin(self::generateUuid());
-            $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `datetime`, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
-            $d->execute([$h_uuid, self::uuid2bin($editdata['uuid']), $editdata['baserev'], time(), $cont_m, $cont_i, $editdata['acl_changed']]);
+            $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
+            $d->execute([$h_uuid, self::uuid2bin($editdata['uuid']), $editdata['baserev'], $cont_m, $cont_i, $editdata['acl_changed']]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 ACL 삭제 중 오류 발생');
         }
@@ -255,5 +256,153 @@ class ACL extends \PressDo\app\Core\Model
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 이름공간 ACL 삭제 중 오류 발생');
         }
+    }
+
+    public static function getAclgroupMembers(int $id, ?int $from, ?int $until): array
+    {
+        $db = self::db();
+        if ($from !== null)
+            $scope = 'AND id <= '.$from;
+        elseif ($until !== null)
+            $scope = 'AND id >= '.$until;
+        else
+            $scope = '';
+
+        try {
+            $d = $db->prepare("SELECT id, target_ip, mask, target_member, comment, `datetime`, until 
+            FROM BlockHistory WHERE target_aclgroup=? AND (`until`>=? OR `until`=0) $scope GROUP BY id HAVING COUNT(*) < 2 ORDER BY `datetime` DESC LIMIT 50");
+            $d->execute([$id, time()]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹 구성원 조회 중 오류 발생');
+        }
+
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getAclgroupMinMaxIdx(int $id): array
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT MAX(b.id) AS max, MIN(b.id) AS min FROM BlockHistory b WHERE target_aclgroup=? AND (`until`>=? OR `until`=0) GROUP BY b.id HAVING COUNT(*) < 2");
+            $d->execute([$id, time()]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹 인덱스 조회 중 오류 발생');
+        }
+        
+        return $d->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function addtoGroup(?string $executor_m, ?string $executor_i, ?string $target_i, ?string $target_m, int $target_group, string $comment, int $until): void
+    {
+        $db = self::db();
+        if (!empty($target_m)) {
+            $target_m = self::uuid2bin($target_m);
+            $ip = $mask = null;
+        } elseif (!empty($target_i)) {
+            $target_m = null;
+            [$ip, $mask] = explode('/', $target_i);
+            $ip = inet_pton($ip);
+        }
+
+        if (!empty($executor_m)) {
+            $executor_m = self::uuid2bin($executor_m);
+            $executor_i = null;
+        } elseif (!empty($executor_i)) {
+            $executor_i = self::uuid2bin($executor_i);
+            $executor_m = null;
+        }
+
+        try {
+            $d = $db->prepare("INSERT INTO BlockHistory (executor_m, executor_i, target_ip, mask, target_member, target_aclgroup, comment, until, `action`)
+            VALUES(?,?,?,?,?,?,?,?,'aclgroup_add')");
+            $d->execute([$executor_m, $executor_i, $ip, $mask, $target_m, $target_group, $comment, $until]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹에 추가 중 오류 발생');
+        }
+    }
+
+    public static function groupIdLookup(int $id): ?int
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT target_aclgroup FROM BlockHistory WHERE id=? AND (`until`>=? OR `until`=0) GROUP BY id HAVING COUNT(*) < 2");
+            $d->execute([$id, time()]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹 ID 조회 중 오류 발생');
+        }
+        
+        return $d->fetch(PDO::FETCH_ASSOC)['target_aclgroup'];
+    }
+
+    public static function removefromGroup(?string $executor_m, ?string $executor_i, int $id, string $comment): void
+    {
+        $db = self::db();
+
+        if (!empty($executor_m)) {
+            $executor_m = self::uuid2bin($executor_m);
+            $executor_i = null;
+        } elseif (!empty($executor_i)) {
+            $executor_i = self::uuid2bin($executor_i);
+            $executor_m = null;
+        }
+
+        try {
+            $d = $db->prepare("INSERT INTO BlockHistory (id, executor_m, executor_i, target_ip, mask, target_member, target_aclgroup, comment, `action`, until)
+            SELECT ?,?,?,target_ip,mask,target_member,target_aclgroup,?,'aclgroup_remove',0 FROM BlockHistory WHERE id=?");
+            $d->execute([$id, $executor_m, $executor_i, $comment, $id]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹에서 제거 중 오류 발생');
+        }
+    }
+
+    public static function addACLGroup(string $name): bool
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("INSERT INTO aclgroups (`name`) VALUES (?)");
+            $d->execute([$name]);
+        } catch (PDOException $err) {
+            if ($err->getCode() == '23000') // duplicate input
+                return false;
+            else
+                throw new ErrorException($err->getMessage().': ACL그룹 생성 중 오류 발생');
+        }
+        return true;
+    }
+
+    public static function deleteACLGroup(string $name): void
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("DELETE FROM aclgroups WHERE `name`=?");
+            $d->execute([$name]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹 생성 중 오류 발생');
+        }
+    }
+
+    public static function groupAddDuplicate(?string $uuid, ?string $cidr, int $groupid): bool
+    {
+        $db = self::db();
+
+        if ($uuid !== null) {
+            $uuid = self::uuid2bin($uuid);
+            $sql = "SELECT 1 FROM BlockHistory WHERE target_member=? AND target_aclgroup=? AND (`until`>=? OR `until`=0) GROUP BY id HAVING COUNT(*) < 2";
+            $param = [$uuid, $groupid, time()];
+        } elseif ($cidr !== null) {
+            [$ip, $mask] = explode('/', $cidr);
+            $ip = inet_pton($ip);
+            $sql = "SELECT 1 FROM BlockHistory WHERE target_ip=? AND mask=? AND target_aclgroup=? AND (`until`>=? OR `until`=0) GROUP BY id HAVING COUNT(*) < 2";
+            $param = [$ip, $mask, $groupid, time()];
+        }
+
+        try {
+            $d = $db->prepare($sql);
+            $d->execute($param);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': ACL그룹 중복 조회 중 오류 발생');
+        }
+        
+        return $d->rowCount() > 0;
     }
 }

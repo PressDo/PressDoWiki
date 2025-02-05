@@ -29,7 +29,7 @@ class Backlink extends \PressDo\app\Core\Model
             $typstr = '';
 
         try {
-            $c = $db->prepare("SELECT document.title as `title`, document.namespace as `namespace`, links.type as `type` FROM `links`,`document` WHERE links.from_uuid = document.uuid AND links.namespace=? AND links.title=? AND document.namespace=?".$typstr);
+            $c = $db->prepare("SELECT document.title as `title`, document.namespace as `namespace`, links.type as `type`, COUNT(*) OVER() AS total_count FROM `links`,`document` WHERE links.from_uuid = document.uuid AND links.namespace=? AND links.title=? AND document.namespace=?".$typstr." LIMIT 100");
             $c->execute($params);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 역링크 조회 중 오류 발생');
@@ -80,23 +80,22 @@ class Backlink extends \PressDo\app\Core\Model
         }else{
             foreach($links['link'] as $l){
                 array_push($addvals, '(?,?,?,?)');
-                list($namespace, $title) = Controller::parseTitle($l);
+                [$namespace, $title] = Controller::parseTitle($l);
                 array_push($parvals, $namespace, $title, $uuid, 'link');
             }
             foreach($links['file'] as $l){
                 array_push($addvals, '(?,?,?,?)');
-                list($namespace, $title) = Controller::parseTitle($l);
+                [$namespace, $title] = Controller::parseTitle($l);
                 array_push($parvals, $namespace, $title, $uuid, 'file');
             }
             foreach($links['include'] as $l){
                 array_push($addvals, '(?,?,?,?)');
-                list($namespace, $title) = Controller::parseTitle($l);
+                [$namespace, $title] = Controller::parseTitle($l);
                 array_push($parvals, $namespace, $title, $uuid, 'include');
             }
             foreach(array_keys($links['category']) as $l){
                 array_push($addvals, '(?,?,?,?)');
-                list($namespace, $title) = Controller::parseTitle($l);
-                array_push($parvals, $namespace, $title, $uuid, 'category');
+                array_push($parvals, '분류', $l, $uuid, 'category');
             }
         }
         try {

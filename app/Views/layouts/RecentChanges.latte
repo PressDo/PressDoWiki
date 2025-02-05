@@ -24,7 +24,7 @@
                 {var $diff = 'a'}
                 {var $disdiff = false}
 
-                {if $he['document']['namespace'] == '문서' && $config['wiki']['force_show_namespace'] === false}
+                {if $he['document']['namespace'] == '문서' && $config['wiki.force_show_namespace'] === false}
                     {var $ns = ''}
                 {else}
                     {var $ns = $he['document']['namespace'].':'}

@@ -71,9 +71,9 @@
         {/if}
         {if !$wiki['page']['data']['state']}
         <h3>{$lang['thread']['create_thread']}</h3>
-        <div n:if="$uri_data['title'] == $config['frontpage']" class="a">
+        <div n:if="$uri_data['title'] == $config['wiki.front_page']" class="a">
             <strong>{$lang['msg']['warning']}</strong>
-            {=$lang['msg']['discuss_in_frontpage']|replace: '@1@', $config['frontpage']}
+            {=$lang['msg']['discuss_in_frontpage']|replace: '@1@', $config['wiki.front_page']}
         </div>
         <form method="POST" action="{$request_uri|noescape}">
             <div data-pressdo-loginform class="c">

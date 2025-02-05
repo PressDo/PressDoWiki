@@ -12,30 +12,21 @@
     </select>
     <button type="submit" class="pressdo-btn btn-blue">제출</button>
 </form>
-<div class="bt-g page-btn-area">
-    {if !$wiki['page']['data']['prev_ver']}
-        {var $ptag = 'span'}
-        {var $phref = null}
-    {else}
-        {var $ptag = null}
-        {var $phref = 'href="/history/'.$uri_data['title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
-    {/if}
-    <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
-        <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
-        <span>{$lang['history']['prev']}</span>
-    </a>
-    {if !$wiki['page']['data']['next_ver']}
-        {var $ntag = 'span'}
-        {var $nhref = null}
-    {else}
-        {var $ntag = null}
-        {var $nhref = 'href="/history/'.$uri_data['title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
-    {/if}
-    <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
-        <span>{$lang['history']['next']}</span>
-        <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg>
-    </a>
-</div>
+{if !$wiki['page']['data']['prev_ver']}
+    {var $ptag = 'span'}
+    {var $phref = null}
+{else}
+    {var $ptag = null}
+    {var $phref = 'href="/history/'.$uri_data['title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
+{/if}
+{if !$wiki['page']['data']['next_ver']}
+    {var $ntag = 'span'}
+    {var $nhref = null}
+{else}
+    {var $ntag = null}
+    {var $nhref = 'href="/history/'.$uri_data['title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
+{/if}
+{include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
 <div>
     {if empty($wiki['page']['data']['backlink'])}
         {$lang['msg']['no_backlinks']}
@@ -52,27 +43,4 @@
         </ul>
     </div>
 </div>
-<div class="bt-g page-btn-area">
-    {if !$wiki['page']['data']['prev_ver']}
-        {var $ptag = 'span'}
-        {var $phref = null}
-    {else}
-        {var $ptag = null}
-        {var $phref = 'href="/history/'.$uri_data['title'].'?until='.$wiki['page']['data']['prev_ver'].'"'}
-    {/if}
-    <a n:tag="$ptag" n:attr="href: $phref, disabled: ($ptag)" class="pressdo-btn btn-page" role="button">
-        <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path></svg>
-        <span>{$lang['history']['prev']}</span>
-    </a>
-    {if !$wiki['page']['data']['next_ver']}
-        {var $ntag = 'span'}
-        {var $nhref = null}
-    {else}
-        {var $ntag = null}
-        {var $nhref = 'href="/history/'.$uri_data['title'].'?from='.$wiki['page']['data']['next_ver'].'"'}
-    {/if}
-    <a n:tag="$ntag" n:attr="href: $nhref, disabled: ($ntag)" class="pressdo-btn btn-page" role="button">
-        <span>{$lang['history']['next']}</span>
-        <svg data-v-3385c7ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg>
-    </a>
-</div>
+{include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}

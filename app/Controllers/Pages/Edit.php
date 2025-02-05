@@ -114,7 +114,7 @@ class Edit extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
-                    'ForceShowNameSpace' => Config::get('ForceShowNameSpace')
+                    'ForceShowNameSpace' => Config::get('wiki.force_show_namespace')
                 ],
                 'user' => ($namespace == '사용자'),
                 'token' => self::rand(64)

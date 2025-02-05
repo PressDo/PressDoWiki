@@ -4,7 +4,7 @@ namespace PressDo\app\Controllers\Pages;
 use PressDo\app\Models\{Backlink,Document,Star};
 use PressDo\app\Core\Controller;
 use PressDo\app\Controllers\ACL;
-use PressDo\app\Helpers\{Namespaces,Languages,Database};
+use PressDo\app\Helpers\{Namespaces,Languages,Database,Config};
 
 class Wiki extends Controller
 {
@@ -81,6 +81,36 @@ class Wiki extends Controller
             if ($rev_uuid !== null)
                 $page['subtitle'] = ($rev_uuid !== null)
                     ? str_replace('@1@', $doc['rev'], Languages::get('document', 'rev')) : '';
+            
+            $cat_documents = [];
+            if ($namespace == '분류') {
+                foreach (Namespaces::all() as $n) {
+                    $bl = Backlink::get($namespace, $title, $n);
+
+                    if (!empty($bl)) {
+                        ksort($bl);
+                        foreach ($bl as $t => $b) {
+                            // backlink 정렬
+                            $firstchar = iconv_substr($t, 0, 1);
+                            $head = self::is_hangeul($firstchar) ? self::ko_head($firstchar) : $firstchar;
+    
+                            if (!isset($cat_documents[$n][$head]))
+                                $cat_documents[$n][$head] = [];
+
+                            if (!isset($cat_documents[$n]['count']))
+                                $cat_documents[$n]['count'] = strval($b[0]['total_count']);
+                            
+                            array_push($cat_documents[$n][$head], [
+                                'document' => [
+                                    'namespace' => $b[0]['namespace'], 
+                                    'title' => $t, 
+                                    'force_show_namespace' => Config::get('wiki.force_show_namespace')], 
+                                    'type' => $b[0]['type']
+                            ]);
+                        }
+                    }
+                }
+            }
 
             $data = [
                 'user' => $namespace == Namespaces::USER,
@@ -90,11 +120,12 @@ class Wiki extends Controller
                     'content' => htmlspecialchars($content['html']),
                     'categories' => $content['links']['category']
                 ],
+                'category_documents' => $cat_documents,
                 'starred' => $this->session['member'] ? Star::ifStarred($uuid,$this->session['member']['uuid']) : false,
                 'star_count' => Star::count($uuid),
                 'discuss_progress' => isset($discussions[0]),
                 'date' => $doc['datetime'],
-                'rev' => $doc['rev'],
+                //'rev' => $doc['rev'],
                 'editable' => $editable
             ];
             
