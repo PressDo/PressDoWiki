@@ -55,6 +55,8 @@ class Controller
     {
         $View = new View();
         $View->renderInit();
+
+        $license = $this->dataset['page']['view_name'] == 'License' ? json_decode(file_get_contents('../config/license.json'), true) : null;
         
         $paramSet = [
             'wiki' => $this->dataset, 
@@ -66,6 +68,7 @@ class Controller
             'uri_data' => (array) $this->uri_data,
             'request_uri' => $_SERVER['REQUEST_URI'],
             'post' => $_POST,
+            'license' => $license
         ];
 
         if (isset($this->error))

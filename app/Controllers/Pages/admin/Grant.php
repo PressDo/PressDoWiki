@@ -1,9 +1,8 @@
 <?php
 namespace PressDo\app\Controllers\Pages\admin;
 
-use PressDo\app\Models\{Document,Member,ACL};
+use PressDo\app\Models\{Member,ACL};
 use PressDo\app\Core\Controller;
-use PressDo\app\Controllers\ACL as WikiACL;
 use PressDo\app\Helpers\{Languages,Config};
 
 class Grant extends Controller
@@ -77,7 +76,7 @@ class Grant extends Controller
             $minus = array_map(fn($a) => '-'.$a, array_diff($page['data']['have'], $ch_perms));
             $plus = array_map(fn($a) => '+'.$a, array_diff($ch_perms, $page['data']['have']));
             $granted = implode(' ',$plus + $minus);
-            Member::grantPermissions($this->session['member']['username'], $m['uuid'], $ch_perms, $granted);
+            Member::grantPermissions($this->session['member']['uuid'], $m['uuid'], $ch_perms, $granted);
             Header('Location: '.$_SERVER['REQUEST_URI']);
         }
         return $page;

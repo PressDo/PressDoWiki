@@ -16,6 +16,7 @@
     <script src="/src/script/jquery-2.2.4.min.js"></script>
     <script src="/src/script/tether.min.js"></script>
     <script src="/src/script/bootstrap.min.js"></script>
+    <script defer n:if="$wiki['page']['view_name'] == 'mypage' || $wiki['page']['data']['use_webauthn']" src="/src/script/webauthn.js"></script>
     <title> {$wiki['page']['title']} - {$config['wiki.site_name']} </title>
     {if $wiki['page']['view_name'] == 'wiki'}
         <link rel="stylesheet" href="/src/style/document.css">

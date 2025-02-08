@@ -34,58 +34,50 @@ class Backlink extends Controller
             'customData' => []
         ];
 
-        if ($uuid !== false) {
-            $page['subtitle'] .= Languages::get('page', 'backlink');
-            if (isset($_GET['flag']) && in_array(intval($_GET['flag']), [0, 1, 2, 4, 8])) {
-                $flag = [
-                    0 => null,
-                    1 => 'link',
-                    2 => 'file',
-                    4 => 'include',
-                    8 => 'redirect'
-                ];
-                $type = $flag[intval($_GET['flag'])];
-            } else
-                $type = null;
-
-            $bl_count = Models::count($namespace, $title);
-            
-            foreach ($bl_count as $b)
-                array_push($page['data']['backlink_count'], ['namespace' => $b['namespace'], 'count' => $b['cnt']]);
-            
-
-            if (isset($_GET['namespace']) && in_array($_GET['namespace'], Namespaces::all()))
-                $target_ns = $_GET['namespace'];
-            elseif (count($bl_count) > 0)
-                $target_ns = $bl_count[0]['namespace'];
-            
-            // skip this if there's no backlink
-            if (isset($target_ns)) {
-                $backlinks = Models::get($namespace, $title, $target_ns, $type);
-                ksort($backlinks);
-                foreach ($backlinks as $title => $b) {
-                    // backlink 정렬
-                    $firstchar = iconv_substr($title, 0, 1);
-                    $head = self::is_hangeul($firstchar) ? self::ko_head($firstchar) : $firstchar;
-
-                    if(!isset($page['data']['backlink'][$head]))
-                        $page['data']['backlink'][$head] = [];
-                    
-                    array_push($page['data']['backlink'][$head], [
-                        'document' => [
-                            'namespace' => $b[0]['namespace'], 
-                            'title' => $title, 
-                            'force_show_namespace' => Config::get('wiki.force_show_namespace')], 
-                            'type' => $b[0]['type']
-                    ]);
-                }
-            }
-        }else{
-            $page = [
-                'view_name' => 'error',
-                'title' => Languages::get('page')['error'],
-                'data' => ['code' => 'no_such_document']
+        $page['subtitle'] .= Languages::get('page', 'backlink');
+        if (isset($_GET['flag']) && in_array(intval($_GET['flag']), [0, 1, 2, 4, 8])) {
+            $flag = [
+                0 => null,
+                1 => 'link',
+                2 => 'file',
+                4 => 'include',
+                8 => 'redirect'
             ];
+            $type = $flag[intval($_GET['flag'])];
+        } else
+            $type = null;
+
+        $bl_count = Models::count($namespace, $title);
+        
+        foreach ($bl_count as $b)
+            array_push($page['data']['backlink_count'], ['namespace' => $b['namespace'], 'count' => $b['cnt']]);
+        
+
+        if (isset($_GET['namespace']) && in_array($_GET['namespace'], Namespaces::all()))
+            $target_ns = $_GET['namespace'];
+        elseif (count($bl_count) > 0)
+            $target_ns = $bl_count[0]['namespace'];
+        
+        // skip this if there's no backlink
+        if (isset($target_ns)) {
+            $backlinks = Models::get($namespace, $title, $target_ns, $type);
+            ksort($backlinks);
+            foreach ($backlinks as $title => $b) {
+                // backlink 정렬
+                $firstchar = iconv_substr($title, 0, 1);
+                $head = self::is_hangeul($firstchar) ? self::ko_head($firstchar) : $firstchar;
+
+                if(!isset($page['data']['backlink'][$head]))
+                    $page['data']['backlink'][$head] = [];
+                
+                array_push($page['data']['backlink'][$head], [
+                    'document' => [
+                        'namespace' => $b[0]['namespace'], 
+                        'title' => $title, 
+                        'force_show_namespace' => Config::get('wiki.force_show_namespace')], 
+                        'type' => $b[0]['type']
+                ]);
+            }
         }
         return $page;
     }

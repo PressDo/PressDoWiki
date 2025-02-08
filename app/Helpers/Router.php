@@ -27,9 +27,9 @@ class Router
             $uri_data->title = urldecode(implode('/', array_slice($uriset, 2)));
             $uri_data->titleurl = implode('/', array_slice($uriset, 2));
         } else {
-            $uri_data->menu = $uriset[2];
-            $uri_data->title = urldecode(implode('/', array_slice($uriset, 3)));
-            $uri_data->titleurl = implode('/', array_slice($uriset, 3));
+            $uri_data->menu = implode('/', array_slice($uriset, 2));
+            $uri_data->title = '';
+            $uri_data->titleurl = '';
         }
 
         $this->uri_data = $uri_data;

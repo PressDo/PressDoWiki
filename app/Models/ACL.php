@@ -87,7 +87,7 @@ class ACL extends \PressDo\app\Core\Model
             $sql .= "target_member=?";
             $uparam = self::uuid2bin($session['member']['uuid']);
         } else {
-            $sql .= " (CONV(HEX(?), 16, 10) & ~((1 << (32 - `mask`)) - 1)) = (CONV(HEX(target_ip), 16, 10) & ~((1 << (32 - `mask`)) - 1))";
+            $sql .= " (? & mask_to_bin(mask)) = (target_ip & mask_to_bin(mask))";
             $uparam = inet_pton($session['ip']);
         }
         // id가 2개면 add와 remove가 하나씩 있음
@@ -98,6 +98,8 @@ class ACL extends \PressDo\app\Core\Model
         try {
             $a->execute([$_SERVER['REQUEST_TIME'], $uparam]);
         } catch (PDOException $err) {
+            if ($err->getCode() == '22003')
+                throw new ErrorException($err->getMessage().': 사용자의 ACL Group 조회 중 오류 발생. IP:'.$session['ip']);
             throw new ErrorException($err->getMessage().': 사용자의 ACL Group 조회 중 오류 발생');
         }
         

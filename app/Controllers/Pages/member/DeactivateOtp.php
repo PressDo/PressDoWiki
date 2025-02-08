@@ -5,11 +5,8 @@ use PressDo\app\Models\Member;
 use PressDo\app\Core\Controller;
 use PressDo\app\Helpers\{Languages,Config};
 use OTPHP\TOTP;
-use ParagonIE\ConstantTime\Base32;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
 
-class ActivateOtp extends Controller
+class DeactivateOtp extends Controller
 {
     public function makeData()
     {
@@ -20,7 +17,7 @@ class ActivateOtp extends Controller
 
         $user = Member::getUserInfo($this->session['member']['uuid']);
 
-        if($user['totp_secret'] !== null){
+        if(empty($user['totp_secret'])){
             $error = ['code' => 'already_activated_otp'];
             $page = [
                 'view_name' => 'error',
@@ -34,35 +31,17 @@ class ActivateOtp extends Controller
             $otp = TOTP::createFromSecret($this->session['otp_secret']);
 
             if ($otp->verify($_POST['pin'])) {
-                Member::setTotp($this->session['member']['uuid'], $this->session['otp_secret']);
-                unset($this->session['member']['secret']);
+                Member::removeTotp($this->session['member']['uuid']);
                 header('Location: /member/mypage');
             } else
                 $errmsg = 'err_invalid_pin';
-            
-            if (empty($this->session['otp_secret']))
-                $this->session['otp_secret'] = trim(Base32::encodeUpper(random_bytes(10)), '=');
-        } else {
-            $this->session['otp_secret'] = trim(Base32::encodeUpper(random_bytes(10)), '=');
         }
 
-        $writer = new PngWriter();
-        $qrCode = new QrCode(
-            data: 'otpauth://totp/'
-                .urlencode(Config::get('wiki.site_name')).':'
-                .$this->session['member']['username']
-                .'?secret='.$this->session['otp_secret'].'&period=30&digits=6&algorithm=SHA1&issuer='.urlencode(Config::get('wiki.site_name')),
-            size: 244,
-            margin: 0
-        );
-        $qr_result = $writer->write($qrCode);
-
         $page = [
-            'view_name' => 'activate_otp',
-            'title' => Languages::get('page')['activate_otp'],
+            'view_name' => 'deactivate_otp',
+            'title' => Languages::get('page')['deactivate_otp'],
             'data' => [
                 'error' => $errmsg,
-                'qrcode' => $qr_result->getDataUri(),
                 'redirect' => base64_decode($_GET['redirect'])
             ],
             'menus' => [],

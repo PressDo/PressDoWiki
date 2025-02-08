@@ -1,8 +1,82 @@
-{
-    "CC0": {
-        "name": "퍼블릭 도메인",
-        "version": "1.0",
-        "country": "",
-        "URL": "//creativecommons.org/publicdomain/zero/1.0/deed.ko"
+[
+    {
+        "name": "readable-url",
+        "url": "https://github.com/HyungJu/readable-url",
+        "author": "Jude",
+        "author_url": "https://github.com/HyungJu",
+        "license_name": "MIT",
+        "license_url": "https://github.com/HyungJu/readable-url/blob/master/LICENSE"
+    },
+    {
+        "name": "php-diff",
+        "url": "https://github.com/chrisboulton/php-diff",
+        "author": "Chris Boulton",
+        "author_url": "https://github.com/chrisboulton",
+        "license_name": "MIT",
+        "license_url": "https://github.com/aaei924/php-diff-theseed/blob/master/LICENSE"
+    },
+    {
+        "name": "PHP Socket Mailer",
+        "url": "https://github.com/yidas/php-socket-mailer",
+        "author": "Nick Tsai",
+        "author_url": "https://github.com/yidas",
+        "license_name": "MIT",
+        "license_url": "https://github.com/yidas/php-socket-mailer/blob/master/LICENSE"
+    },
+    {
+        "name": "Parsedown",
+        "url": "https://github.com/erusev/parsedown",
+        "author": "Emanuil Rusev",
+        "author_url": "https://github.com/yidas",
+        "license_name": "MIT",
+        "license_url": "https://github.com/erusev/parsedown/blob/master/LICENSE.txt"
+    },
+    {
+        "name": "jBBCode",
+        "url": "https://github.com/jbowens/jBBCode",
+        "author": "Jackson Owens",
+        "author_url": "https://github.com/jbowens",
+        "license_name": "MIT",
+        "license_url": "https://github.com/jbowens/jBBCode/blob/master/LICENSE.md"
+    },
+    {
+        "name": "Wikitext",
+        "url": "https://github.com/mike42/wikitext",
+        "author": "Michael Billington",
+        "author_url": "https://github.com/mike42",
+        "license_name": "MIT",
+        "license_url": "https://github.com/mike42/wikitext/blob/master/LICENSE.md"
+    },
+    {
+        "name": "GeoIP2-php",
+        "url": "https://github.com/maxmind/GeoIP2-php",
+        "author": "MaxMind",
+        "author_url": "https://github.com/maxmind",
+        "license_name": "Apache-2.0",
+        "license_url": "https://github.com/maxmind/GeoIP2-php/blob/main/LICENSE"
+    },
+    {
+        "name": "otphp",
+        "url": "https://github.com/Spomky-Labs/otphp",
+        "author": "Florent Morselli",
+        "author_url": "https://github.com/Spomky",
+        "license_name": "MIT",
+        "license_url": "https://github.com/Spomky-Labs/otphp/blob/11.4.x/LICENSE"
+    },
+    {
+        "name": "qr-code",
+        "url": "https://github.com/endroid/qr-code",
+        "author": "Jeroen van den Enden",
+        "author_url": "https://github.com/endroid",
+        "license_name": "MIT",
+        "license_url": "https://github.com/endroid/qr-code/blob/main/LICENSE"
+    },
+    {
+        "name": "WebAuthn",
+        "url": "https://github.com/lbuchs/WebAuthn",
+        "author": "Lukas Buchs, Thomas Bleeker",
+        "author_url": "https://github.com/lbuchs",
+        "license_name": "MIT",
+        "license_url": "https://github.com/lbuchs/WebAuthn/blob/master/LICENSE"
     }
-}
+]

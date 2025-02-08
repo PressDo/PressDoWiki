@@ -58,6 +58,10 @@ function loadClass($page, $menu) {
                 require $DIR.'Document.php';
             }
             break;
+        case 'admin':
+            if ($menu == 'grant')
+                require $DIR.'Member.php';
+            break;
         case 'member':
             if ($menu == 'unstar' || $menu == 'star') {
                 require $DIR.'Document.php';

@@ -30,17 +30,65 @@ getdoctitle = () => {
     return s.slice(2).join('/')
 }
 
+pinInput = (n) => {
+    if (pin.length > 6)
+        return false;
+
+    pin += n.toString();
+    q('input[name=pin]').setAttribute('value', parseInt(pin))
+
+    var x = q('input.pin-current');
+
+    // 초회에는 실행 안됨
+    if (parseInt(x.value) >= 0) {
+        x.classList.remove('pin-current');
+        ++pinPos;
+        var neu = q('div.pin-area input.pin-digit:nth-of-type('+pinPos.toString()+')')
+        neu.classList.add('pin-current')
+        neu.focus()
+    }
+
+    var y = q('input.pin-current');
+
+    y.setAttribute('value', n)
+    y.value = n
+}
+
+pinBackspace = () => {
+    if (pin.length < 1)
+        return false;
+
+    pin = pin.slice(0, -1)
+    q('input[name=pin]').setAttribute('value', parseInt(pin))
+
+    var x = q('input.pin-current');
+    x.value = null;
+    x.removeAttribute('value')
+
+    if (pinPos > 1) {
+        x.classList.remove('pin-current');
+        pinPos--
+
+        var neu = q('div.pin-area input.pin-digit:nth-of-type('+pinPos.toString()+')')
+        neu.classList.add('pin-current')
+        neu.focus()
+    }
+
+    
+}
 LS = JSON.parse(localStorage.getItem('pressdo_settings'))
 
+pinPos = 1
+pin = ''
 before = 0
 Ctrl = Alt = false
 Lock = true
 document.onkeyup = (e) => {
-    switch(e.keyCode){
-        case 17:
+    switch(e.key){
+        case 'Control':
             Ctrl = false
             break
-        case 18:
+        case 'Alt':
             Alt = false
             break
     }
@@ -48,32 +96,44 @@ document.onkeyup = (e) => {
 // 단축키
 document.onkeydown = (e) => {
     var t = document.activeElement.tagName
+    if (parseInt(e.key) >= 0) {
+        pinInput(parseInt(e.key));
+    } else if (document.activeElement.classList.contains('pin-digit') && e.key == 'Backspace') {
+        pinBackspace();
+    }
     if(t !== 'INPUT' && t !== 'SELECT' && t !== 'TEXTAREA' && Ctrl === false && Alt === false){
-        switch (e.keyCode){
-            case 17:
+        switch (e.key){
+            case 'Control':
                 Ctrl = true
                 break
-            case 18:
+            case 'Alt':
                 Alt = true
                 break
-            case 70: // key f
+            case 'f': // key f
                 location.href = '/'
                 break
-            case 67: // key c
+            case 'c': // key c
                 location.href = '/RecentChanges'
                 break
-            case 68: // key d
+            case 'd': // key d
                 location.href = '/RecentDiscuss'
                 break
-            case 65: // key a
+            case 'a': // key a
                 location.href = '/random'
                 break
-            case 69: // key e
+            case 'e': // key e
                 location.href = '/edit/'+getdoctitle()
                 break
         }
     }
 }
+
+// PIN 입력
+qa('input.pin-digit').forEach(r => {
+    e(r, 'mousedown', (e) => {
+        q('input.pin-current').focus()
+    })
+})
 
 // 목차접힘
 qa('.hidden-trigger').forEach(h => {
@@ -377,6 +437,22 @@ qa('.rmag').forEach(r => {
     })
 })
 
+qa('.passkey-remove').forEach(r => {
+    e(r,'click', (e) => {
+        var name = a.g(r,'targetname');
+        var f = ce('form')
+        var i = ce('input')
+        i.type = 'hidden'
+        i.name = 'delnm'
+        i.value = name
+        f.appendChild(i)
+        f.method = 'post'
+        f.action = window.location.href
+        document.body.appendChild(f)
+        f.submit()
+    })
+})
+
 // ACL그룹-사용자추가
 if(q('select[name=mode]')){
     e(q('select[name=mode]'),'change', (e) => {
@@ -446,6 +522,36 @@ qa('li[dropdown-option]').forEach(r => {
         y.blur()
     })
 })
+qa('a.tfa').forEach(r => {
+    e(r, 'click', () => {
+        var x = g('loginform') // form of button
+        var y = a.g(r, 'to')
+        if (y == 'webauthn')
+            var t = 'totp'
+        else if (y == 'totp')
+            var t = 'webauthn'
+
+        SH(x, 'none');
+        a.s(x, 'id', t);
+        //document.getElementById('loginform').setAttribute('id', t)
+        //document.getElementById('loginform').setAttribute('id', t)
+
+        var z = g(y);
+
+        a.s(z, 'id', 'loginform');
+        SH(z, 'block');
+    })
+})
+// checkbox style adjust
+qa('input[type=checkbox]').forEach(r => {
+    e(r, 'click', () => {
+        if (a.g(r, 'checked') === null)
+            a.s(r, 'checked', '')
+        else
+            r.removeAttribute('checked')
+    })
+})
+
 
 // 다른 곳 클릭하면 팝업 닫힘
 e(document, 'click', e => {

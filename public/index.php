@@ -28,16 +28,16 @@ switch ($router->uri_data->page) {
     case 'admin':
         // no break
     case 'api':
-        $fnClassNm = $router->uri_data->page.'\\'.ucwords($router->uri_data->menu, '_');
-        require '../app/Controllers/Pages/'.$router->uri_data->page.'/'.ucwords($router->uri_data->menu, '_').'.php';
+        $fnClassNm = $router->uri_data->page.'\\'.str_replace('_', '', ucwords($router->uri_data->menu, '_'));
+        require '../app/Controllers/Pages/'.$router->uri_data->page.'/'.str_replace('_', '', ucwords($router->uri_data->menu, '_')).'.php';
         break;
     case 'acl':
         $fnClassNm = 'ACL';
         require '../app/Controllers/Pages/ACL.php';
         break;
     default:
-        $fnClassNm = ucwords($router->uri_data->page, '_');
-        require '../app/Controllers/Pages/'.ucwords($router->uri_data->page, '_').'.php';
+        $fnClassNm = str_replace('_', '',ucwords($router->uri_data->page, '_'));
+        require '../app/Controllers/Pages/'.str_replace('_', '',ucwords($router->uri_data->page, '_')).'.php';
 }
 
 // initial

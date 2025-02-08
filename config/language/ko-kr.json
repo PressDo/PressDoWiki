@@ -94,6 +94,7 @@
         "blame": "blame",
         "issue": "발급",
         "activate": "활성화",
+        "deactivate": "비활성화",
         "reset": "초기화"
     },
     "log":{
@@ -206,12 +207,18 @@
         "search_go_directly": "&nbsp; 찾는 문서가 없나요? 문서로 바로 갈 수 있습니다. ",
         "user_discuss_exists": "현재 진행중인 <a href=\"/discuss/@1@\">사용자 토론</a>이 있습니다.",
         "no_backlinks": "해당 문서의 역링크가 존재하지 않습니다.",
-        "force_2fa":"확인되지 않은 기기에서 로그인하셨습니다. 2단계 인증 앱에서 코드를 입력해주세요.",
+        "force_2fa":"확인되지 않은 기기에서 로그인하셨습니다.",
+        "force_2fa_totp":"2단계 인증 앱에서 코드를 입력해주세요.",
+        "force_2fa_webauthn":"Passkey를 사용하여 2단계 인증을 진행합니다.",
+        "force_2fa_email":"이메일(@1@)로 전송된 PIN을 입력해주세요.",
         "activate_otp_1": "휴대 전화에 <b>2단계 인증 앱</b>을 설치합니다.",
         "activate_otp_2": "앱을 열고 바코드 스캔을 클릭해서 아래 QR코드를 스캔합니다.",
         "activate_otp_3": "표시되는 코드를 아래에 입력해서 활성화 합니다.",
+        "err_invalid_pin": "PIN이 올바르지 않습니다.",
+        "empty_webauthn": "등록된 PassKey가 없습니다.",
         "err_mail_not_send": "이메일 발송에 실패했습니다.",
-        "err_invalid_username": "사용자 이름의 값을 형식에 맞게 입력해주세요."
+        "err_invalid_username": "사용자 이름의 값을 형식에 맞게 입력해주세요.",
+        "authenticator_duplicate_name": "PassKey 이름이 이미 존재합니다."
     },
     "mail":{
         "signup_title": "[@1@] 계정 생성 이메일 주소 인증.",
@@ -269,6 +276,7 @@
         "thread": "토론",
         "mypage": "내 정보",
         "activate_otp": "OTP 활성화",
+        "deactivate_otp": "OTP 비활성화",
         "contribution": "기여내역",
         "error": "오류",
         "login": "로그인",
@@ -306,10 +314,15 @@
         "2fa": "이중인증",
         "disable_2fa": "TOTP 비활성화",
         "enable_2fa": "TOTP 활성화",
+        "2fa_other_methods": "다른 인증 방법",
+        "2fa_totp": "일회용 암호",
+        "2fa_totp_desc": "이메일이나 OTP 앱에서 받은 일회용 인증 코드를 입력하여 인증합니다.",
+        "2fa_webauthn_desc": "지문, 얼굴 인식 또는 보안 키를 사용하여 인증합니다.",
         "webauthn_add": "PassKey 추가",
         "webauthn_name": "이름",
         "webauthn_registered": "등록일",
-        "webauthn_lastused": "마지막 사용"
+        "webauthn_lastused": "마지막 사용",
+        "login_webauthn": "WebAuthn 로그인"
     },
     "history":{
         "compare_revision": "선택 리비전 비교",

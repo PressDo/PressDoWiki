@@ -1,3 +1,7 @@
+<div n:if="$wiki['page']['data']['error']" class="a e">
+    <strong>{$lang['msg']['error']}</strong>
+    <span>{$lang['msg'][$wiki['page']['data']['error']] ?? $wiki['page']['data']['error']}</span>
+</div>
 <form id="mypage" method="post">
     <div class="bottom-space">
         <label for="usernameInput">{$lang['auth']['username']}</label>
@@ -31,7 +35,8 @@
         {else}
             <a class="pressdo-btn-nonflex btn-red" href="/member/deactivate_otp">{$lang['auth']['disable_2fa']}</a>
             <div class="small-subform">
-                <input class="pressdo-form" type="text" placeholder="PassKey Name"><button class="pressdo-btn-nonflex btn-lightblue" type="button">{$lang['auth']['webauthn_add']}</button>
+                <input type="hidden" id="webauthnCredential" value="{$wiki['page']['data']['webauthn_arg'] ?? ''}">
+                <input name="passkeyName" class="pressdo-form" type="text" placeholder="PassKey Name"><button id="webauthn-add" class="pressdo-btn-nonflex btn-lightblue" type="button">{$lang['auth']['webauthn_add']}</button>
             </div>
             <table class="pressdo-table">
                 <thead>
@@ -42,12 +47,13 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody n:inner-foreach="$wiki['page']['data']['webauthn'] as $w">
-                    <tr>
+                <tbody>
+                    <tr><td n:if="($wiki['page']['data']['webauthn']|length) === 0" class="s" colspan="5">{$lang['msg']['empty_webauthn']}</td></tr>
+                    <tr n:foreach="$wiki['page']['data']['webauthn'] as $w">
                         <td>{$w['name']}</td>
-                        <td>{$w['registered']}</td>
-                        <td>{$w['lastuse']}</td>
-                        <td><button class="pressdo-btn-nonflex btn-red" type="button">{$lang['btn']['delete']}</button></td>
+                        <td>{$w['registered']|date: 'Y-m-d H:i:s'}</td>
+                        <td>{$w['lastuse'] ? ($w['lastuse']|date: 'Y-m-d H:i:s') : 'Not used'}</td>
+                        <td><button targetname="{$w['name']}" class="pressdo-btn-nonflex btn-red" type="button">{$lang['btn']['delete']}</button></td>
                     </tr>
                 </tbody>
             </table>

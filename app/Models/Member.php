@@ -16,7 +16,7 @@ class Member extends \PressDo\app\Core\Model
      * @param string $ua       user-agent
      * @return array|bool        false or userdata
      */
-    public static function login(string $id, string $pw, string $dt, string $ip, string $ua): array|bool
+    public static function login(string $id, string $pw, string $ip, string $ua): array|bool
     {
         $db = self::db();
         try {
@@ -33,8 +33,8 @@ class Member extends \PressDo\app\Core\Model
             return false;
         
         try {
-            $d = $db->prepare("INSERT INTO `login_history`(uuid,ip,datetime) VALUES(?,?,?)");
-            $d->execute([$user['uuid'], $ip, $dt]);
+            $d = $db->prepare("INSERT INTO `login_history`(uuid,ip) VALUES(?,?)");
+            $d->execute([$user['uuid'], $ip]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 로그인 기록 중 오류 발생');
         }
@@ -197,11 +197,37 @@ class Member extends \PressDo\app\Core\Model
         return $d->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function getUserWebauthn(string $uuid)
+    public static function setTotp(string $uuid, string $secret)
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        
+        try {
+            $e = $db->prepare("UPDATE `member` SET `totp_secret`=? WHERE `uuid`=?");
+            $e->execute([$secret,$uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': TOTP 등록 중 오류 발생');
+        }
+    }
+
+    public static function removeTotp(string $uuid)
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        
+        try {
+            $e = $db->prepare("UPDATE `member` SET `totp_secret`=NULL WHERE `uuid`=?");
+            $e->execute([$uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': TOTP 삭제 중 오류 발생');
+        }
+    }
+
+    public static function getUserWebauthn(string $uuid): array
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT `name`, `registered`, `lastuse` FROM `webauthn` WHERE uuid=? ORDER BY registered ASC");
+            $d = $db->prepare("SELECT `name`, `registered`, `lastuse`, client_data FROM `webauthn` WHERE uuid=? ORDER BY registered ASC");
             $d->execute([self::uuid2bin($uuid)]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': Webauthn 목록 조회 중 오류 발생');
@@ -210,15 +236,55 @@ class Member extends \PressDo\app\Core\Model
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function grantPermissions(string $executor, string $uuid, array $perms, string $record): void
+    public static function saveUserWebauthn(string $uuid, string $name, string $data): void
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);
+        
+        try {
+            $e = $db->prepare("INSERT INTO `webauthn` (uuid, `name`, client_data) VALUES (?, ?, ?)");
+            $e->execute([$uuid,$name,$data]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': Webauthn 추가 중 오류 발생');
+        }
+    }
+
+    public static function deleteUserWebauthn(string $uuid, string $name): void
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("DELETE FROM `webauthn` WHERE uuid=? AND `name`=?");
+            $d->execute([self::uuid2bin($uuid), $name]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': Webauthn 삭제 중 오류 발생');
+        }
+    }
+
+    public static function logWebauthnUsage(string $name)
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("UPDATE `webauthn` SET lastuse=UNIX_TIMESTAMP() WHERE `name`=?");
+            $d->execute([$name]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': Webauthn 사용 기록 중 오류 발생');
+        }
+    }
+
+    public static function grantPermissions(string $executoruuid, string $targetuuid, array $perms, string $record): void
+    {
+        $db = self::db();
+        $executoruuid = self::uuid2bin($executoruuid);
+        $targetuuid = self::uuid2bin($targetuuid);
         $c = implode(',', $perms);
-        $e = $db->prepare("UPDATE `member` SET `perm`=? WHERE `uuid`=?");
-        $e->execute([$c,$uuid]);
-        $f = $db->prepare("INSERT INTO `BlockHistory` (executor_m,target_member,datetime,action,granted) VALUES(?,?,?,'grant',?)");
-        $f->execute([$executor, $uuid, $_SERVER['REQUEST_TIME'], $record]);
+        try {
+            $e = $db->prepare("UPDATE `member` SET `perm`=? WHERE `uuid`=?");
+            $e->execute([$c,$targetuuid]);
+            $f = $db->prepare("INSERT INTO `BlockHistory` (executor_m,target_member,action,granted) VALUES(?,?,'grant',?)");
+            $f->execute([$executoruuid, $targetuuid, $record]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': Webauthn 목록 조회 중 오류 발생');
+        }
     }
 
     /**
