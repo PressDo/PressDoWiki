@@ -4,11 +4,11 @@
             <div class="toolkit-wrap">
                 <div class="menu-wrap">
                     <ul class="recent-toolbox">
-                        <li><a n:class="!in_array($uri_data['query']->logtype, ['create', 'delete', 'move', 'revert']) ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=all">{$lang['recent']['logtype_all']}</a></li>
-                        <li><a n:class="$uri_data['query']->logtype == 'create' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=create">{$lang['recent']['logtype_create']}</a></li>
-                        <li><a n:class="$uri_data['query']->logtype == 'delete' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=delete">{$lang['recent']['logtype_delete']}</a></li>
-                        <li><a n:class="$uri_data['query']->logtype == 'move' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=move">{$lang['recent']['logtype_move']}</a></li>
-                        <li><a n:class="$uri_data['query']->logtype == 'revert' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=revert">{$lang['recent']['logtype_revert']}</a></li>
+                        <li><a n:class="!in_array($_GET['logtype'], ['create', 'delete', 'move', 'revert']) ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=all">{$lang['recent']['logtype_all']}</a></li>
+                        <li><a n:class="$_GET['logtype'] == 'create' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=create">{$lang['recent']['logtype_create']}</a></li>
+                        <li><a n:class="$_GET['logtype'] == 'delete' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=delete">{$lang['recent']['logtype_delete']}</a></li>
+                        <li><a n:class="$_GET['logtype'] == 'move' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=move">{$lang['recent']['logtype_move']}</a></li>
+                        <li><a n:class="$_GET['logtype'] == 'revert' ? recent-menu-current, recent-menu" href="/RecentChanges?logtype=revert">{$lang['recent']['logtype_revert']}</a></li>
                     </ul>
                 </div>
             </div>

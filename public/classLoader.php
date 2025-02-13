@@ -49,9 +49,9 @@ function loadClass($page, $menu) {
         break;
         case 'discuss':
             require $DIR.'EditRequest.php';
+            require $DIR.'Document.php';
         case 'thread':
             require $DIR.'Member.php';
-            require $DIR.'Document.php';
             require $DIR.'Thread.php';
         case 'api':
             if ($menu == 'preview' || $page == 'thread') {

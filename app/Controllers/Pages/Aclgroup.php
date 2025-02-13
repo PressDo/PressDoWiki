@@ -85,7 +85,7 @@ class Aclgroup extends Controller
                     $_POST['note'],
                     $duration
                 );
-        } elseif (!empty($group) && self::getAllowedAction($group, 'remove', $perms) && !empty($_POST['note'])) {
+        } elseif (!empty($group) && self::getAllowedAction(array_search($group, $aclgroups), 'remove', $perms) && !empty($_POST['note'])) {
             if (!$this->session['member']['uuid'])
                 $exec_i = Member::getIpUuid($this->session['ip']);
             else

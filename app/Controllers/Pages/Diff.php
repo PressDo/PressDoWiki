@@ -19,7 +19,6 @@ class Diff extends Controller
         $page = [
             'view_name' => 'diff',
             'title' => $this->uri_data->title,
-            'subtitle' => Languages::get('page', 'diff'),
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

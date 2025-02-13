@@ -127,12 +127,19 @@ class Document extends \PressDo\app\Core\Model
      * @throws ErrorException
      * @return void
      */
-    public static function move(string $uuid, string $from, string $to, ?string $cont_m, ?string $cont_i, string $comment): void
+    public static function move(string $uuid, string $from, string $to, ?string $cont_m, ?string $cont_i, int $baserev, string $comment): void
     {
         $db = self::db();
+
         [$toNS, $toT] = Controller::parseTitle($to);
         [$fromNS, $fromT] = Controller::parseTitle($from);
-        $c = self::load($fromNS, $fromT); // 편집기록에 들어갈 문서 데이터
+
+        $uuid = self::uuid2bin($uuid);
+
+        if($cont_m !== null)
+            $cont_m = self::uuid2bin($cont_m);
+        elseif($cont_i !== null)
+            $cont_i = self::uuid2bin(self::getIpUuid($cont_i));
 
         $a = $db->prepare("UPDATE `document` SET `namespace`=?, `title`=? WHERE `uuid`=?");
         $a->execute([$toNS, $toT, $uuid]);
@@ -141,9 +148,8 @@ class Document extends \PressDo\app\Core\Model
             self::uuid2bin(self::generateUuid()),
             $uuid,
             $comment,
-            $_SERVER['REQUEST_TIME'],
             'move',
-            $c['rev'] + 1,
+            $baserev + 1,
             0,
             $cont_m,
             $cont_i,
@@ -152,7 +158,7 @@ class Document extends \PressDo\app\Core\Model
         ];
         
         try {
-            $b = $db->prepare("INSERT INTO `history`(uuid,document,comment,datetime,action,rev,count,contributor_m,contributor_i,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+            $b = $db->prepare("INSERT INTO `history`(uuid,document,comment,action,rev,count,contributor_m,contributor_i,moved_from,moved_to) VALUES(?,?,?,?,?,?,?,?,?,?)");
             $b->execute($d);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 이동 중 오류 발생');

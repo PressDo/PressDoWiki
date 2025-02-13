@@ -78,7 +78,6 @@ class Thread extends Controller
         $page = [
             'view_name' => 'thread',
             'title' => $doctitle,
-            'subtitle' => Languages::get('page', 'thread'),
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

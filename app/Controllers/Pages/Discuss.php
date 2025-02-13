@@ -32,15 +32,17 @@ class Discuss extends Controller
 
         if ($_GET['state'] == 'close' || $_GET['state'] == 'closed_edit_requests') {
             // 닫힌 00 목록
-            if ($_GET['state'] == 'closed_edit_requests')
+            if ($_GET['state'] == 'closed_edit_requests') {
+                $viewname = 'edit_request_close';
                 $threads = Editrequest::get($uuid, 'closed');
-            else
+            } else {
+                $viewname = 'thread_list_close';
                 $threads = Thread::getDocThread($uuid, 'closed');
+            }
 
             $page = [
-                'view_name' => 'discuss_list',
+                'view_name' => $viewname,
                 'title' => $this->uri_data->title,
-                'subtitle' => Languages::get('page', 'discuss_'.$_GET['state']),
                 'data' => [
                     'document' => [
                         'namespace' => $namespace,
@@ -95,9 +97,8 @@ class Discuss extends Controller
                 array_push($threads, $ra);
             }
             $page = [
-                'view_name' => 'discuss',
+                'view_name' => 'thread_list',
                 'title' => $this->uri_data->title,
-                'subtitle' => Languages::get('page', 'discuss'),
                 'data' => [
                     'document' => [
                         'namespace' => $namespace,

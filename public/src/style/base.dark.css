@@ -17,8 +17,8 @@
         --button-normal-border-color: #484848;
     }
 
-    .pressdo-btn-nonflex{--button-background-color: #27292d;--button-border-color: #383b40; --button-color: #ddd;}
-    .pressdo-btn-nonflex:not([disabled]):active, .pressdo-btn-nonflex:not([disabled]):hover{--button-background-color: #2d2f34;border-color: #383b40;}
+    .pressdo-btn-nonflex{background-color: #27292d;border-color: #383b40; color: #ddd;}
+    .pressdo-btn-nonflex:not([disabled]):active, .pressdo-btn-nonflex:not([disabled]):hover{background-color: #2d2f34;border-color: #383b40;}
     
     .btn-blue:not([disabled]){--button-background-color: #1555b5;--button-border-color: #052e6d;}
     .btn-blue:not([disabled]):hover{--button-background-hover-color: #1e5ebd;}

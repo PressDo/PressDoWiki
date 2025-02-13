@@ -38,7 +38,6 @@ class Move extends Controller
         $page = [
             'view_name' => 'move',
             'title' => $this->uri_data->title,
-            'subtitle' => Languages::get('page', 'move'),
             'data' => [
                 'document' => [
                     'namespace' => $namespace,
@@ -54,12 +53,14 @@ class Move extends Controller
         if (!empty($_POST['token']) && $this->session['token'] !== $_POST['token']) {
             $this->error = [
                 'code' => 'err_csrf_token',
+                'message' => Languages::get('msg', 'err_csrf_token'),
                 'errbox' => true
             ];
-        } elseif (isset($_POST['token']) && $this->session['token'] == $_POST['token'] && isset($_POST['new_title'])) {
+        } elseif (!empty($_POST['token']) && $this->session['token'] == $_POST['token'] && !empty($_POST['new_title'])) {
             // Approve Move
             $member = $this->session['member']['uuid'] ?? null;
             $ip = !$member ? $this->session['ip'] : null;
+            $rev = Document::getVersion($uuid);
 
             Document::move(
                 $uuid, 
@@ -67,8 +68,10 @@ class Move extends Controller
                 $_POST['new_title'], 
                 $member,
                 $ip,
+                $rev,
                 $_POST['summary']);
             Header('Location: /w/'.$_POST['new_title']);
+            unset($this->session['token']);
         }else{
             $this->session['token'] = self::rand(64);
             $page['data']['token'] = $this->session['token'];

@@ -76,13 +76,13 @@
         <p n:if="$err[1]['expire']" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'expire'}</p>
         <p n:if="$err[1]['expire_much']" class="errmsg">{$lang['msg']['err_expire_too_long']}</p>
     </div>
-    <button class="pressdo-btn-nonflex btn-blue" n:attr="disabled: !$wiki['page']['data']['list_addable']" type="submit">{$lang['acl']['add']}</button>
+    <button class="pressdo-btn-nonflex btn-lightblue" n:attr="disabled: !$wiki['page']['data']['list_addable']" type="submit">{$lang['acl']['add']}</button>
 </form>
 {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
 <form class="s" data-pressdo-aclgroup method="GET">
     <div data-pressdo-aclgroup class="g">
         <input class="pressdo-form" type="text" name="from" placeholder="ID">
-        <button class="pressdo-btn-nonflex btn-blue" type="submit">Go</button>
+        <button class="pressdo-btn-nonflex btn-lightblue" type="submit">Go</button>
     </div>
 </form>
 <table class="pressdo-table">
@@ -151,7 +151,7 @@
                     <p n:if="$err[1]['note']" id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'note'}</p>
                 </div>
                 <div class="overlay-btns">
-                    <button class="pressdo-btn-nonflex btn-blue btn-sizeup" type="submit">{$lang['acl']['delete']}</button>
+                    <button class="pressdo-btn-nonflex btn-lightblue btn-sizeup" type="submit">{$lang['acl']['delete']}</button>
                     <button class="pressdo-btn-nonflex btn-sizeup" id="cancel_btn" type="button">{$lang['cancel']}</button>
                 </div>
             </form>

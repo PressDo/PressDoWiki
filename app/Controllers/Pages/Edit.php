@@ -87,6 +87,7 @@ class Edit extends Controller
                 
 
                 Header('Location: /w/'.$this->uri_data->title);
+                unset($this->session['token']);
             }
         }
 
@@ -96,17 +97,11 @@ class Edit extends Controller
         $this->session['raw'] = $uuid ? $doc['content'] : '';
         $section = $_GET['section'];
 
-        if ($this->session['baserev'] < 1)
-            $subtitle = Languages::get('editor', 'create');
-        else
-            $subtitle = 'r'.$this->session['baserev'].' '.Languages::get('page', 'edit');
-
         $page = [
             'view_name' => 'edit',
             'title' => $this->uri_data->title,
-            'subtitle' => $subtitle,
             'data' => [
-                'editor' => [
+                'body' => [
                     'baserev' => $this->session['baserev'],
                     'section' => $section,
                     'raw' => $this->session['raw']

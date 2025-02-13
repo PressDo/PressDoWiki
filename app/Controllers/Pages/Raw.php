@@ -58,8 +58,6 @@ class Raw extends Controller
                 'data' => ['code' => 'no_such_revision']
             ];
         }
-
-        $page['subtitle'] .= 'r'.$doc['rev'].' RAW';
         $page['data']['rev'] = $doc['rev'];
         $page['data']['text'] = $doc['content'];
         //'debug' => $this->uri_data

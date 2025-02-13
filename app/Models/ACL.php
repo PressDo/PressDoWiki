@@ -8,6 +8,11 @@ use PressDo\app\Models\Document;
 
 class ACL extends \PressDo\app\Core\Model
 {
+    /**
+     * Get associative array about aclgroup (groupid => name)
+     * @throws \ErrorException
+     * @return array
+     */
     public static function aclgroups(): array
     {
         $db = self::db();
@@ -337,6 +342,11 @@ class ACL extends \PressDo\app\Core\Model
         }
     }
 
+    /**
+     * Get target ACL Group name by execution ID
+     * @param int $id
+     * @throws \ErrorException
+     */
     public static function groupIdLookup(int $id): ?string
     {
         $db = self::db();

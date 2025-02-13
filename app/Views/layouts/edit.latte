@@ -51,7 +51,7 @@
             <div n:if="!$readonly" n:class="!$mobile && !$readonly ? a, editor" id="m">
                 <div id="monaco" class="editor showUnused"></div>
             </div><div n:class="$mobile || $readonly ? a, editor" id="r">
-                <textarea n:attr="readonly: $readonly" class="editor" id="pressdo-anchor" name="content">{$wiki['page']['data']['editor']['raw']|noescape}</textarea>
+                <textarea n:attr="readonly: $readonly" class="editor" id="pressdo-anchor" name="content">{$wiki['page']['data']['body']['raw']|noescape}</textarea>
             </div><div n:if="!$readonly" id="p" class="p editor"><div class="w"></div></div>
         </div>
         {if !$readonly}

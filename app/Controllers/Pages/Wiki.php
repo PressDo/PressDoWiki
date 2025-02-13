@@ -58,6 +58,23 @@ class Wiki extends Controller
 
         
         $doc = Document::load($uuid, $rev_uuid);
+
+        if ($doc['content'] === null) {
+            # If Not Found
+            return [
+                'view_name' => 'notfound',
+                'title' => $this->uri_data->title,
+                'data' => [
+                    'document' => [
+                        'namespace' => $namespace,
+                        'title' => $title
+                    ],
+                    'discuss_progress' => false,
+                    'user' => $namespace == Namespaces::USER
+                ]
+            ];
+        }
+        
         $content = self::readSyntax($doc['content'], [
             'title' => $this->uri_data->title,
             'db' => Database::getInstance(),
@@ -74,10 +91,6 @@ class Wiki extends Controller
             if (Document::getUuid($lns, $lt) !== false && $_GET['noredirect'] !== '1' && empty($_GET['from']))
                 header('Location: /w/'.$content['links']['redirect'][0].'?from='.$this->uri_data->title);
         }
-
-        if ($rev_uuid !== null)
-            $page['subtitle'] = ($rev_uuid !== null)
-                ? str_replace('@1@', $doc['rev'], Languages::get('document', 'rev')) : '';
         
         $cat_documents = [];
         if ($namespace == Namespaces::CATEGORY) {

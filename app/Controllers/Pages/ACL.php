@@ -99,6 +99,11 @@ class ACL extends Controller
                     ACLModels::deleteNSACL($acl_target[1]);
             }
         }
+        
+        $ACL->check('acl');
+
+        $doc_editable = !($error['code'] == 'permission_acl');
+        $ns_editable = in_array('nsacl', $ACL->perms);
 
         $acl_doc = $uuid ? ACLModels::fetchDocACL($uuid) : [];
         $acl_ns = ACLModels::fetchNSACL($namespace);
@@ -117,7 +122,6 @@ class ACL extends Controller
         $page = [
             'view_name' => 'acl',
             'title' => $this->uri_data->title,
-            'subtitle' => Languages::get('page', 'acl'),
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

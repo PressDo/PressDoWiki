@@ -20,7 +20,6 @@ class History extends Controller
         $page = [
             'view_name' => 'history',
             'title' => $this->uri_data->title,
-            'subtitle' => Languages::get('page', 'history'),
             'data' => [
                 'document' => [
                     'namespace' => $namespace,

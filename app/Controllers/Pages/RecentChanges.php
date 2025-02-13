@@ -19,8 +19,8 @@ class RecentChanges extends Controller
             'customData' => []
         ];
 
-        if(in_array($this->uri_data->query->logtype, ['create', 'revert', 'move', 'delete']))
-            $lt = $this->uri_data->query->logtype;
+        if(in_array($_GET['logtype'], ['create', 'revert', 'move', 'delete']))
+            $lt = $_GET['logtype'];
         else
             $lt = 'all';
 

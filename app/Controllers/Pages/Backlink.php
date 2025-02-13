@@ -21,7 +21,6 @@ class Backlink extends Controller
         $page = [
             'view_name' => 'backlink',
             'title' => $this->uri_data->title,
-            'subtitle' => '',
             'data' => [
                 'document' => [
                     'namespace' => $namespace,
@@ -34,7 +33,6 @@ class Backlink extends Controller
             'customData' => []
         ];
 
-        $page['subtitle'] .= Languages::get('page', 'backlink');
         if (isset($_GET['flag']) && in_array(intval($_GET['flag']), [0, 1, 2, 4, 8])) {
             $flag = [
                 0 => null,

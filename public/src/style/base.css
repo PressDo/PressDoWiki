@@ -186,7 +186,14 @@ a.btn-skyblue {background-color: #5bc0de!important; border-color: #5bc0de!import
 
 /* Button Shape */
 .btn-under {padding-top: .5rem;}
-.btn-round{border-color:#e0e0e0; border-radius: 3px; font-size: .8rem; height: 1.6rem; min-width: 2.4rem; padding: .1rem .3rem !important;}
+.btn-round{
+    font-size: .8rem;
+    height: 1.6rem;
+    min-width: 2.4rem;
+    padding: .1rem .3rem!important;
+    --button-border-color: #e0e0e0;
+    --button-border-radius: 3px;
+}
 .btn-wide {min-width: 4rem;}
 .btn-flex-full {display:flex; width:100%;}
 .btn-sizeup{padding: .75rem 1.25rem;}
@@ -565,6 +572,11 @@ table.config input[type=text] {width: 100%;}
     .recent-th{display:none;}
     .recent-th+.recent-tr{border-top: 1px solid #e0e0e0;}
 
-    /*.pressdo-btn {height: 1.7rem; min-width: 2.6rem;}
+    .btn-round {
+        height: 1.7rem;
+        min-width: 2.6rem;
+    }
+
+    /*
     .pagelist-menu{width:100%;}*/
 }
