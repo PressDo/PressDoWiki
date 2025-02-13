@@ -28,12 +28,11 @@ class Move extends Controller
             $error = ['code' => 'no_such_document'];
         
         if (!$uuid || $error['code'] == 'permission_read' || $error['code'] == 'permission_edit' || $error['code'] == 'permission_move') {
-            $page = [
+            return [
                 'view_name' => 'error',
                 'title' => Languages::get('page', 'error'),
                 'data' => $error
             ];
-            return $page;
         }
 
         $page = [
@@ -53,7 +52,7 @@ class Move extends Controller
         ];
 
         if (!empty($_POST['token']) && $this->session['token'] !== $_POST['token']) {
-            $error = [
+            $this->error = [
                 'code' => 'err_csrf_token',
                 'errbox' => true
             ];

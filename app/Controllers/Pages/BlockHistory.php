@@ -27,7 +27,7 @@ class BlockHistory extends Controller
 
         $data = array_reverse(BH::get($type, $keyword, $from, $until));
         $dataset = [];
-        $aclgroups = ACL::aclgroups();
+        
         foreach ($data as $d){
             $ip = $member = $Cuuid = $target_ip = $target_member = $uuid2 = $aclgroup = null;
 
@@ -55,8 +55,9 @@ class BlockHistory extends Controller
                 $target_member = Member::lookup($uuid2);
             }
 
-            if ($d['target_aclgroup']) {
-                $aclgroup = $aclgroups[$d['target_aclgroup']];
+            if ($d['target_ip_uuid'] !== null) {
+                $uuid2 = BH::bin2uuid($d['target_ip_uuid']);
+                $target_ip = Member::ipLookup($uuid2);
             }
             
             array_push($dataset, [
@@ -71,8 +72,8 @@ class BlockHistory extends Controller
                     'duration' => $dur,
                     'memo' => $d['comment'],
                     'member' => $target_member,
-                    'member_uuid' => $uuid2,
-                    'aclgroup' => $aclgroup,
+                    'target_uuid' => $uuid2,
+                    'aclgroup' => $d['target_aclgroup'],
                     'target_id' => $d['target_id'],
                     'granted' => $d['granted']
                 ]

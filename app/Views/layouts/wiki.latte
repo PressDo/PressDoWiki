@@ -16,24 +16,24 @@
 </div>
 <div class="w">
     <div>
-    {if $wiki['page']['data']['user'] !== false} 
-        <div n:if="$wiki['page']['data']['user']['admin'] === true" onmouseover="this.style.borderTopColor='red';" onmouseout="this.style.borderTopColor='orange';" style="border-width: 5px 1px 1px; border-style: solid; border-color: orange gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
+    {if $wiki['page']['data']['user']} 
+        <div n:if="$wiki['page']['data']['userData']['admin'] === true" onmouseover="this.style.borderTopColor='red';" onmouseout="this.style.borderTopColor='orange';" style="border-width: 5px 1px 1px; border-style: solid; border-color: orange gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
             <span>{$lang['msg']['this_is_admin']}</span>
         </div>
-        {if $wiki['page']['data']['user']['block']['blocked'] === true}
+        {if $wiki['page']['data']['userData']['block']['blocked'] === true}
 
-            {if $wiki['page']['data']['user']['block']['until'] == 0}
-                {var $until = $lang['acl']['forever']}
+            {if $wiki['page']['data']['userData']['block']['until'] == '0'}
+                {var $until = $lang['msg']['b_forever']}
             {else}
-                {var $until = ($lang['until']|replace: '@1@', $wiki['page']['data']['user']['block']['until'])}
+                {var $until = ($lang['until']|replace: '@1@', $wiki['page']['data']['userData']['block']['until'])}
             {/if}
 
             <div onmouseover="this.style.borderTopColor='blue';" onmouseout="this.style.borderTopColor='red';" style="border-width: 5px 1px 1px; border-style: solid; border-color: red gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
-                <span>{$lang['msg']['this_is_blocked']} (#{$wiki['page']['data']['user']['block']['seq']})</span>
+                <span>{$lang['msg']['this_is_blocked']} (#{$wiki['page']['data']['userData']['block']['seq']})</span>
                 <br><br>
-                {$lang['msg']['this_is_blocked_user']|replace: ['@1@' => '<time datetime="'.$wiki['page']['data']['user']['block']['dt_html'].'">'.$wiki['page']['data']['user']['block']['datetime'].'</time>', '@2@' => $wiki['page']['data']['user']['block']['until']]}
+                {$lang['msg']['this_is_blocked_user']|replace: ['@1@' => '<time datetime="'.($wiki['page']['data']['userData']['block']['datetime']-32400|date: 'Y-m-d\TH:i:s').'.000Z">'.($wiki['page']['data']['userData']['block']['datetime']|date: 'Y-m-d H:i:s').'</time>', '@2@' => $until]|noescape}
                 <br>
-                {$lang['blocked_reason']}: {$wiki['page']['data']['user']['block']['memo']}
+                {$lang['blocked_reason']}: {$wiki['page']['data']['userData']['block']['memo']}
             </div>
         {/if}
     {/if}

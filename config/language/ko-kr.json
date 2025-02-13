@@ -12,6 +12,7 @@
         "deny": "거부",
         "gotons": "이름공간ACL 실행",
         "forever": "영구",
+        "forever_aclgroup": "무기한",
         "second": "초",
         "minute": "분",
         "hour": "시간",
@@ -218,7 +219,8 @@
         "empty_webauthn": "등록된 PassKey가 없습니다.",
         "err_mail_not_send": "이메일 발송에 실패했습니다.",
         "err_invalid_username": "사용자 이름의 값을 형식에 맞게 입력해주세요.",
-        "authenticator_duplicate_name": "PassKey 이름이 이미 존재합니다."
+        "authenticator_duplicate_name": "PassKey 이름이 이미 존재합니다.",
+        "uuid_copied": "@1@ @2@의 UUID가 복사되었습니다."
     },
     "mail":{
         "signup_title": "[@1@] 계정 생성 이메일 주소 인증.",

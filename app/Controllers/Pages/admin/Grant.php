@@ -48,13 +48,17 @@ class Grant extends Controller
             'nsacl',
             'hide_thread_comment',
             'grant',
-            'disable_two_factor_login',
+            //'disable_two_factor_login',
             'login_history',
             'update_thread_document',
             'update_thread_topic',
+            'hide_revision',
+            'mark_troll_revision',
             'aclgroup',
             'api_access',
             'no_force_captcha',
+            'batch_revert',
+            'hide_document_history_log',
             'developer'
         ];
         $page['data']['have'] = array_intersect($page['data']['perms'], $perms);

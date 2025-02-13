@@ -1,20 +1,24 @@
-{if !$data['until']}
-    {var $_p = 'data-pressdo-history-null'}
+{if !$wiki['page']['data']['until']}
+    {var $ptag = 'span'}
+    {var $phref = null}
 {else}
-    {var $_p = 'href="/login_history?username='.$_GET['username'].'&until='.$data['until'].'"'}
+    {var $ptag = null}
+    {var $phref = '/admin/login_history?username='.$_GET['username'].'&until='.$wiki['page']['data']['until']}
 {/if}
 
-{if !$data['from']}
-    {var $_f = 'data-pressdo-history-null'}
+{if !$wiki['page']['data']['from']}
+    {var $ntag = 'span'}
+    {var $nhref = null}
 {else}
-    {var $_f = 'href="/login_history?username='.$_GET['username'].'&from='.$data['from'].'"'}
+    {var $ptag = null}
+    {var $phref = '/admin/login_history?username='.$_GET['username'].'&until='.$wiki['page']['data']['from']}
 {/if}
 <div class="wiki-content">
-    <div n:if="$data['errbox']" class="a e">
+    <div n:if="$wiki['page']['data']['errbox']" class="a e">
         <strong>{$lang['msg']['error']}</strong>
-        <span>{$data['errbox']}</span>
+        <span>{$wiki['page']['data']['errbox']}</span>
     </div>
-    <form method="POST" action="{$_SERVER['REQUEST_URI']}">
+    <form method="get">
         <div data-pressdo-loginform class="c">
             <label data-pressdo-loginform for="username">{$lang['auth']['username']} : </label>
             <input data-pressdo-acl-span type="text" id="username" name="username">
@@ -23,35 +27,21 @@
             <button class="btn-blue btn" type="submit">{$lang['confirm']}</button>
         </div>
     </form>
-    <form n:if="$_GET['username']" method="POST" action="{$_SERVER['REQUEST_URI']}">
+    <form n:if="$_GET['username']" method="POST">
         <h3>{$_GET['username']} {$lang['login_history']}</h3><br>
-        <p>{$lang['auth']['last_login_ua'].' : '.$data['UA']}</p><br>
-        <p>{$lang['auth']['email'].' : '.$data['email']}</p>
-        <div class="bt-g">
-            <a {$_p|noescape} data-pressdo-history-mv>
-                <span ionicon ion-arrow-back></span> Prev
-            </a>
-            <a {$_f|noescape} data-pressdo-history-mv>
-                Next <span ionicon ion-arrow-forward></span>
-            </a>
-        </div>
-        <table data-pressdo-doc-table class="wiki-table">
+        <p>{$lang['auth']['last_login_ua'].' : '.$wiki['page']['data']['UA']}</p><br>
+        <p>{$lang['auth']['email'].' : '.$wiki['page']['data']['email']}</p>
+        {include '../../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
+        <table class="pressdo-table">
             <thead>
                 <th><strong>Date</strong></th>
                 <th><strong>IP</strong></th>
             </thead>
-            <tr n:foreach="$data['history'] as $h">
-                <td>{date('Y-m-d H:i:s', $h['datetime'])}</td>
+            <tr n:foreach="$wiki['page']['data']['history'] as $h">
+                <td>{$h['datetime']|date: 'Y-m-d H:i:s'}</td>
                 <td>{$h['ip']}</td>
             </tr>
         </table>
-        <div class="bt-g">
-            <a {$_p|noescape} data-pressdo-history-mv>
-                <span ionicon ion-arrow-back></span> Prev
-            </a>
-            <a {$_f|noescape} data-pressdo-history-mv>
-                Next <span ionicon ion-arrow-forward></span>
-            </a>
-        </div>
+        {include '../../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
     </form>
 </div>

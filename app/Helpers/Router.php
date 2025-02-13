@@ -27,6 +27,10 @@ class Router
             $uri_data->title = urldecode(implode('/', array_slice($uriset, 2)));
             $uri_data->titleurl = implode('/', array_slice($uriset, 2));
         } else {
+            if ($uriset[2] == 'star' || $uriset[2] == 'unstar') {
+                $uri_data->menu = $uriset[2];
+                $uri_data->title = implode('/', array_slice($uriset, 3));
+            } else
             $uri_data->menu = implode('/', array_slice($uriset, 2));
             $uri_data->title = '';
             $uri_data->titleurl = '';

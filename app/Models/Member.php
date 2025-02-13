@@ -50,15 +50,22 @@ class Member extends \PressDo\app\Core\Model
         return $user;
     }
 
+    /**
+     * Check if member exists.
+     * @param mixed $username
+     * @param mixed $email
+     * @throws \ErrorException
+     * @return array|bool           Member's uuid, username and email
+     */
     public static function exist($username='', $email=''): array|bool
     {
         $db = self::db();
         try{
             if (empty($email)) {
-                $d = $db->prepare("SELECT uuid, username, email FROM member WHERE username=?");
+                $d = $db->prepare("SELECT uuid, username, email, last_login_ua FROM member WHERE username=?");
                 $d->execute([$username]);
             } else {
-                $d = $db->prepare("SELECT uuid, username, email FROM member WHERE email=? AND username IS NOT NULL");
+                $d = $db->prepare("SELECT uuid, username, email, last_login_ua FROM member WHERE email=? AND username IS NOT NULL");
                 $d->execute([$email]);
             }
         } catch (PDOException $err) {
@@ -280,7 +287,7 @@ class Member extends \PressDo\app\Core\Model
         try {
             $e = $db->prepare("UPDATE `member` SET `perm`=? WHERE `uuid`=?");
             $e->execute([$c,$targetuuid]);
-            $f = $db->prepare("INSERT INTO `BlockHistory` (executor_m,target_member,action,granted) VALUES(?,?,'grant',?)");
+            $f = $db->prepare("INSERT INTO `BlockHistory` (id,executor_m,target_member,action,granted) VALUES(0,?,?,'grant',?)");
             $f->execute([$executoruuid, $targetuuid, $record]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': Webauthn 목록 조회 중 오류 발생');
@@ -308,7 +315,7 @@ class Member extends \PressDo\app\Core\Model
     /**
      * find username by uuid
      * @param string $uuid
-     * @return mixed username (false if not exist)
+     * @return string|false username (false if not exist)
      */
     public static function lookup($uuid): string|bool
     {
@@ -321,5 +328,36 @@ class Member extends \PressDo\app\Core\Model
             return false;
         else
             return $data['username'];
+    }
+
+    public static function loginHistory(string $id, string $execuuid, $from=null, $until=null)
+    {
+        $db = self::db();
+        $exec = self::uuid2bin($execuuid);
+        $target = self::uuid2bin($id);
+        $sqlstr = '';
+
+        if($from !== null)
+            $sqlstr = "AND `datetime`<=$from";
+        elseif($until !== null)
+            $sqlstr = "AND `datetime`>=$until";
+
+        
+
+        $d = $db->prepare("SELECT ip, `datetime` FROM `login_history` WHERE `uuid`=? $sqlstr ORDER BY `datetime` DESC LIMIT 50");
+        $d->execute([$target]);
+        $e = $db->prepare("INSERT INTO `BlockHistory` (id,executor_m,target_member,action) VALUES(0,?,?,'login_history')");
+        $e->execute([$exec, $target]);
+        return $d->fetchAll();
+    }
+
+    public static function getLogintimeEnd(string $uuid): array
+    {
+        $db = self::db();
+        $exec = self::uuid2bin($uuid);
+
+        $d = $db->prepare("SELECT MAX(`datetime`) AS max, MIN(`datetime`) AS min FROM `login_history` WHERE `uuid`=? ORDER BY `datetime`");
+        $d->execute([$exec]);
+        return $d->fetch();
     }
 }

@@ -116,7 +116,7 @@ class Model {
     public static function bin2uuid(string $uuid): string
     {
         $uuid = bin2hex($uuid);
-        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16);
+        return substr($uuid, 0, 8).'-'.substr($uuid, 8, 4).'-'.substr($uuid, 12, 4).'-'.substr($uuid, 16, 4).'-'.substr($uuid, 20);
     }
 
     public static function uuid2bin(string $uuid): string

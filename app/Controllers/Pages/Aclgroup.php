@@ -51,17 +51,15 @@ class Aclgroup extends Controller
                 $errmsg = 'invalid_cidr';
             elseif ($_POST['mode'] == 'username' && !($userdata = Member::exist($_POST['username'])))
                 $errmsg = 'invalid_username';
-
-            $gid = array_search($_POST['group'], $aclgroups);
             
             if ($_POST['mode'] == 'username') {
                 $uuid = $userdata['uuid'];
                 $ip = null;
-                $dup = ACL::groupAddDuplicate($uuid, null, $gid);
+                $dup = ACL::groupAddDuplicate($uuid, null, $_POST['group']);
             } else {
                 $ip = $_POST['ip'];
                 $uuid = null;
-                $dup = ACL::groupAddDuplicate($uuid, $ip, $gid);
+                $dup = ACL::groupAddDuplicate($uuid, $ip, $_POST['group']);
             }
 
             if ($dup)
@@ -83,7 +81,7 @@ class Aclgroup extends Controller
                     $exec_i, 
                     $ip, 
                     $uuid, 
-                    $gid,
+                    $_POST['group'],
                     $_POST['note'],
                     $duration
                 );
@@ -123,7 +121,7 @@ class Aclgroup extends Controller
                 $target_group = in_array($_GET['group'], $accessible_group_names) ? $_GET['group'] : $accessible_group_names[0];
                 $group_id = array_search($target_group, $aclgroups);
 
-                $list = ACL::getAclgroupMembers($group_id, $from, $until);
+                $list = ACL::getAclgroupMembers($target_group, $from, $until);
                 $len = count($list);
 
                 for ($i = 0; $i < $len; $i++) {

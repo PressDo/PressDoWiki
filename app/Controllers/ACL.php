@@ -38,7 +38,7 @@ class ACL extends Controller
             array_push($this->perms, 'ip');
 
         $this->geoip = GeoIP::get($this->session['ip']);
-        $this->aclgroups = ACLModels::getUserAclgroups($this->session);
+        $this->aclgroups = ACLModels::getUserAclgroups($this->session['ip'], $this->session['member']['uuid'] ?? null);
     }
 
     /**
@@ -81,13 +81,12 @@ class ACL extends Controller
                 'errbox' => !($this->access == 'read')
             ];
         } elseif ($this->status === 'deny') {
-            $error = $this->error;
-            $error['message'] = str_replace(
+            $this->error['message'] = str_replace(
                 ['@1@', '@3@', '@4@', '@5@', '@6@', '@7@', '@t@'], 
-                [$access, $allowed, $error['target']['id'], $error['target']['until'], $error['target']['reason'], self::formatCondition($error['cond']), $full_title], 
-                Languages::get('msg')[$error['message']]
+                [$access, $allowed, $this->error['target']['id'], $this->error['target']['until'], $this->error['target']['comment'], self::formatCondition($this->error['cond']), $full_title], 
+                Languages::get('msg')[$this->error['message']]
             );
-            $error['errbox'] = true;
+            $this->error['errbox'] = true;
         }
     }
 
@@ -115,6 +114,7 @@ class ACL extends Controller
                     $this->handleAction(($this->geoip === $cond[1]), $cond[0], $cond[1], $acl['action']);
                     break;
                 case 'aclgroup':
+                    //var_dump($)
                     $this->handleAction(in_array($cond[1], array_keys($this->aclgroups)), $cond[0], $cond[1], $acl['action']);
                     break;
             }
@@ -136,39 +136,56 @@ class ACL extends Controller
     {
         switch($action) {
             case 'allow':
-                if ($cond == 'user')
-                    $input_cond = Languages::get('acl')['specific_user'];
-                else
-                    $input_cond = $cond.':'.$value;
-                
+                $input_cond = self::formatCondition($cond.':'.$value);
                 array_push($this->allow_list, $input_cond);
+
+                if ($this->status === null && $in_cond)
+                    $this->status = $action;
                 break;
             case 'deny':
                 // apply only when user is in condition and status is unset
                 if ($this->status === null && $in_cond) {
-                    $this->error = (object) [
+                    $this->error = [
                         'code' => 'permission_'.$this->access,
                         'message' => 'aclerr_in_target',
-                        'cond' => $cond.':'.$value,
+                        'cond' => self::formatCondition($cond.':'.$value),
                         'errbox' => false
                     ];
                     if ($cond == 'aclgroup') {
+                        if ($this->aclgroups[$value][0]['until'] === 0)
+                            $this->aclgroups[$value][0]['until'] = Languages::get('acl', 'forever_aclgroup');
+                        else
+                            $this->aclgroups[$value][0]['until'] = date('Y-m-d H:i:s', $this->aclgroups[$value][0]['until']);
+
                         $this->error['message'] = 'aclerr_in_aclgroup';
-                        $this->error['target'] = [$value => $this->aclgroups[$value][0]['id']];
+                        $this->error['target'] = $this->aclgroups[$value][0];
                     }
                 }
+                if ($this->status === null && $in_cond)
+                    $this->status = $action;
                 break;
             case 'gotons':
+            if ($this->status === null && $in_cond)
+                $this->status = $action;
                 break;
         }
-        // set status only when status is not set and user meets condition
-        if ($this->status === null && $in_cond)
-            $this->status = $action;
     }
 
     private static function formatCondition(string $cond): string
     {
         // not built
-        return $cond;
+        $con = explode(':', $cond);
+
+        // return 하므로 break가 불요
+        switch ($con[0]) {
+            case 'aclgroup':
+                return $con[1];
+            case 'perm':
+                return Languages::get('perm', $con[1]) ?? $cond;
+            case 'user':
+                return Languages::get('acl')['specific_user'];
+            default:
+                return $cond;
+        }
     }
 }

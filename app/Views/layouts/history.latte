@@ -14,12 +14,13 @@
 {/if}
 <div class="history-menu">
     {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
+    {var $idset = []}
     <form>
         <div class="history-menu-area history-goto page-btn-area">
             <input class="textfield" type="number" name="from" pattern="\d+" required>
             <span>r</span>
             <button class="pressdo-btn" type="submit">
-                <svg data-v-5e68844d="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2l0 64-112 0C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96l96 0 0 64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2l0 64-112 0C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96l96 0 0 64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z"></path></svg>
             </button>
         </div>
     </form>
@@ -39,10 +40,10 @@
                 {var $color = 'red'}
                 {var $flag = ''}
             {/if}
-            <li data-pressdo-history><time datetime="{$d['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$d['date']|date: 'Y-m-d H:i:s'}</time> 
-                <span data-pressdo-history-menu>(<a href="/w/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['view']}</a> | 
+            <li class="history"><time datetime="{$d['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$d['date']|date: 'Y-m-d H:i:s'}</time> 
+                <span class="history-btns">(<a href="/w/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['view']}</a> | 
                 <a href="/raw/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">RAW</a> | 
-                {*<a href="<?=$uri['blame'].$Doc.$uri['prefix'].'uuid={$d['uuid']}">Blame</a> | *}
+                {*<a href="/blame/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">Blame</a> | *}
                 <a href="/revert/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['revert']}</a>{if $d['rev'] > 1} | 
                 <a href="/diff/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['diff']}</a>{/if}{if empty($d['author']) && $d['ip'] == $wiki['session']['ip'] && !empty($wiki['session']['member']['username'])} | 
                 <a href="/move_ip/{$uri_data['title']|escapeUrl}?dt={$d['date']}">{$lang['history']['move_ip']}</a>{/if}
@@ -51,7 +52,7 @@
                         <a href="<?=$uri['hide'].$Doc.'?uuid='.$d['uuid']?>">숨기기</a>
                 }*})
                 </span>
-                <span><input data-pressdo-history-radio type="radio" name="olduuid" value="{$d['uuid']}" v="inline-block"><input data-pressdo-history-radio type="radio" name="uuid" value="{$d['uuid']}" v="inline-block"></span>
+                <span><input type="radio" name="olduuid" value="{$d['uuid']}" v="inline-block"><input type="radio" name="uuid" value="{$d['uuid']}" v="inline-block"></span>
                 <i>{switch $d['logtype']}
                     {case 'revert'}
                         ({=$lang['log']['revert']|replace: '@1@', $d['target_rev']})
@@ -63,9 +64,14 @@
                         ({=$lang['log']['acl']|replace: '@1@', $d['acl']})
                 {/switch}</i>
                 <strong>r{$d['rev']}</strong> <span>(<span class="history-{$color}">{$flag.$d['count']}</span>)</span>
-                <div data-pressdo-history-menu style="display:inline;">
-                    <a n:if="$d['author'] === null" style="{$d['style']}" class="user">{$d['ip']}</a>
-                    <a n:if="$d['author'] !== null" style="{$d['style']}" class="user user-member">{$d['author']}</a>
+                <div class="context-menu v-popper v-popper--theme-contextmenu">
+                    {if $d['author'] === null}
+                        {var $idset[$d['contributor_uuid']] = ['IP', $d['ip']]}
+                        <a style="{$d['style']|noescape}" href="/contribution/{$d['contributor_uuid']}/document" class="user" aria-describedby="contextmenu-{$d['contributor_uuid']}">{$d['ip']}</a>
+                    {else}
+                        {var $idset[$d['contributor_uuid']] = [$lang['acl']['member'].($d['admin'] ? ' ('.$lang['perm']['admin'].')':''), $d['author']]}
+                        <a style="{$d['style']|noescape}" href="/w/{'사용자:'.$d['author']|escapeUrl}" class="user user-member" aria-describedby="contextmenu-{$d['contributor_uuid']}">{$d['author']}</a>
+                    {/if}
                 </div>
                 (<span class="history-gray">{$d['log']}</span>)
             </li>
@@ -73,3 +79,37 @@
     </ul>
     {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
 </form>
+<div n:foreach="$idset as $k => $i" class="context-tooltip" id="contextmenu-{$k}" v="none">
+    <div class="popper__backdrop"></div>
+    <div class="v-popper__wrapper">
+        <div class="v-popper__inner">
+            <div>
+                <div class="tooltip-top">
+                    <div class="user-type">{$i[0]}</div>
+                    <div class="user-name">{$i[1]}</div>
+                </div>
+                {if $i[0] !== 'IP'}
+                <hr>
+                <a href="/w/{$i[0]|escapeUrl}:{$i[1]}" role="button" class="pressdo-btn">사용자 문서</a>
+                {/if}
+                <hr>
+                <a href="/contribution/{$k}/document" role="button" class="pressdo-btn">문서 기여 내역</a>
+                <a href="/contribution/{$k}/discuss" role="button" class="pressdo-btn">토론 기여 내역</a>
+                {if $wiki['session']['admin']}
+                <hr>
+                <a role="button" copy-id="{$k}" copy-msg="{$lang['msg']['uuid_copied']}" href="#" class="pressdo-btn">UUID 복사</a>
+                <a href="/BlockHistory?query={$k}&target=text" role="button" class="pressdo-btn">차단 내역 조회</a>
+                <hr>
+                <a role="button" href="#" class="pressdo-btn btn-darkred" danger>차단</a>
+                {/if}
+            </div>
+            <div class="resize-observer" tabindex="-1">
+                <object aria-hidden="true" tabindex="-1" type="text/html" data="about:blank"></object>
+            </div>
+        </div>
+        <div class="v-popper__arrow-container" style="left: 21.963875px;">
+            <div class="v-popper__arrow-outer"></div>
+            <div class="v-popper__arrow-inner"></div>
+        </div>
+    </div>
+</div>

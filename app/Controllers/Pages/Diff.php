@@ -34,39 +34,37 @@ class Diff extends Controller
         ];
 
         if ($error['code'] == 'permission_read'){
-            $page = [
+            return [
                 'view_name' => 'error',
                 'title' => Languages::get('page')['error'],
                 'data' => $error
             ];
-            return $page;
         }
 
-        if($uuid !== false){
-            $target_uuid = $_GET['uuid'];
-            $new = Document::load($uuid, $target_uuid);
-
-            if(!$new){
-                $error = ['code' => 'no_such_revision'];
-                return $page;
-            }
-            
-            $old_uuid = $_GET['olduuid'] ?? History::getPrevUuid($uuid, $new['rev']);
-            $old = Document::load($uuid, $old_uuid);
-
-            $page['data']['old_uuid'] = $old_uuid;
-            $page['data']['rev_uuid'] = $target_uuid ?? $new['uuid'];
-            $page['data']['diff'] = self::load_diff($old['content'], $new['content'], $old['rev'], $new['rev']);
-            //'debug' => $this->uri_data
-            return $page;
-        }else{
-            $page = [
+        if (!$uuid) {
+            return [
                 'view_name' => 'error',
                 'title' => Languages::get('page', 'error'),
                 'data' => ['code' => 'no_such_revision']
             ];
+        }
+
+        $target_uuid = $_GET['uuid'];
+        $new = Document::load($uuid, $target_uuid);
+
+        if(!$new){
+            $error = ['code' => 'no_such_revision'];
             return $page;
         }
+        
+        $old_uuid = $_GET['olduuid'] ?? History::getPrevUuid($uuid, $new['rev']);
+        $old = Document::load($uuid, $old_uuid);
+
+        $page['data']['old_uuid'] = $old_uuid;
+        $page['data']['rev_uuid'] = $target_uuid ?? $new['uuid'];
+        $page['data']['diff'] = self::load_diff($old['content'], $new['content'], $old['rev'], $new['rev']);
+        //'debug' => $this->uri_data
+        return $page;
     }
 
     private static function load_diff(string $old, string $new, int $ov, int $nv): string

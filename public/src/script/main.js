@@ -15,7 +15,7 @@ q =  (e) => document.querySelector(e),
 qa =  (e) => document.querySelectorAll(e),
 p = function (p,c) {
     if(p != c && c.parentNode != p)
-        return true
+        return true // outside target
     else
         return false
 }
@@ -82,6 +82,7 @@ pinPos = 1
 pin = ''
 before = 0
 Ctrl = Alt = false
+NowDisplayPopper = ''
 Lock = true
 document.onkeyup = (e) => {
     switch(e.key){
@@ -437,6 +438,28 @@ qa('.rmag').forEach(r => {
     })
 })
 
+qa('.conf-del').forEach(r => {
+    e(r,'click', (e) => {
+        e.preventDefault()
+        var f = ce('form')
+        var i = ce('input')
+        var k = ce('input')
+        var j = r.id;
+        i.type = 'hidden'
+        i.name = 'delk'
+        i.value = g(j+'-k').value
+        k.type = 'hidden'
+        k.name = 'delv'
+        k.value = g(j+'-v').value
+        f.appendChild(i)
+        f.appendChild(k)
+        f.method = 'post'
+        f.action = window.location.href
+        document.body.appendChild(f)
+        f.submit()
+    })
+})
+
 qa('.passkey-remove').forEach(r => {
     e(r,'click', (e) => {
         var name = a.g(r,'targetname');
@@ -551,12 +574,31 @@ qa('input[type=checkbox]').forEach(r => {
             r.removeAttribute('checked')
     })
 })
-
+qa('a[copy-id]').forEach(r => {
+    e(r, 'click', () => {
+        window.navigator.clipboard.writeText(r.getAttribute('copy-id')).then(() => {
+            var selector = 'div#contextmenu-' + r.getAttribute('copy-id');
+            var text = r.getAttribute('copy-msg')
+                .replace('@1@', q(selector + ' .user-type').innerText)
+                .replace('@2@', q(selector + ' .user-name').innerText)
+            alert(text)
+        })
+    })
+})
 
 // 다른 곳 클릭하면 팝업 닫힘
 e(document, 'click', e => {
     var x = q('.hidden-trigger')
     var y = g('content-nav-menu')
+
+    if (NowDisplayPopper.length > 0) {
+        NowDisplayPopper = e.target.getAttribute('aria-describedby')
+        qa('div.context-tooltip:not(#'+NowDisplayPopper+')').forEach(r => {
+            SH(r, 'none');
+        })
+    }
+
+    
 
     if(g('list-dropdown-menu'))
         var z = g('list-dropdown-menu')
@@ -588,3 +630,25 @@ if(g('logInput')){
         before = cnt;
     })
 }
+
+qa('div.context-menu a').forEach(r => {
+    var cls = r.getAttribute('aria-describedby')
+    var tooltip = q('div#'+cls)
+    e(r, 'click', e => {
+        e.preventDefault();
+        NowDisplayPopper = cls;
+        var pop = Popper.createPopper(r, tooltip, {
+            placement: 'bottom-start',
+            modifiers: [
+                {
+                  name: 'flip',
+                  options: {
+                    fallbackPlacements: ['top-start'],
+                  },
+                },
+              ],
+            strategy: 'absolute'
+        });
+        SH(tooltip, 'block');
+    })
+})

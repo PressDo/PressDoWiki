@@ -1,25 +1,44 @@
-<div class="wiki-content">
-    <div n:if="$wiki['page']['data']['errbox']" class="a e">
-        <strong>{$lang['msg']['error']}</strong>
-        <span>{$lang['msg'][$wiki['page']['data']['errbox']]}</span>
-    </div>
-    <form method="GET" action="{$request_uri}">
-        <div class="form c">
-            <label for="usernameInput">Username</label>
-            <input class="pressdo-form" data-pressdo-acl-span type="text" id="usernameInput" name="username">
-        </div>
-        <div class="btn-area">
-            <button class="btn-blue pressdo-btn" type="submit">{$lang['confirm']}</button>
-        </div>
-    </form>
-    <form n:if="$wiki['page']['data']['username']" method="POST" action="{$request_uri}">
-        <h3>{$wiki['page']['data']['username']}</h3>
-        <div n:foreach="$wiki['page']['data']['perms'] as $p" class="c form">
-            <label for="{$p}">{$p}</label>
-            <input type="checkbox" class="pressdo-form" id="{$p}" name="permissions[]" value="{$p}" n:attr="checked: in_array($p, $wiki['page']['data']['have'])">
-        </div>
-        <div class="btn-area">
-            <button class="btn-blue pressdo-btn" type="submit">{$lang['confirm']}</button>
-        </div>
-    </form>
+<div n:if="$wiki['page']['data']['errbox']" class="a e">
+    <strong>{$lang['msg']['error']}</strong>
+    <span>{$lang['msg'][$wiki['page']['data']['errbox']]}</span>
 </div>
+<form method="POST">
+    <table class="pressdo-table config">
+        <colgroup>
+            <col style="width:250px;">
+            <col style="width:500px;">
+            <col style="width:100px;">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {var $idx = 1}
+            <td n:if="($wiki['page']['data']['config']|length) === 0" class="s" colspan="3">{$lang['msg']['empty_aclgroup']}</td>
+            {foreach $wiki['page']['data']['config'] as $k => $li}
+            <tr n:if="($wiki['page']['data']['config']|length) !== 0" n:foreach="$li as $l">
+                <td class="s">{$k}<input id="del{$idx}-k" type="hidden" name="ckey-{$idx}" value="{$k}"></td>
+                <td class="s">
+                    <input class="" type="text" name="cval-{$idx}" value="{$l}">
+                    <input id="del{$idx}-v" type="hidden" value="{$l}">
+                </td>
+                <td>
+                    <button id="del{$idx++}" class="pressdo-btn-nonflex btn-red conf-del" type="button">{$lang['acl']['delete']}</button>
+                </td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    <div class="btn-area">
+        <button class="btn-blue pressdo-btn" type="submit">{$lang['change']}</button>
+    </div>
+</form>
+<form method="post">
+    <label for="keyInput">Key:<input name="key" type="text"></label><br>
+    <label for="valueInput">Value:<input name="value" type="text"></label><br>
+    <button type="submit" class="pressdo-btn-nonflex btn-blue">{$lang['acl']['add']}</button>
+</form>

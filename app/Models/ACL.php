@@ -24,7 +24,7 @@ class ACL extends \PressDo\app\Core\Model
     /**
      * Get perms of user account. (all permissions)
      *
-     * @param array $member      member object
+     * @param array $member      member object (require username and uuid)
      * @param array &$perms      permission array
      * @param $document         document uuid
      * @return void            list of perms
@@ -75,20 +75,21 @@ class ACL extends \PressDo\app\Core\Model
 
     /**
      * Get user's ACL Groups.
-     * 
-     * @return array            user's aclgroup list
+     * @param ?string $ip
+     * @param ?string $uuid
+     * @return array            user's aclgroup list ['Group Name': [0: ['id', 'groupid', 'comment', 'until']]]
      */
-    public static function getUserAclgroups(array $session): array|bool
+    public static function getUserAclgroups(?string $ip=null, ?string $uuid=null): array
     {
         $db = self::db();
 
-        $sql = "SELECT target_aclgroup FROM BlockHistory WHERE target_aclgroup IS NOT NULL AND (`until`>=? OR `until`=0) AND ";
-        if ($session['member']) {
+        $sql = "SELECT target_aclgroup, id, groupid, comment, `until`, `datetime` FROM BlockHistory JOIN aclgroups ON `name` = target_aclgroup WHERE target_aclgroup IS NOT NULL AND (`until`>=unix_timestamp() OR `until`=0) AND ";
+        if (!empty($uuid)) {
             $sql .= "target_member=?";
-            $uparam = self::uuid2bin($session['member']['uuid']);
+            $uparam = self::uuid2bin($uuid);
         } else {
             $sql .= " (? & mask_to_bin(mask)) = (target_ip & mask_to_bin(mask))";
-            $uparam = inet_pton($session['ip']);
+            $uparam = inet_pton($ip);
         }
         // id가 2개면 add와 remove가 하나씩 있음
         $sql .= " GROUP BY id HAVING COUNT(*) = 1";
@@ -96,14 +97,14 @@ class ACL extends \PressDo\app\Core\Model
         $a = $db->prepare($sql);
 
         try {
-            $a->execute([$_SERVER['REQUEST_TIME'], $uparam]);
+            $a->execute([$uparam]);
         } catch (PDOException $err) {
-            if ($err->getCode() == '22003')
-                throw new ErrorException($err->getMessage().': 사용자의 ACL Group 조회 중 오류 발생. IP:'.$session['ip']);
+            //if ($err->getCode() == '22003')
+            //    throw new ErrorException($err->getMessage().': 사용자의 ACL Group 조회 중 오류 발생. IP:'.$ip);
             throw new ErrorException($err->getMessage().': 사용자의 ACL Group 조회 중 오류 발생');
         }
         
-        return $a->fetchAll(PDO::FETCH_GROUP);
+        return $a->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_ASSOC);
     }
 
     /**
@@ -119,9 +120,9 @@ class ACL extends \PressDo\app\Core\Model
         $uuid = self::uuid2bin($uuid);
         try {
             $d = $db->prepare("SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_document` 
-            WHERE `uuid`=? AND ".($access!==null? "`access`=? AND": "")." (`until`>=? OR `until`=0) ORDER BY `id` ASC");
+            WHERE `uuid`=? AND ".($access!==null? "`access`=? AND": "")." (`until`>=unix_timestamp() OR `until`=0) ORDER BY `id` ASC");
             $d->execute(
-                ($access===null? [$uuid, $_SERVER['REQUEST_TIME']]:[$uuid, $access, $_SERVER['REQUEST_TIME']])
+                ($access===null? [$uuid]:[$uuid, $access])
             );
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 권한 목록 조회 중 오류 발생');
@@ -152,9 +153,9 @@ class ACL extends \PressDo\app\Core\Model
     {
         $db = self::db();
         try {
-            $d = $db->prepare('SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_namespace` WHERE `namespace`=? AND '.($access!==null? "`access`=? AND": "").' (`until`>=? OR `until`=0) ORDER BY `id` ASC');
+            $d = $db->prepare('SELECT `id`,`condition`,`access`,`action`,`until` as `expired` FROM `acl_namespace` WHERE `namespace`=? AND '.($access!==null? "`access`=? AND": "").' (`until`>=unix_timestamp() OR `until`=0) ORDER BY `id` ASC');
             $d->execute(
-                ($access === null ? [$rawns, $_SERVER['REQUEST_TIME']] : [$rawns, $access, $_SERVER['REQUEST_TIME']])
+                ($access === null ? [$rawns] : [$rawns, $access])
             );
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 이름공간 권한 목록 조회 중 오류 발생');
@@ -182,14 +183,19 @@ class ACL extends \PressDo\app\Core\Model
         elseif($editdata['contributor_i'] !== null)
             $cont_i = self::uuid2bin(self::getIpUuid($editdata['contributor_i']));
 
+        $h_uuid = self::uuid2bin(self::generateUuid());
+
         try {
             $d = $db->prepare("INSERT INTO `acl_document` (uuid, `condition`,`access`,`action`,`until`) VALUES (?,?,?,?,?)");
             $d->execute([$uuid, $acldata['condition'], $acldata['access'], $acldata['action'], $acldata['until']]);
-            $h_uuid = self::uuid2bin(self::generateUuid());
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 ACL 추가 중 오류 발생');
+        }
+        try {
             $d = $db->prepare("INSERT INTO `history` (uuid, document, rev, `action`, contributor_m, contributor_i, acl_changed) VALUES(?,?,?,?,'acl',?,?,?)");
             $d->execute([$h_uuid, $uuid, $editdata['baserev'], $cont_m, $cont_i, $editdata['acl_changed']]);
         } catch (PDOException $err) {
-            throw new ErrorException($err->getMessage().': 문서 ACL 추가 중 오류 발생');
+            throw new ErrorException($err->getMessage().': 문서 ACL 추가내용 기록 중 오류 발생');
         }
     }
 
@@ -260,7 +266,15 @@ class ACL extends \PressDo\app\Core\Model
         }
     }
 
-    public static function getAclgroupMembers(int $id, ?int $from, ?int $until): array
+    /**
+     * Get list of members in ACL Group.
+     * @param string $group
+     * @param mixed $from
+     * @param mixed $until
+     * @throws \ErrorException
+     * @return array
+     */
+    public static function getAclgroupMembers(string $group, ?int $from, ?int $until): array
     {
         $db = self::db();
         if ($from !== null)
@@ -272,8 +286,8 @@ class ACL extends \PressDo\app\Core\Model
 
         try {
             $d = $db->prepare("SELECT id, target_ip, mask, target_member, comment, `datetime`, until 
-            FROM BlockHistory WHERE target_aclgroup=? AND (`until`>=? OR `until`=0) $scope GROUP BY id HAVING COUNT(*) < 2 ORDER BY `datetime` DESC LIMIT 50");
-            $d->execute([$id, time()]);
+            FROM BlockHistory WHERE target_aclgroup=? AND (`until`>=unix_timestamp() OR `until`=0) $scope GROUP BY id HAVING COUNT(*) < 2 ORDER BY `datetime` DESC LIMIT 50");
+            $d->execute([$group]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ACL그룹 구성원 조회 중 오류 발생');
         }
@@ -281,12 +295,12 @@ class ACL extends \PressDo\app\Core\Model
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getAclgroupMinMaxIdx(int $id): array
+    public static function getAclgroupMinMaxIdx(string $group): array
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT MAX(b.id) AS max, MIN(b.id) AS min FROM BlockHistory b WHERE target_aclgroup=? AND (`until`>=? OR `until`=0) GROUP BY b.id HAVING COUNT(*) < 2");
-            $d->execute([$id, time()]);
+            $d = $db->prepare("SELECT MAX(b.id) AS max, MIN(b.id) AS min FROM BlockHistory b WHERE target_aclgroup=? AND (`until`>=unix_timestamp() OR `until`=0) GROUP BY b.id HAVING COUNT(*) < 2");
+            $d->execute([$group]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ACL그룹 인덱스 조회 중 오류 발생');
         }
@@ -294,7 +308,7 @@ class ACL extends \PressDo\app\Core\Model
         return $d->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function addtoGroup(?string $executor_m, ?string $executor_i, ?string $target_i, ?string $target_m, int $target_group, string $comment, int $until): void
+    public static function addtoGroup(?string $executor_m, ?string $executor_i, ?string $target_i, ?string $target_m, string $target_group, string $comment, int $until): void
     {
         $db = self::db();
         if (!empty($target_m)) {
@@ -323,14 +337,14 @@ class ACL extends \PressDo\app\Core\Model
         }
     }
 
-    public static function groupIdLookup(int $id): ?int
+    public static function groupIdLookup(int $id): ?string
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT target_aclgroup FROM BlockHistory WHERE id=? AND (`until`>=? OR `until`=0) GROUP BY id HAVING COUNT(*) < 2");
-            $d->execute([$id, time()]);
+            $d = $db->prepare("SELECT target_aclgroup FROM BlockHistory WHERE id=? AND (`until`>=unix_timestamp() OR `until`=0) GROUP BY id HAVING COUNT(*) < 2");
+            $d->execute([$id]);
         } catch (PDOException $err) {
-            throw new ErrorException($err->getMessage().': ACL그룹 ID 조회 중 오류 발생');
+            throw new ErrorException($err->getMessage().': ID로 ACL그룹 조회 중 오류 발생');
         }
         
         return $d->fetch(PDO::FETCH_ASSOC)['target_aclgroup'];
@@ -383,19 +397,19 @@ class ACL extends \PressDo\app\Core\Model
         }
     }
 
-    public static function groupAddDuplicate(?string $uuid, ?string $cidr, int $groupid): bool
+    public static function groupAddDuplicate(?string $uuid, ?string $cidr, string $group): bool
     {
         $db = self::db();
 
         if ($uuid !== null) {
             $uuid = self::uuid2bin($uuid);
-            $sql = "SELECT 1 FROM BlockHistory WHERE target_member=? AND target_aclgroup=? AND (`until`>=? OR `until`=0) GROUP BY id HAVING COUNT(*) < 2";
-            $param = [$uuid, $groupid, time()];
+            $sql = "SELECT 1 FROM BlockHistory WHERE target_member=? AND target_aclgroup=? AND (`until`>=unix_timestamp() OR `until`=0) GROUP BY id HAVING COUNT(*) < 2";
+            $param = [$uuid, $group];
         } elseif ($cidr !== null) {
             [$ip, $mask] = explode('/', $cidr);
             $ip = inet_pton($ip);
-            $sql = "SELECT 1 FROM BlockHistory WHERE target_ip=? AND mask=? AND target_aclgroup=? AND (`until`>=? OR `until`=0) GROUP BY id HAVING COUNT(*) < 2";
-            $param = [$ip, $mask, $groupid, time()];
+            $sql = "SELECT 1 FROM BlockHistory WHERE target_ip=? AND mask=? AND target_aclgroup=? AND (`until`>=unix_timestamp() OR `until`=0) GROUP BY id HAVING COUNT(*) < 2";
+            $param = [$ip, $mask, $group];
         }
 
         try {

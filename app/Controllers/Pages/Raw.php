@@ -41,29 +41,28 @@ class Raw extends Controller
         }
 
         if (!$uuid) {
-            $page = [
+            return [
                 'view_name' => 'error',
                 'title' => Languages::get('page', 'error'),
                 'data' => ['code' => 'no_such_document']
             ];
-        } else {
-            $rev = $_GET['uuid'] ?? $uuid;
-            $doc = Document::load($uuid, $rev);
-
-            if ($doc === null) {
-                $page = [
-                    'view_name' => 'error',
-                    'title' => Languages::get('page', 'error'),
-                    'data' => ['code' => 'no_such_revision']
-                ];
-                return $page;
-            }
-
-            $page['subtitle'] .= 'r'.$doc['rev'].' RAW';
-            $page['data']['rev'] = $doc['rev'];
-            $page['data']['text'] = $doc['content'];
-            //'debug' => $this->uri_data
         }
+
+        $rev = $_GET['uuid'] ?? $uuid;
+        $doc = Document::load($uuid, $rev);
+
+        if ($doc === null) {
+            return [
+                'view_name' => 'error',
+                'title' => Languages::get('page', 'error'),
+                'data' => ['code' => 'no_such_revision']
+            ];
+        }
+
+        $page['subtitle'] .= 'r'.$doc['rev'].' RAW';
+        $page['data']['rev'] = $doc['rev'];
+        $page['data']['text'] = $doc['content'];
+        //'debug' => $this->uri_data
         return $page;
     }
 }

@@ -13,6 +13,7 @@ function loadClass($page, $menu) {
         case 'wiki':
             require $DIR.'Star.php';
             require $HDIR.Config::get('wiki.mark').'/Loader.php';
+            require $DIR.'Member.php';
             // no break
         case 'backlink':
             require $DIR.'Document.php';
@@ -59,7 +60,7 @@ function loadClass($page, $menu) {
             }
             break;
         case 'admin':
-            if ($menu == 'grant')
+            if ($menu == 'grant' || $menu == 'login_history')
                 require $DIR.'Member.php';
             break;
         case 'member':
