@@ -16,10 +16,10 @@ class Mypage extends Controller
         }
 
         if (!empty($_POST['delnm'])) {
-            Member::deleteUserWebauthn($this->session['member']['uuid'], $_POST['delnm']);
+            Member::deleteUserWebauthn($this->session['uuid'], $_POST['delnm']);
         } elseif (json_decode($_POST['challenge'], true) !== null && !empty($_POST['passkeyName'])) {
             // validate passkey enrollment
-            $passkeys = Member::getUserWebauthn($this->session['member']['uuid']);
+            $passkeys = Member::getUserWebauthn($this->session['uuid']);
             foreach ($passkeys as $p) {
                 if ($p['name'] == $_POST['passkeyName']) {
                     $errmsg = 'authenticator_duplicate_name';
@@ -39,12 +39,12 @@ class Mypage extends Controller
                 $credential->AAGUID = base64_encode($credential->AAGUID);
                 
                 // 등록된 키를 데이터베이스에 저장
-                Member::saveUserWebauthn($this->session['member']['uuid'], $_POST['passkeyName'], json_encode($credential));
+                Member::saveUserWebauthn($this->session['uuid'], $_POST['passkeyName'], json_encode($credential));
             }                
         }
 
-        $user = Member::getUserInfo($this->session['member']['uuid']);
-        $passkeys = Member::getUserWebauthn($this->session['member']['uuid']);
+        $user = Member::getUserInfo($this->session['uuid']);
+        $passkeys = Member::getUserWebauthn($this->session['uuid']);
 
         if ($user['totp_secret']) {
             // initilaize passkey enrollment

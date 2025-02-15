@@ -15,7 +15,7 @@ class Unstar extends Controller
             exit;
         }
 
-        Star::unstar(Document::getUuid($namespace,$title), $this->session['member']['uuid']);
+        Star::unstar(Document::getUuid($namespace,$title), $this->session['uuid']);
 
         Header('Location: /w/'.$this->uri_data->title);
     }

@@ -10,7 +10,6 @@ class Preview extends Controller
     {
         $content = self::readSyntax($_POST['text'], [
             'title' => $_POST['title'],
-            'db' => Database::getInstance(),
             'namespace' => Namespaces::all(),
             'thread' => false
         ]);

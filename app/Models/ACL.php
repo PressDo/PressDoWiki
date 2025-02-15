@@ -186,7 +186,7 @@ class ACL extends \PressDo\app\Core\Model
         if($editdata['contributor_m'] !== null)
             $cont_m = self::uuid2bin($editdata['contributor_m']);
         elseif($editdata['contributor_i'] !== null)
-            $cont_i = self::uuid2bin(self::getIpUuid($editdata['contributor_i']));
+            $cont_i = self::uuid2bin($editdata['contributor_i']);
 
         $h_uuid = self::uuid2bin(self::generateUuid());
 
@@ -249,7 +249,7 @@ class ACL extends \PressDo\app\Core\Model
         if($editdata['contributor_m'] !== null)
             $cont_m = self::uuid2bin($editdata['contributor_m']);
         elseif($editdata['contributor_i'] !== null)
-            $cont_i = self::uuid2bin(self::getIpUuid($editdata['contributor_i']));
+            $cont_i = self::uuid2bin($editdata['contributor_i']);
 
         try {
             $db->query("DELETE FROM acl_document WHERE id=$id");

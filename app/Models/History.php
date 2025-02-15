@@ -42,11 +42,10 @@ class History extends \PressDo\app\Core\Model
 
     /**
      * fetch recent 100 edit histories
-     * 
-     * @param string|null $option  extra string for filtering
+     * @param string $logtype  type of edit
      * @return 
      */
-    public static function recentChanges(string $option='all', bool $sidebar=false)
+    public static function recentChanges(string $logtype='all', bool $sidebar=false)
     {
         $db = self::db();
 
@@ -65,7 +64,7 @@ class History extends \PressDo\app\Core\Model
 
         try {
             $d = $db->query("SELECT h.`uuid`,h.`action`,h.`comment`,h.`reverted_version`,h.`count`,h.`contributor_m`, h.`contributor_i`,h.`document`, h.`acl_changed`, h.`moved_from`, h.`moved_to`, h.`datetime`, h.rev FROM `history` as h, document 
-            WHERE BINARY h.`is_hidden`='false' AND h.document = document.uuid $lt[$option] ORDER BY `datetime` DESC LIMIT ".$quota);
+            WHERE BINARY h.`is_hidden`='false' AND h.document = document.uuid $lt[$logtype] ORDER BY `datetime` DESC LIMIT ".$quota);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 최근 변경 가져오는 중 오류 발생');
         }

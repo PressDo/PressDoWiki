@@ -7,6 +7,7 @@ require '../app/Core/Controller.php';
 require '../app/Core/Model.php';
 require '../app/Core/View.php';
 require '../app/Controllers/ACL.php';
+require '../app/Models/Member.php';
 require 'classLoader.php';
 
 use PressDo\app\Helpers\{Config,Router};

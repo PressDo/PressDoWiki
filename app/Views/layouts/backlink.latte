@@ -34,7 +34,7 @@
     <div n:foreach="$wiki['page']['data']['backlink'] as $key => $val">
         <h3>{$key}</h3>
         <ul class="lists" n:inner-foreach="$val as $v">
-            {if $v['force_show_namespace'] || $v['document']['namespace'] !== '문서'}
+            {if $v['document']['forceShowNamespace'] !== false}
                 {var $ns = $v['document']['namespace'].':'}
             {else}
                 {var $ns = ''}

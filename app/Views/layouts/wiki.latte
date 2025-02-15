@@ -55,12 +55,10 @@
             {continueIf $key == 'count'}
             <h3>{$key}</h3>
             <ul class="lists" n:inner-foreach="$val as $v">
-                {if $v['force_show_namespace'] || $v['document']['namespace'] !== '문서'}
-                    {var $ns = $v['document']['namespace'].':'}
-                {else}
-                    {var $ns = ''}
-                {/if}{$v['title']}
-                <li class="backlinks"><a href="/w/{$ns.$v['document']['title']}">{$ns.$v['document']['title']}</a></li>
+                {$v['title']}
+                <li class="backlinks">
+                    <a href="/w/{$ns.$v['document']['title']}">{($v['document']['forceShowNamespace'] !== false ? $ns : '').$v['document']['title']}</a>
+                </li>
             </ul>
         </div>
     </div>

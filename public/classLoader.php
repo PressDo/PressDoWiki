@@ -13,7 +13,6 @@ function loadClass($page, $menu) {
         case 'wiki':
             require $DIR.'Star.php';
             require $HDIR.Config::get('wiki.mark').'/Loader.php';
-            require $DIR.'Member.php';
             // no break
         case 'backlink':
             require $DIR.'Document.php';
@@ -24,7 +23,6 @@ function loadClass($page, $menu) {
             // no break
         case 'RecentDiscuss':
             require $DIR.'Thread.php';
-            require $DIR.'Member.php';
             // no break
         case 'edit':
         case 'move':
@@ -41,37 +39,28 @@ function loadClass($page, $menu) {
             break;
         case 'RecentChanges':
         case 'history':
-            require $DIR.'Member.php';
-            // no break
         case 'diff':
             require $DIR.'Document.php';
             require $DIR.'History.php';
-        break;
+            break;
         case 'discuss':
             require $DIR.'EditRequest.php';
-            require $DIR.'Document.php';
+            // no break
         case 'thread':
-            require $DIR.'Member.php';
             require $DIR.'Thread.php';
+            // no break
         case 'api':
+            require $DIR.'Document.php';
             if ($menu == 'preview' || $page == 'thread') {
                 require $HDIR.Config::get('wiki.mark').'/Loader.php';
-                require $DIR.'Document.php';
+            } elseif ($menu == 'recent') {
+                require $DIR.'History.php';
             }
-            break;
-        case 'admin':
-            if ($menu == 'grant' || $menu == 'login_history')
-                require $DIR.'Member.php';
             break;
         case 'member':
             if ($menu == 'unstar' || $menu == 'star') {
                 require $DIR.'Document.php';
                 require $DIR.'Star.php';
             }
-            // no break 
-        case 'License':
-        case 'aclgroup':
-            require $DIR.'Member.php';
-            break;
     }
 }

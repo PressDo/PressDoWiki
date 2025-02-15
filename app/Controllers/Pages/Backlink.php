@@ -25,6 +25,7 @@ class Backlink extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'backlink_count' => [],
                 'backlink' => []
@@ -72,8 +73,9 @@ class Backlink extends Controller
                     'document' => [
                         'namespace' => $b[0]['namespace'], 
                         'title' => $title, 
-                        'force_show_namespace' => Config::get('wiki.force_show_namespace')], 
-                        'type' => $b[0]['type']
+                        'forceShowNamespace' => self::forceShowNamespace($b[0]['namespace'], $title)
+                    ],
+                    'type' => $b[0]['type']
                 ]);
             }
         }

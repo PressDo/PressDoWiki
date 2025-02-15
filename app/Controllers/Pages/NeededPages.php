@@ -41,6 +41,9 @@ class NeededPages extends Controller
             'menus' => [],
             'customData' => []
         ];
+        foreach ($resultSet as $k => $r) {
+            $resultSet[$k]['forceShowNamespace'] = self::forceShowNamespace($r['namespace'], $r['title']);
+        }
 
         $page['data']['content'] = $resultSet;
 

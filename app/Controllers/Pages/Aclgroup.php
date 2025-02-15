@@ -65,10 +65,16 @@ class Aclgroup extends Controller
             if ($dup)
                 $errmsg = 'acl_already_exists';
 
-            if (!$this->session['member']['uuid'])
-                $exec_i = Member::getIpUuid($this->session['ip']);
-            else
+            if (!$this->session['member']) {
+                if (!$this->session['uuid']) {
+                    $this->session['uuid'] = Member::getIpUuid($this->session['ip']);
+                }
+                $exec_i = $this->session['uuid'];
+                $exec_m = null;
+            } else {
                 $exec_i = null;
+                $exec_m = $this->session['uuid'];
+            }
 
             if ($_POST['duration_raw'] > 0)
                 $duration = time() + $_POST['duration_raw'];
@@ -77,7 +83,7 @@ class Aclgroup extends Controller
 
             if (empty($errmsg))
                 ACL::addtoGroup(
-                    $this->session['member']['uuid'],
+                    $exec_m,
                     $exec_i, 
                     $ip, 
                     $uuid, 
@@ -86,13 +92,19 @@ class Aclgroup extends Controller
                     $duration
                 );
         } elseif (!empty($group) && self::getAllowedAction(array_search($group, $aclgroups), 'remove', $perms) && !empty($_POST['note'])) {
-            if (!$this->session['member']['uuid'])
-                $exec_i = Member::getIpUuid($this->session['ip']);
-            else
+            if (!$this->session['member']) {
+                if (!$this->session['uuid']) {
+                    $this->session['uuid'] = Member::getIpUuid($this->session['ip']);
+                }
+                $exec_i = $this->session['uuid'];
+                $exec_m = null;
+            } else {
                 $exec_i = null;
+                $exec_m = $this->session['uuid'];
+            }
 
             ACL::removefromGroup(
-                $this->session['member']['uuid'],
+                $exec_m,
                 $exec_i, 
                 $_POST['id'],
                 $_POST['note']

@@ -1,6 +1,7 @@
 <?php
 namespace PressDo\app\Core;
 
+use PressDo\app\Models\Member;
 use PressDo\app\Helpers\{Config,Namespaces,Languages};
 use PressDo\app\Helpers\Mark\Loader;
 use \yidas\socketMailer\Mailer;
@@ -19,6 +20,9 @@ class Controller
             'ip' => self::getIPAddr(),
             'ua' => $_SERVER['HTTP_USER_AGENT']
         ];
+        $uuid = Member::getIpUuid($this->session['ip'], true);
+        if ($uuid !== null)
+            $this->session['uuid'] = $uuid;
 
         $this->api_config = [
             'force_recaptcha_public' => Config::get('wiki.force_recaptcha_public'),
@@ -107,10 +111,9 @@ class Controller
      */
     public static function parseTitle(string $title): array
     {
-        $_ns = Namespaces::all();
         $t = explode(':', $title);
         
-        if (!in_array($t[0], $_ns) || count($t) === 1)
+        if (!in_array($t[0], Namespaces::all()) || count($t) === 1)
             return [Namespaces::DOCUMENT, $title];
         else
             return [$t[0], implode(':', array_slice($t, 1))];
@@ -125,10 +128,19 @@ class Controller
      */
     public static function makeTitle(string $namespace, string $title): string
     {
-        if ($namespace == Namespaces::DOCUMENT && Config::get('wiki.force_show_namespace') === false)
+        if (self::forceShowNamespace($namespace, $title) === false)
             return $title;
         else 
             return $namespace.':'.$title;
+    }
+
+    protected static function forceShowNamespace(string $namespace, string $title): bool|null
+    {
+        $e = explode(':', $title);
+        if (!in_array($e[0], Namespaces::all()) && $namespace == Namespaces::DOCUMENT)
+            return false;
+        else
+            return null;
     }
 
     protected static function sendMail(string $recipient, string $title, string $content): bool
@@ -221,7 +233,7 @@ class Controller
         $code = self::utf8_ord($char) - 44032;
         if ($code > -1 && $code < 11172) {
             $result = $heads[$code / 588];
-        }elseif(in_array($char, $heads)) {
+        }else{//if(in_array($char, $heads)) {
             $result = $char;
         }
         return $result;

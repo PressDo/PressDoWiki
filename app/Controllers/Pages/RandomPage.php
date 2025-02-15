@@ -21,6 +21,9 @@ class RandomPage extends Controller
             'customData' => []
         ];
         $resultSet = Document::getRandom($namespace, 20);
+        foreach ($resultSet as $k => $r) {
+            $resultSet[$k]['forceShowNamespace'] = self::forceShowNamespace($r['namespace'], $r['title']);
+        }
 
         $page['data']['content'] = $resultSet;
 

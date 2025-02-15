@@ -40,8 +40,7 @@ class Thread extends Controller
             else {
                 $cont = $this::readSyntax($c['content'], [
                     'title' => $this->uri_data->title,
-                    'thread' => true,
-                    'db' => Database::getInstance()
+                    'thread' => true
                 ]);
             }
 
@@ -73,7 +72,7 @@ class Thread extends Controller
             ]);
         }
 
-        $init_c = $info['contributor_m'] ?? $info['contributor_i'];
+        $init_c = $info['init_m'] ?? $info['init_i'];
 
         $page = [
             'view_name' => 'thread',
@@ -81,7 +80,8 @@ class Thread extends Controller
             'data' => [
                 'document' => [
                     'namespace' => $namespace,
-                    'title' => $title
+                    'title' => $title,
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'status' => $info['status'],
                 'topic'=> $info['topic'],

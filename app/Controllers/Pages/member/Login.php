@@ -77,6 +77,8 @@ class Login extends Controller
                 $this->setup2fa($this->session['temp']['member'], $page['data']);
             } elseif (!empty($this->session['temp'])) {
                 $this->session['menus'] = $this->session['temp']['menus'];
+                $this->session['uuid'] = $this->session['temp']['member']['uuid'];
+                unset($this->session['temp']['member']['uuid']);
                 $this->session['member'] = $this->session['temp']['member'];
                 unset($this->session['temp']);
                 
@@ -116,6 +118,8 @@ class Login extends Controller
                 }
 
                 $this->session['menus'] = $this->session['temp']['menus'];
+                $this->session['uuid'] = $this->session['temp']['member']['uuid'];
+                unset($this->session['temp']['member']['uuid']);
                 $this->session['member'] = $this->session['temp']['member'];
                 unset($this->session['temp']);
                 

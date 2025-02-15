@@ -18,7 +18,7 @@ class ActivateOtp extends Controller
             exit;
         }
 
-        $user = Member::getUserInfo($this->session['member']['uuid']);
+        $user = Member::getUserInfo($this->session['uuid']);
 
         if($user['totp_secret'] !== null){
             $error = ['code' => 'already_activated_otp'];
@@ -34,7 +34,7 @@ class ActivateOtp extends Controller
             $otp = TOTP::createFromSecret($this->session['otp_secret']);
 
             if ($otp->verify($_POST['pin'])) {
-                Member::setTotp($this->session['member']['uuid'], $this->session['otp_secret']);
+                Member::setTotp($this->session['uuid'], $this->session['otp_secret']);
                 unset($this->session['member']['secret']);
                 header('Location: /member/mypage');
             } else

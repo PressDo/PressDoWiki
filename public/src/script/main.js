@@ -174,7 +174,8 @@ qa('button.e.editor.top').forEach(r => {
                 SH(f,'')
             }else{
                 SH(f,'none')
-                q('div#r textarea.editor').value = window.monaco_namu.getValue()
+                if (d.id == 'm')
+                    q('div#r textarea.editor').value = window.monaco_namu.getValue()
             }
             if(e.target.id == 'p')
                 getPreview()
@@ -598,7 +599,7 @@ e(document, 'click', e => {
         })
     }
 
-    
+    //if ()
 
     if(g('list-dropdown-menu'))
         var z = g('list-dropdown-menu')
@@ -652,3 +653,73 @@ qa('div.context-menu a').forEach(r => {
         SH(tooltip, 'block');
     })
 })
+
+let updated = false;
+softSearch = () => {
+    updated = true;
+    var searchText = $('#searchInput').val();
+    if (searchText.length < 1){
+        $('div.v-autocomplete-list').empty()
+        return false;
+    }
+    const xhr = new XMLHttpRequest()
+    const data = new FormData()
+
+    xhr.open('GET', window.location.protocol + '//' + window.location.host + '/api/search?q=' + searchText)
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState === xhr.DONE && xhr.status === 200) {
+            var searchData = JSON.parse(xhr.responseText);
+            $('div.v-autocomplete-list').empty()
+            searchData.forEach(r => {
+                var docnm = (r.forceShowNamespace === false ? '' : r.namespace + ':') + r.title;
+                var $item = $('<div class="v-autocomplete-list-item"><div>'+ docnm +'</div></div>')
+                $('div.v-autocomplete-list').append($item);
+            })
+
+            $('div.v-autocomplete-list-item')
+                .on('mouseenter', e => {
+                    e.target.classList.add('v-autocomplete-item-active')
+                })
+                .on('mouseleave', e => {
+                    e.target.classList.remove('v-autocomplete-item-active')
+                })
+                .on('click', e => {
+                    location.href = '/w/' + e.target.innerText
+                })
+        }
+    }
+    xhr.send(data)
+}
+$('#searchInput').on('keydown', softSearch)
+
+getRecent = () => {
+    const xhr = new XMLHttpRequest()
+    const data = new FormData()
+
+    xhr.open('GET', window.location.protocol + '//' + window.location.host + '/api/recent')
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState === xhr.DONE && xhr.status === 200) {
+            var searchData = JSON.parse(xhr.responseText);
+            $('.recent-item').each(function(index) {
+                if (searchData[index]) {
+                    var r = searchData[index]
+                    var date = new Date(r.date * 1000);
+                    var targetdate = date.getFullYear().toString() + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + ("0" + date.getDate()).slice(-2)
+                    var now = new Date();
+                    var nowdate = now.getFullYear().toString() + '/' + ("0" + (now.getMonth() + 1)).slice(-2) + '/' + ("0" + now.getDate()).slice(-2)
+                    if (targetdate === nowdate)
+                        var displaydate = ("0" + date.getHours()).slice(-2) + ':' + ("0" + date.getMinutes()).slice(-2) + ':' + ("0" + date.getSeconds()).slice(-2)
+                    else
+                        var displaydate = targetdate
+                    var docnm = (r.document.forceShowNamespace === false ? '' : r.document.namespace + ':') + r.document.title;
+                    $(this).text('['+displaydate+'] '+docnm); // jQuery 방식으로 값 설정
+                    $(this).contents().unwrap().wrap('<a class="recent-item" href="/w/'+docnm+'"></a>')
+                } else
+                    $(this).text('&nbsp;');
+            });
+        }
+    }
+    xhr.send(data)
+}
+getRecent();
+setInterval(getRecent, 30000)

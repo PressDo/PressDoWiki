@@ -23,6 +23,7 @@ class Raw extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'rev' => null,
                 'text' => null

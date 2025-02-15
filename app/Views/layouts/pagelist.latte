@@ -25,7 +25,7 @@
     {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
     <ul class="lists">
         {foreach $wiki['page']['data']['content'] as $d}
-            {if $config['wiki.force_show_namespace'] === false && $d['namespace'] == '문서'}
+            {if $d['forceShowNamespace'] === false}
                 {var $title = $d['title']}
             {else}
                 {var $title = $d['namespace'].':'.$d['title']}

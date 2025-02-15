@@ -17,6 +17,7 @@
     {default $readonly = false}
     {default $mobile = false}
     {default $toolbarinit = false}
+    <div class="w"></div>
     <form method="post" name="editForm" id="editForm" enctype="multipart/form-data">
         <input n:if="!$readonly" type="hidden" name="token" value="{$wiki['page']['data']['token']}">
         <ul class="editor top">

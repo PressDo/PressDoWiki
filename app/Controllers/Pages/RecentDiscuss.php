@@ -1,9 +1,9 @@
 <?php
 namespace PressDo\app\Controllers\Pages;
 
-use PressDo\app\Models\{Thread,Document,Member};
+use PressDo\app\Models\{Thread,Document,Member,ACL};
 use PressDo\app\Core\{Controller,Model};
-use PressDo\app\Helpers\Languages;
+use PressDo\app\Helpers\{Languages,Config};
 
 class RecentDiscuss extends Controller
 {
@@ -39,24 +39,44 @@ class RecentDiscuss extends Controller
         $order = ($lot[0] == 'old')? 'ASC' : 'DESC';
         $fetch = Thread::recentDiscuss($from, $status, $order);
         $resultSet = [];
+        $userStyleSet = [];
+        $mperms = [];
 
         foreach ($fetch as $f){
-            if (!$f['last_contributor_m']) {
-                //$uuid = Model::bin2uuid($f['last_contributor_i']);
-                //$ip = Member::ipLookup($uuid);
+            if (!$f['contributor_m']) {
+                $uuid = Model::bin2uuid($f['contributor_i']);
+                $ip = Member::ipLookup($uuid);
+
+                if (empty($userStyleSet[$ip])):
+                    $groups = array_map(fn($r) => $r[0]['groupid'], ACL::getUserAclgroups($ip));
+                    $userStyleSet[$ip] = implode(' ', array_map(fn($r) => Config::get('aclgroup.'.$r.'.style', ' '), $groups));
+                endif;
             } else {
-                //$uuid = Model::bin2uuid($f['last_contributor_m']);
-                //$member = Member::lookup($uuid);
+                $uuid = Model::bin2uuid($f['contributor_m']);
+                $member = Member::lookup($uuid);
+                $ip = null;
+
+                if (empty($userStyleSet[$uuid])):
+                    $groups = array_map(fn($r) => $r[0]['groupid'], ACL::getUserAclgroups(uuid: $uuid));
+                    $userStyleSet[$uuid] = implode(' ', array_map(fn($r) => Config::get('aclgroup.'.$r.'.style', ' '), $groups));
+                endif;
+
+                if (empty($mperms[$uuid])) {
+                    $mperms[$uuid] = [];
+                    ACL::getAccountPerms(['username' => $member, 'uuid' => $uuid], $mperms[$uuid]);
+                }
             }
             $_e = Document::getTitleByUuid(Model::bin2uuid($f['document']));
             $rs = [
                 'slug' => $f['urlstr'],
-                'document' => ['namespace' => $_e['namespace'], 'title' => $_e['title']],
+                'document' => ['namespace' => $_e['namespace'], 'title' => $_e['title'], 'forceShowNamespace' => self::forceShowNamespace($_e['namespace'], $_e['title'])],
                 'topic' => $f['topic'],
                 'date' => $f['last_comment'],
-                'logtype' => $f['logtype'],
                 'ip' => $ip,
                 'author' => $member,
+                'contributor_uuid' => $uuid,
+                'style' => $userStyleSet[$uuid] ?? $userStyleSet[$ip], 
+                'admin' => $ip ?? in_array('admin', $mperms[$uuid]),
                 'user_mode' => []
             ];
             array_push($resultSet, $rs);

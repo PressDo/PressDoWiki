@@ -1,55 +1,87 @@
-<div class="wiki-content">
-    <div>
-        <div class="top-area">
-            <div class="toolkit-wrap">
-                <div class="menu-wrap">
-                    <ul class="recent-toolbox">
-                        <li><a n:class="!in_array($uri_data['query']['logtype'], ['old_thread', 'pause_thread', 'closed_thread', 'open_editrequest', 'accepted_editrequest', 'closed_editrequest', 'old_editrequest']) ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=normal_thread">{$lang['recent']['logtype_normal_thread']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'old_thread' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=old_thread">{$lang['recent']['logtype_old_thread']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'pause_thread' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=pause_thread">{$lang['recent']['logtype_pause_thread']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'closed_thread' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=closed_thread">{$lang['recent']['logtype_closed_thread']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'open_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=open_editrequest">{$lang['recent']['logtype_open_editrequest']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'accepted_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=accepted_editrequest">{$lang['recent']['logtype_accepted_editrequest']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'closed_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=closed_editrequest">{$lang['recent']['logtype_closed_editrequest']}</a></li>
-                        <li><a n:class="$uri_data['query']['logtype'] == 'old_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=old_editrequest">{$lang['recent']['logtype_old_editrequest']}</a></li>
-                    </ul>
+<div class="top-area">
+    <div class="toolkit-wrap">
+        <div class="menu-wrap">
+            <ul class="recent-toolbox">
+                <li><a n:class="!in_array($_GET['logtype'], ['old_thread', 'pause_thread', 'closed_thread', 'open_editrequest', 'accepted_editrequest', 'closed_editrequest', 'old_editrequest']) ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=normal_thread">{$lang['recent']['logtype_normal_thread']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'old_thread' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=old_thread">{$lang['recent']['logtype_old_thread']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'pause_thread' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=pause_thread">{$lang['recent']['logtype_pause_thread']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'closed_thread' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=closed_thread">{$lang['recent']['logtype_closed_thread']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'open_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=open_editrequest">{$lang['recent']['logtype_open_editrequest']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'accepted_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=accepted_editrequest">{$lang['recent']['logtype_accepted_editrequest']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'closed_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=closed_editrequest">{$lang['recent']['logtype_closed_editrequest']}</a></li>
+                <li><a n:class="$_GET['logtype'] == 'old_editrequest' ? recent-menu-current, recent-menu" href="/RecentDiscuss?logtype=old_editrequest">{$lang['recent']['logtype_old_editrequest']}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="recent-changes recent-table">
+    <div class="recent-tr recent-th">
+        <div class="recent-td">{$lang['recent']['title']}</div>
+        <div class="recent-td">{$lang['recent']['editor']}</div>
+        <div class="recent-td">{$lang['recent']['ago']}</div>
+    </div>
+    {foreach $wiki['page']['data']['content'] as $he}
+        {if $he['document']['forceShowNamespace'] === false}
+            {var $ns = ''}
+        {else}
+            {var $ns = $he['document']['namespace'].':'}
+        {/if}
+        <div class="recent-tr">
+            <div class="recent-td">
+                <a href="/thread/{$he['slug']}">{$he['topic']}</a>
+                <span class="recent-document">
+                    <span class="recent-document-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"></path></svg></span>
+                </span>
+                <a class="recent-document-title" href="/discuss/{$ns.$he['document']['title']|escapeUrl}">{$ns.$he['document']['title']}</a>
+            </div>
+            <div class="recent-td">
+                <span>
+                    <div class="context-menu v-popper v-popper--theme-contextmenu">
+                    {if $he['author'] === null}
+                        {var $idset[$he['contributor_uuid']] = ['IP', $he['ip']]}
+                        <a style="{$he['style']}" class="user" href="/contribution/{$he['contributor_uuid']}/document" class="user" aria-describedby="contextmenu-{$he['contributor_uuid']}">{$he['ip']}</a>
+                    {else}
+                        {var $idset[$he['contributor_uuid']] = [$lang['acl']['member'].($he['admin'] ? ' ('.$lang['perm']['admin'].')':''), $he['author']]}
+                        <a style="{$he['style']}" class="user user-member" href="/w/{'사용자:'.$he['author']|escapeUrl}" class="user user-member" aria-describedby="contextmenu-{$he['contributor_uuid']}">{$he['author']}</a>
+                    {/if}
+                    </div>
+                </span>
+            </div>
+            <div class="recent-td recent-datetime"><time datetime="{$he['date']-32400|date:'Y-m-d\TH:i:s'}.000Z">{$he['date']|date:'Y-m-d H:i:s'}</time></div>
+        </div>
+    {/foreach}
+</div>
+<div n:foreach="$idset as $k => $i" class="context-tooltip" id="contextmenu-{$k}" v="none">
+    <div class="popper__backdrop"></div>
+    <div class="v-popper__wrapper">
+        <div class="v-popper__inner">
+            <div>
+                <div class="tooltip-top">
+                    <div class="user-type">{$i[0]}</div>
+                    <div class="user-name">{$i[1]}</div>
                 </div>
+                {if $i[0] !== 'IP'}
+                <hr>
+                <a href="/w/{$i[0]|escapeUrl}:{$i[1]}" role="button" class="pressdo-btn">사용자 문서</a>
+                {/if}
+                <hr>
+                <a href="/contribution/{$k}/document" role="button" class="pressdo-btn">문서 기여 내역</a>
+                <a href="/contribution/{$k}/discuss" role="button" class="pressdo-btn">토론 기여 내역</a>
+                {if $wiki['session']['admin']}
+                <hr>
+                <a role="button" copy-id="{$k}" copy-msg="{$lang['msg']['uuid_copied']}" href="#" class="pressdo-btn">UUID 복사</a>
+                <a href="/BlockHistory?query={$k}&target=text" role="button" class="pressdo-btn">차단 내역 조회</a>
+                <hr>
+                <a role="button" href="#" class="pressdo-btn btn-darkred" danger>차단</a>
+                {/if}
+            </div>
+            <div class="resize-observer" tabindex="-1">
+                <object aria-hidden="true" tabindex="-1" type="text/html" data="about:blank"></object>
             </div>
         </div>
-        <div class="recent-changes recent-table">
-            <div class="recent-tr recent-th">
-                <div class="recent-td">{$lang['recent']['title']}</div>
-                <div class="recent-td">{$lang['recent']['editor']}</div>
-                <div class="recent-td">{$lang['recent']['ago']}</div>
-            </div>
-            {foreach $wiki['page']['data']['content'] as $he}
-                {if $he['document']['namespace'] == '문서' && $config['wiki.force_show_namespace'] === false}
-                    {var $ns = ''}
-                {else}
-                    {var $ns = $he['document']['namespace'].':'}
-                {/if}
-                <div class="recent-tr">
-                    <div class="recent-td">
-                        <a href="/thread/{$he['slug']}">{$he['topic']}</a>
-                        <span class="recent-document">
-                            <span class="recent-document-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"></path></svg></span>
-                        </span>
-                        <a class="recent-document-title" href="/discuss/{$ns.$he['document']['title']|escapeUrl}">{$ns.$he['document']['title']}</a>
-                    </div>
-                    <div class="recent-td">
-                        <span>
-                            <div class="context-menu">
-                            {if $he['author'] === null}
-                                <a data-pressdo-recent-user style="{$he['style']}" class="user"p>{$he['ip']}</a>
-                            {else}
-                                <a data-pressdo-recent-user style="{$he['style']}" class="user user-member">{$he['author']}</a>
-                            {/if}
-                            </div>
-                        </span>
-                    </div>
-                    <div class="recent-td recent-datetime"><time datetime="{$he['date']-32400|date:'Y-m-d\TH:i:s'}.000Z">{$he['date']|date:'Y-m-d H:i:s'}</time></div>
-                </div>
-            {/foreach}
+        <div class="v-popper__arrow-container" style="left: 21.963875px;">
+            <div class="v-popper__arrow-outer"></div>
+            <div class="v-popper__arrow-inner"></div>
         </div>
     </div>
 </div>

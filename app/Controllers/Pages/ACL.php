@@ -68,9 +68,15 @@ class ACL extends Controller
                         $baserev = Document::getVersion($uuid);
     
                     $aclchanged = ['insert', $acl_target[1], $_POST['action'], $_POST['target_type'].':'.$_POST['target_name']];
+                    if (!$this->session['member']) {
+                        if (!$this->session['uuid'])
+                            $this->session['uuid'] = Member::getIpUuid($this->session['ip']);
+                        $conti = $this->session['uuid'];
+                    } else
+                        $conti = null;
                     
                     $acldataobj = ['access' => $acl_target[1], 'condition' => $_POST['target_type'].':'.$_POST['target_name'], 'action' => $_POST['action'], 'until' => $expiry];
-                    $editdataobj = ['baserev' => $baserev, 'contributor_m' => $this->session['member']['uuid'] ?? null, 'contributor_i' => $this->session['ip'], 'acl_changed' => implode(',', $aclchanged)];
+                    $editdataobj = ['baserev' => $baserev, 'contributor_m' => $this->session['member'] ? $this->session['uuid'] : null, 'contributor_i' => $conti, 'acl_changed' => implode(',', $aclchanged)];
     
                     ACLModels::addDocACL($uuid, $acldataobj, $editdataobj);
                 } elseif ($acl_target[0] == 'ns') {
@@ -91,9 +97,15 @@ class ACL extends Controller
                         $baserev = Document::getVersion($uuid);
                     
                     $rule = ACLModels::getDocRule($acl_target[1]);
+                    if (!$this->session['member']) {
+                        if (!$this->session['uuid'])
+                            $this->session['uuid'] = Member::getIpUuid($this->session['ip']);
+                        $conti = $this->session['uuid'];
+                    } else
+                        $conti = null;
                     
                     $aclchanged = ['delete', $rule['access'], $rule['action'], $rule['condition']];
-                    $editdataobj = ['uuid' => $uuid, 'baserev' => $baserev, 'contributor_m' => $this->session['member']['uuid'] ?? null, 'contributor_i' => $this->session['ip'], 'acl_changed' => implode(',', $aclchanged)];
+                    $editdataobj = ['uuid' => $uuid, 'baserev' => $baserev, 'contributor_m' => $this->session['member'] ? $this->session['uuid'] : null, 'contributor_i' => $conti, 'acl_changed' => implode(',', $aclchanged)];
                     ACLModels::deleteDocACL($acl_target[1], $editdataobj);
                 } elseif ($acl_target[0] == 'ns')
                     ACLModels::deleteNSACL($acl_target[1]);
@@ -126,7 +138,7 @@ class ACL extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
-                    //'ForceShowNameSpace' => $conf['ForceShowNameSpace']
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'docACL' => [
                     'acls' => $doc_acl,

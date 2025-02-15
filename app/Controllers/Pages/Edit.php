@@ -1,7 +1,7 @@
 <?php
 namespace PressDo\app\Controllers\Pages;
 
-use PressDo\app\Models\Document;
+use PressDo\app\Models\{Document,Member};
 use PressDo\app\Core\Controller;
 use PressDo\app\Controllers\ACL as WikiACL;
 use PressDo\app\Helpers\{Languages,Config};
@@ -66,8 +66,11 @@ class Edit extends Controller
                 $this->error = $error;
             } else {
                 // Approve Edit
-                $member = @$this->session['member']['uuid'];
-                $ip = !$member ? $this->session['ip'] : null;
+                $member = $this->session['member'] ? $this->session['uuid'] : null;
+                $ip = !$member ? ($this->session['uuid'] ?? Member::getIpUuid($this->session['ip'])) : null;
+                if (!$member && !$this->session['uuid']) {
+                    $this->session['uuid'] = $ip;
+                }
 
                 if (!$uuid) {
                     $uuid = Document::create($namespace, $title);
@@ -109,7 +112,7 @@ class Edit extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
-                    'ForceShowNameSpace' => Config::get('wiki.force_show_namespace')
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'user' => ($namespace == '사용자'),
                 'token' => self::rand(64)

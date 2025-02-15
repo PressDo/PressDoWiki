@@ -45,7 +45,8 @@ class Wiki extends Controller
                 'data' => [
                     'document' => [
                         'namespace' => $namespace,
-                        'title' => $title
+                        'title' => $title,
+                        'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                     ],
                     'discuss_progress' => false,
                     'user' => $namespace == Namespaces::USER
@@ -67,7 +68,8 @@ class Wiki extends Controller
                 'data' => [
                     'document' => [
                         'namespace' => $namespace,
-                        'title' => $title
+                        'title' => $title,
+                        'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                     ],
                     'discuss_progress' => false,
                     'user' => $namespace == Namespaces::USER
@@ -77,7 +79,6 @@ class Wiki extends Controller
         
         $content = self::readSyntax($doc['content'], [
             'title' => $this->uri_data->title,
-            'db' => Database::getInstance(),
             'thread' => false
         ]);
 
@@ -93,6 +94,7 @@ class Wiki extends Controller
         }
         
         $cat_documents = [];
+        
         if ($namespace == Namespaces::CATEGORY) {
             foreach (Namespaces::all() as $n) {
                 $bl = Backlink::get($namespace, $title, $n);
@@ -114,8 +116,9 @@ class Wiki extends Controller
                             'document' => [
                                 'namespace' => $b[0]['namespace'], 
                                 'title' => $t, 
-                                'force_show_namespace' => Config::get('wiki.force_show_namespace')], 
-                                'type' => $b[0]['type']
+                                'forceShowNamespace' => self::forceShowNamespace($b[0]['namespace'], $t)
+                            ],
+                            'type' => $b[0]['type']
                         ]);
                     }
                 }
@@ -127,11 +130,12 @@ class Wiki extends Controller
             'document' => [
                 'namespace' => $namespace,
                 'title' => $title,
+                'forceShowNamespace' => self::forceShowNamespace($namespace, $title),
                 'content' => htmlspecialchars($content['html']),
                 'categories' => $content['links']['category']
             ],
             'category_documents' => $cat_documents,
-            'starred' => $this->session['member'] ? Star::ifStarred($uuid,$this->session['member']['uuid']) : false,
+            'starred' => $this->session['member'] ? Star::ifStarred($uuid,$this->session['uuid']) : false,
             'star_count' => Star::count($uuid),
             'discuss_progress' => isset($discussions[0]),
             'date' => $doc['datetime'],

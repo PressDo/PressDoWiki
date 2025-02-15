@@ -46,7 +46,8 @@ class Discuss extends Controller
                 'data' => [
                     'document' => [
                         'namespace' => $namespace,
-                        'title' => $title
+                        'title' => $title,
+                        'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                     ],
                     'state' => $_GET['state'],
                     'thread_list' => $threads,
@@ -102,7 +103,8 @@ class Discuss extends Controller
                 'data' => [
                     'document' => [
                         'namespace' => $namespace,
-                        'title' => $title
+                        'title' => $title,
+                        'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                     ],
                     'thread_list' => $threads,
                     'editRequests' => [

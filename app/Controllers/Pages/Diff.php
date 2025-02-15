@@ -23,6 +23,7 @@ class Diff extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'oldrev' => null,
                 'rev' => null,

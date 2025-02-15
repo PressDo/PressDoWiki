@@ -35,7 +35,7 @@ class Document extends \PressDo\app\Core\Model
      * @param string $uuid     uuid of document
      * @param ?string $rev     revision uuid of document
      * @throws ErrorException
-     * @return ?array       array(Namespace, Title)
+     * @return ?array       array (history data)
      */
     public static function load(string $uuid, ?string $rev=null): ?array
     {
@@ -103,7 +103,7 @@ class Document extends \PressDo\app\Core\Model
         if($cont_m !== null)
             $cont_m = self::uuid2bin($cont_m);
         elseif($cont_i !== null)
-            $cont_i = self::uuid2bin(self::getIpUuid($cont_i));
+            $cont_i = self::uuid2bin($cont_i);
 
         $uuid = self::uuid2bin($uuid);
 
@@ -139,7 +139,7 @@ class Document extends \PressDo\app\Core\Model
         if($cont_m !== null)
             $cont_m = self::uuid2bin($cont_m);
         elseif($cont_i !== null)
-            $cont_i = self::uuid2bin(self::getIpUuid($cont_i));
+            $cont_i = self::uuid2bin($cont_i);
 
         $a = $db->prepare("UPDATE `document` SET `namespace`=?, `title`=? WHERE `uuid`=?");
         $a->execute([$toNS, $toT, $uuid]);
@@ -217,15 +217,14 @@ class Document extends \PressDo\app\Core\Model
      * Get title of the document by UUID.
      *
      * @param   string $uuid     Document UUID
-     * @return  array       Document namespace, title
+     * @return  array|false       Document namespace, title. returns false if not exist.
      */
-    public static function getTitleByUuid(string $uuid): array
+    public static function getTitleByUuid(string $uuid): array|false
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);
-
         try {
-            $c = $db->prepare("SELECT `namespace`,`title` FROM `document` WHERE `uuid`=?");
+            $c = $db->prepare("SELECT `namespace`,`title`, `status` FROM `document` WHERE `uuid`=?");
             $c->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': ID로 문서명 조회 중 오류 발생');
@@ -262,7 +261,7 @@ class Document extends \PressDo\app\Core\Model
         
         try {
             $d = $db->query("SELECT d.namespace, d.title, MAX(h.`datetime`) as dt FROM `history` as h INNER JOIN `document` as d ON d.uuid = h.document
-                WHERE NOT EXISTS (SELECT 1 FROM links as l WHERE l.from_uuid = h.document AND l.type = 'redirect') GROUP BY h.`document` ORDER BY dt DESC LIMIT $from, $count");
+                WHERE NOT EXISTS (SELECT 1 FROM links as l WHERE l.from_uuid = h.document AND l.type = 'redirect') AND d.namespace != '사용자' GROUP BY h.`document` ORDER BY dt ASC LIMIT $from, $count");
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 오래된 문서 불러오기 중 오류 발생');
         }
@@ -326,6 +325,18 @@ class Document extends \PressDo\app\Core\Model
             $d->execute([$namespace]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 분류되지 않은 문서 불러오기 중 오류 발생');
+        }
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function softSearch(string $namespace, string $mixedk, string $chosungk)
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT d.namespace, d.title FROM document as d WHERE d.namespace = :ns AND (d.title REGEXP :q OR d.title REGEXP :c) LIMIT 10");
+            $d->execute(['ns' => $namespace, 'q' => $mixedk, 'c' => $chosungk]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서명 검색 중 오류 발생');
         }
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }

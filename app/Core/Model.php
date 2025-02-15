@@ -65,11 +65,12 @@ class Model {
     }
 
     /**
-     * find ip by uuid
+     * find uuid by ip
      * @param string $ip
+     * @param bool $noinsert    set true if just lookup (not be generated even in absence)
      * @return mixed UUID of ip
      */
-    public static function getIpUuid($ip)
+    public static function getIpUuid($ip, bool $noinsert = false): string|null
     {
         $db = self::db();
         
@@ -77,6 +78,8 @@ class Model {
         $d->execute([inet_pton($ip)]);
         $data = $d->fetch(PDO::FETCH_ASSOC);
         if($d->rowCount() < 1){
+            if ($noinsert)
+                return null;
             $uuid = self::generateUuid();
             $d = $db->prepare("INSERT INTO ip(uuid,ip) VALUES(?,?)");
             $d->execute([self::uuid2bin($uuid),inet_pton($ip)]);

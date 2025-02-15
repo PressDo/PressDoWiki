@@ -15,7 +15,7 @@ class DeactivateOtp extends Controller
             exit;
         }
 
-        $user = Member::getUserInfo($this->session['member']['uuid']);
+        $user = Member::getUserInfo($this->session['uuid']);
 
         if(empty($user['totp_secret'])){
             $error = ['code' => 'already_activated_otp'];
@@ -31,7 +31,7 @@ class DeactivateOtp extends Controller
             $otp = TOTP::createFromSecret($this->session['otp_secret']);
 
             if ($otp->verify($_POST['pin'])) {
-                Member::removeTotp($this->session['member']['uuid']);
+                Member::removeTotp($this->session['uuid']);
                 header('Location: /member/mypage');
             } else
                 $errmsg = 'err_invalid_pin';

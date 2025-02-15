@@ -1,7 +1,7 @@
 <?php
 namespace PressDo\app\Controllers\Pages;
 
-use PressDo\app\Models\Document;
+use PressDo\app\Models\{Document, Member};
 use PressDo\app\Core\Controller;
 use PressDo\app\Controllers\ACL as WikiACL;
 use PressDo\app\Helpers\Languages;
@@ -42,6 +42,7 @@ class Move extends Controller
                 'document' => [
                     'namespace' => $namespace,
                     'title' => $title,
+                    'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
                 'captcha' => null,
                 'token' => null
@@ -58,8 +59,11 @@ class Move extends Controller
             ];
         } elseif (!empty($_POST['token']) && $this->session['token'] == $_POST['token'] && !empty($_POST['new_title'])) {
             // Approve Move
-            $member = $this->session['member']['uuid'] ?? null;
-            $ip = !$member ? $this->session['ip'] : null;
+            $member = $this->session['member'] ? $this->session['uuid'] : null;
+            $ip = !$member ? ($this->session['uuid'] ?? Member::getIpUuid($this->session['ip'])) : null;
+            if (!$member && !$this->session['uuid']) {
+                $this->session['uuid'] = $ip;
+            }
             $rev = Document::getVersion($uuid);
 
             Document::move(
