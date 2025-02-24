@@ -33,7 +33,7 @@
         {if $wiki['page']['data']['use_totp']}
             {var $totpmsg = $lang['msg']['force_2fa_totp']}
         {else}
-            {var $totpmsg = ($lang['msg']['force_2fa_email']|replace: '@1@', $wiki['page']['data']['otp_email'])}
+            {var $totpmsg = sprintf($lang['msg']['force_2fa_email'], $wiki['page']['data']['otp_email'])}
         {/if}
         {$totpmsg|noescape}
     </p>

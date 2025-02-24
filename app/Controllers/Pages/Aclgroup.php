@@ -14,7 +14,7 @@ class Aclgroup extends Controller
 
         $perms = [];
         if (isset($this->session['member']))
-            ACL::getAccountPerms($this->session['member'], $perms);
+            ACL::getAccountPerms($this->session['uuid'], $this->session['member']['username'], $perms);
 
         
         if (!empty($_POST['name']) && in_array('aclgroup', $perms)) {

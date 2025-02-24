@@ -12,7 +12,7 @@ class LoginHistory extends Controller
         $perms = [];
 
         if(!empty($this->session['member']))
-            ACL::getAccountPerms($this->session['member'], $perms);
+            ACL::getAccountPerms($this->session['uuid'], $this->session['member']['username'], $perms);
 
         if(!in_array('login_history', $perms) && !in_array('developer', $perms)) {
             $error = ['code' => 'no_permission'];

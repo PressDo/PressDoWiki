@@ -13,5 +13,6 @@ class Logout extends Controller
             Header('Location: '.$_GET['redirect']);
         else
             Header('Location: /');
+        exit;
     }
 }

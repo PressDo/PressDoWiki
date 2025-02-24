@@ -64,12 +64,12 @@
                             {var $timeSet = $timeSet.' '.$h['content']['duration'][$t].$lang['acl'][$t]}
                         {/if}
                     {/foreach}
-                    {var $timestr = ($lang['msg']['b_for']|replace: '@1@', $timeSet)}
+                    {var $timestr = sprintf($lang['msg']['b_for'], $timeSet)}
                 {/if}
                 
                 {switch $h['action']}
                     {case aclgroup_add, aclgroup_remove}
-                        {var $msg = str_replace(['@1@', '@2@'], ['<b>'.$h['content']['aclgroup'].'</b>', $timestr], $lang['msg']['b_'.$h['action']])}
+                        {var $msg = sprintf($lang['msg']['b_'.$h['action']], '<b>'.$h['content']['aclgroup'].'</b>', $timestr)}
                         {var $hid = '#'.$h['content']['id']}
                     {case login_history, grant}
                         {var $msg = $lang['msg']['b_'.$h['action']]}
@@ -88,19 +88,14 @@
                     {/if}
                 {/if}
 
-                {=$lang['msg']['b_user']|replace: [
-                    '@1@' => $subject,
-                    '@2@' => $target,
-                    '@3@' => $target_type,
-                    '@4@' => $msg
-                ]|noescape}
+                {sprintf($lang['msg']['b_user'], $subject, $target, $target_type, $msg)|noescape}
                 <span class="bh-id">{$hid}</span>
             </div>
             <div class="recent-log">
                 <span n:if="$h['action'] == 'grant'">{$h['content']['granted']}</span>
             </div>
             <div class="recent-log">
-                <time datetime="{$h['datetime']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$h['datetime']|date: "Y-m-d H:i:s"}</time>
+                {$h['datetime']|localdate|noescape}
                 <span n:if="$h['action'] !== 'login_history' && $h['action'] !== 'grant'">({$h['content']['memo']})</span>
             </div>
         </div>

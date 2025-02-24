@@ -25,10 +25,10 @@ class Login extends Controller
             'customData' => []
         ];
 
-        if (!empty($this->session['temp']['member']['uuid'])) {
-            // process verification
+        if (!empty($this->session['temp']['uuid'])) {
+            // 2차인증 처리
             if (json_decode($_POST['challenge']) !== null && $this->session['do2fa'] == 'webauthn') {
-                $passkeys = Member::getUserWebauthn($this->session['temp']['member']['uuid']);
+                $passkeys = Member::getUserWebauthn($this->session['temp']['uuid']);
                 $webauthn = new WebAuthn(Config::get('wiki.site_name'), Config::get('wiki.domain'));
                 $data = json_decode($_POST['challenge'], true);
                 $credentialPublicKey = null;
@@ -59,7 +59,7 @@ class Login extends Controller
                 }
 
             } elseif (strlen($_POST['pin']) === 6 && is_numeric($_POST['pin']) && ($this->session['do2fa'] == 'totp' || $this->session['do2fa'] == 'webauthn')) {
-                $user = Member::getUserInfo($this->session['temp']['member']['uuid']);
+                $user = Member::getUserInfo($this->session['temp']['uuid']);
                 $otp = TOTP::createFromSecret($user['totp_secret']);
                 $ok = $otp->verify($_POST['pin']);
 
@@ -73,59 +73,64 @@ class Login extends Controller
                 unset($this->session['temp']);
             }
 
+            // 끝
             if (!empty($page['data']['error'])) {
                 $this->setup2fa($this->session['temp']['member'], $page['data']);
             } elseif (!empty($this->session['temp'])) {
                 $this->session['menus'] = $this->session['temp']['menus'];
-                $this->session['uuid'] = $this->session['temp']['member']['uuid'];
-                unset($this->session['temp']['member']['uuid']);
                 $this->session['member'] = $this->session['temp']['member'];
+                $this->session['uuid'] = $this->session['temp']['uuid'];
                 unset($this->session['temp']);
                 
                 // 로그인 성공
                 Header('Location: '.($_GET['redirect'] ?? '/'));
             }
         } elseif (isset($_POST['username']) && isset($_POST['password'])) {
-            // registration verification
+            // 1차 로그인
             $l = Member::login($_POST['username'], $_POST['password'], $this->session['ip'], $_SERVER['HTTP_USER_AGENT']);
 
-            if (!$l)
+            if (!$l) {
                 $page['data']['error'] = 'err_invalid_member';
-            else {
-                $menus = [];
-                $SP = ['aclgroup', 'grant', 'login_history'];
-                $link = ['aclgroup' => '/aclgroup', 'grant' => '/admin/grant', 'login_history' => '/admin/login_history'];
-                $sps = Member::specialPerms($l['uuid']);
-                foreach ($SP as $prm) {
-                    if (in_array($prm, $sps))
-                        array_push($menus, ['l' => $link[$prm], 't' => $prm]);
-                }
+                return $page;
+            }
+            
+            $menus = [];
+            $SP = ['aclgroup', 'grant', 'login_history'];
+            $link = ['aclgroup' => '/aclgroup', 'grant' => '/admin/grant', 'login_history' => '/admin/login_history'];
+            $sps = Member::specialPerms($l['uuid']);
+            foreach ($SP as $prm) {
+                if (in_array($prm, $sps))
+                    array_push($menus, ['l' => $link[$prm], 't' => $prm]);
+            }
 
-                $this->session['temp']['menus'] = $menus;
-                $this->session['temp']['email'] = $l['email'];
-                $this->session['temp']['member'] = [
+            unset($this->session['temp']);
+            $this->session['temp'] = [
+                'menus' => $menus,
+                'email' => $l['email'],
+                'uuid' => $l['uuid'],
+                'member' => [
                     'user_document_discuss' => null,
-                    'uuid' => $l['uuid'],
                     'username' => $l['username'],
                     'gravatar_url' => '//www.gravatar.com/avatar/'.md5($l['email']).'?d=retro',
                     'admin' => in_array('admin', $sps),
                     'settings' => ['skin' => $l['skin']]
-                ];
+                ]
+            ];
 
-                if (self::newLoginEnv()) { // && !in_array('disable_two_factor_login', $sps)
-                    $this->setup2fa($l, $page['data']);
-                    return $page;
-                }
-
-                $this->session['menus'] = $this->session['temp']['menus'];
-                $this->session['uuid'] = $this->session['temp']['member']['uuid'];
-                unset($this->session['temp']['member']['uuid']);
-                $this->session['member'] = $this->session['temp']['member'];
-                unset($this->session['temp']);
-                
-                // 로그인 성공
-                Header('Location: '.($_GET['redirect'] ?? '/'));
+            // 2차 로그인
+            if (self::newLoginEnv()) { // && !in_array('disable_two_factor_login', $sps)
+                $this->setup2fa($l, $page['data']);
+                return $page;
             }
+
+            $this->session['menus'] = $this->session['temp']['menus'];
+            $this->session['member'] = $this->session['temp']['member'];
+            $this->session['uuid'] = $this->session['temp']['uuid'];
+            unset($this->session['temp']);
+            
+            // 로그인 성공
+            Header('Location: '.($_GET['redirect'] ?? '/'));
+        
         }
         return $page;
     }
@@ -158,18 +163,12 @@ class Login extends Controller
             $content = $lang['new_login'];
             $data['otp_email'] = $userdata['email'] ?? $this->session['temp']['email'];
 
-            $body = str_replace(['@1@', '@2@', '@3@'], [
-                Config::get('wiki.site_name'), 
-                $this->session['pin'], 
-                $this->session['ip']
-            ], $content);
+            $body = sprintf($content, Config::get('wiki.site_name'), $this->session['pin'], $this->session['ip']);
 
             if (empty($this->session['pin']))
                 $send = self::sendMail(
                     $userdata['email'] ?? $this->session['temp']['email'], 
-                    str_replace('@1@', 
-                        Config::get('wiki.site_name'), 
-                        $lang['new_login_title']),
+                    sprintf($lang['new_login_title'], Config::get('wiki.site_name')),
                     $body
                 );
             

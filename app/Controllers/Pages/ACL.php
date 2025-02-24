@@ -42,7 +42,7 @@ class ACL extends Controller
             if ($_POST['target_type'] == 'ip' && inet_pton($_POST['target_name']) === false)
                 $errormsg = 'invalid_acl_condition';
             
-            if ($_POST['target_type'] == 'geoip' && !in_array($_POST['target_name'], GeoIP::$geoCodes))
+            if ($_POST['target_type'] == 'geoip' && !in_array($_POST['target_name'], GeoIP::GEOCODES))
                 $errormsg = 'invalid_aclgroup';
 
             if ($_POST['target_type'] == 'aclgroup' && !in_array($_POST['target_name'], $aclgroups))

@@ -31,4 +31,10 @@ class Namespaces
         self::init();
         return static::$Namespaces;
     }
+
+    public static function validate($namespace): bool
+    {
+        self::init();
+        return in_array($namespace, static::$Namespaces);
+    }
 }

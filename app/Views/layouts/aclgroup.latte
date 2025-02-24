@@ -18,7 +18,7 @@
 </div>
 <ul class="aclgroup-tabs">
     <li n:foreach="$wiki['page']['data']['aclgroups'] as $g" data-pressdo-aclgroup>
-        <a n:class="$wiki['page']['data']['currentgroup'] == $g ? a" href="/aclgroup?group={$g|escapeUrl}">{$g} <button n:if="$wiki['page']['data']['group_removable']" d_target="{$g}" class="rmag" msg="{=$lang['msg']['aclgroup_delete']|replace: '@1@', $g}" type="button">×</button></a>
+        <a n:class="$wiki['page']['data']['currentgroup'] == $g ? a" href="/aclgroup?group={$g|escapeUrl}">{$g} <button n:if="$wiki['page']['data']['group_removable']" d_target="{$g}" class="rmag" msg="{sprintf($lang['msg']['aclgroup_delete'], $g)}" type="button">×</button></a>
     </li>
     <li n:if="$wiki['page']['data']['group_addable']" data-pressdo-aclgroup>
         <button id="nag" type="button">+</button>
@@ -38,7 +38,7 @@
     <div data-pressdo-aclgroup class="g">
         <label data-pressdo-aclgroup for="noteInput">{$lang['acl']['memo']} :</label>
         <input class="pressdo-form" data-pressdo-aclgroup type="text" id="noteInput" name="note">
-        <p n:if="$err[1]['note']" id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'note'}</p>
+        <p n:if="$err[1]['note']" id="erruser" class="errmsg">{sprintf($lang['msg']['err_required_input'], 'note')}</p>
     </div>
     <div data-pressdo-aclgroup class="g">
         <label data-pressdo-aclgroup>{$lang['acl']['expire']} :</label>
@@ -73,7 +73,7 @@
                 <option class="pressdo-form" value="604800">{$lang['acl']['week']}</option>
             </select>
         </span>
-        <p n:if="$err[1]['expire']" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'expire'}</p>
+        <p n:if="$err[1]['expire']" class="errmsg">{sprintf($lang['msg']['err_required_input'], 'expire')}</p>
         <p n:if="$err[1]['expire_much']" class="errmsg">{$lang['msg']['err_expire_too_long']}</p>
     </div>
     <button class="pressdo-btn-nonflex btn-lightblue" n:attr="disabled: !$wiki['page']['data']['list_addable']" type="submit">{$lang['acl']['add']}</button>
@@ -111,12 +111,12 @@
                 <td class="s">{$li['id']}</td>
                 <td class="s">{$li['target_member'] ?? $li['target_ip']}</td>
                 <td class="s">{$li['comment']}</td>
-                <td class="s">{$li['datetime']|date:'Y-m-d H:i:s'}</td>
+                <td class="s">{$li['datetime']|localdate|noescape}</td>
                 <td class="s">
                 {if $li['until'] == 0}
                     {$lang['acl']['forever']}
                 {else}
-                    {$li['until']|date: 'Y-m-d H:i:s'}
+                    {$li['until']|localdate|noescape}
                 {/if}
                 </td>
                 <td><button n:attr="disabled: !$wiki['page']['data']['list_removable']" id="acl_delete" acllog_id="{$li['id']}" class="pressdo-btn-nonflex btn-red" type="button">{$lang['acl']['delete']}</button></td>
@@ -148,7 +148,7 @@
                 <div>
                     <p>{$lang['acl']['memo']}:</p>
                     <input class="pressdo-form" type="text" name="note">
-                    <p n:if="$err[1]['note']" id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'note'}</p>
+                    <p n:if="$err[1]['note']" id="erruser" class="errmsg">{sprintf($lang['msg']['err_required_input'], 'note')}</p>
                 </div>
                 <div class="overlay-btns">
                     <button class="pressdo-btn-nonflex btn-lightblue btn-sizeup" type="submit">{$lang['acl']['delete']}</button>
@@ -176,7 +176,7 @@
                     <p>{$lang['acl']['group_name']}:</p>
                     <input class="pressdo-form" type="text" name="name">
                     {if $err[1]['name']}
-                        <p id="erruser" class="errmsg">{=$lang['msg']['err_required_input']|replace: '@1@', 'name'}</p>
+                        <p id="erruser" class="errmsg">{sprintf($lang['msg']['err_required_input'], 'name')}</p>
                     {/if}
                 </div>
                 <div class="overlay-btns">

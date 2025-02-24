@@ -51,8 +51,8 @@
                     <tr><td n:if="($wiki['page']['data']['webauthn']|length) === 0" class="s" colspan="5">{$lang['msg']['empty_webauthn']}</td></tr>
                     <tr n:foreach="$wiki['page']['data']['webauthn'] as $w">
                         <td>{$w['name']}</td>
-                        <td>{$w['registered']|date: 'Y-m-d H:i:s'}</td>
-                        <td>{$w['lastuse'] ? ($w['lastuse']|date: 'Y-m-d H:i:s') : 'Not used'}</td>
+                        <td>{$w['registered']|localdate|noescape}</td>
+                        <td>{$w['lastuse'] ? ($w['lastuse']|localdate|noescape) : 'Not used'}</td>
                         <td><button targetname="{$w['name']}" class="pressdo-btn-nonflex btn-red" type="button">{$lang['btn']['delete']}</button></td>
                     </tr>
                 </tbody>

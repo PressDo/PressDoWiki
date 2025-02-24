@@ -1,9 +1,14 @@
 .pressdo-dark-mode {
+    [dropdown-toggle], #list-dropdown-menu, [dropdown-selected] {background: #27292d;color: #ddd;}
+    .dropdown-open, .dropdown-toggle-clear {fill: #ddd;}
+
     .textfield{background-color: #282829;border-color: #484848;}
     .error-input{--focus-outline-color: #8b3f46!important;border-color: #861520;}
     .pagelist-menu select {background-color: #282829;background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Cpath fill=%27%23434343%27 d=%27M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z%27/%3E%3C/svg%3E");border-color: #484848;}
 
     input.pressdo-form, select.pressdo-form{background-color: #27292d;border-color: #383b40;color: #ddd;}
+
+    div.a-mono {background-color: #2a2a2a;border-color: #484848;}
 
     .chkbox {background-color: #282829;border-color: #484848;}
     .textfield:focus-visible {--focus-outline-color: var(--brand-bright-color-2, #45474b);}
@@ -43,9 +48,10 @@
     /* Editor */
     form li button.a.editor.top{background-color: #383b40;color: #ddd}
     form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
-    form input[data-pressdo-edit-summary],  form textarea.editor, div.alert a {background-color: #27292d;border-color: #383b40;color: #ddd;}
+    form input[data-pressdo-edit-summary],  form textarea.editor,
+    div.alert a {background-color: #27292d;border-color: #383b40;color: #ddd;}
     form div.c.editor,  form ul.editor.top {border-color: #383b40;}
-    textarea.editor {background-color: #000;color: #ddd;}
+    textarea.editor, input, select {background-color: #000;color: #ddd;}
 
     /* Diff */
     table.diff{border-color: #383b40;}
@@ -58,7 +64,7 @@
     table.diff ins.diff{background-color: #1c751c;}
 
     /* Recent */
-    .recent-tr{border-bottom-color:#575757}
+    .recent-tr, .contr-tr{border-bottom-color:#575757}
     .recent-td+.recent-log{color:#bbb;}
     .recent-toolbox>*{border-bottom-color:#575757;border-top-color:#575757}
     .recent-toolbox>:first-of-type{border-left-color: #575757;}
@@ -110,6 +116,6 @@
 
     /* Media Query */
     @media screen and (max-width: 1023.98px){
-        .recent-th+.recent-tr{border-top-color: #575757;}
+        .recent-th+.recent-tr, .recent-th+.contr-tr{border-top-color: #575757;}
     }
 }

@@ -128,5 +128,5 @@ $(document).ready(
             window.alert('통신 오류\n' + err.message || 'unknown error occured');
         }
     }),
-    $('#webauthnInput').trigger('click')
+    setTimeout(() => $('#webauthnInput').trigger('click'), 1000)
 );

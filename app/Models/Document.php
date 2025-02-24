@@ -113,7 +113,6 @@ class Document extends \PressDo\app\Core\Model
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 편집 저장 중 오류 발생');
         }
-        unset($d, $g);
     }
 
     /**
@@ -277,7 +276,7 @@ class Document extends \PressDo\app\Core\Model
         $sql = "SELECT d.namespace, d.title, len FROM
             (SELECT document, `datetime`, CHAR_LENGTH(`content`) as len,
                 RANK() OVER (PARTITION BY document ORDER BY `datetime` DESC) AS rnk FROM `history`
-            ) AS h INNER JOIN `document` as d ON d.uuid = document WHERE d.namespace = '문서' AND rnk = 1 AND len IS NOT NULL AND NOT EXISTS
+            ) AS h INNER JOIN `document` as d ON d.uuid = document WHERE d.namespace = '문서' AND rnk = 1 AND NOT EXISTS
             (SELECT 1 FROM links as l WHERE l.from_uuid = document AND l.type = 'redirect') GROUP BY `document` ORDER BY len $order LIMIT $from, $count";
         try {
             $d = $db->query($sql);
@@ -329,15 +328,17 @@ class Document extends \PressDo\app\Core\Model
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function softSearch(string $namespace, string $mixedk, string $chosungk)
+    public static function getLicensesAndCategories(): array
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT d.namespace, d.title FROM document as d WHERE d.namespace = :ns AND (d.title REGEXP :q OR d.title REGEXP :c) LIMIT 10");
-            $d->execute(['ns' => $namespace, 'q' => $mixedk, 'c' => $chosungk]);
+            $d = $db->query("SELECT title FROM document WHERE `namespace` = '틀' AND title LIKE '이미지 라이선스/%' AND title != '이미지 라이선스/'");
+            $license = $d->fetchAll(PDO::FETCH_ASSOC);
+            $d = $db->query("SELECT title FROM document WHERE `namespace` = '분류' AND title LIKE '파일/%' AND title != '파일/'");
+            $category = $d->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서명 검색 중 오류 발생');
         }
-        return $d->fetchAll(PDO::FETCH_ASSOC);
+        return ['License' => $license, 'Category' => $category];
     }
 }

@@ -12,7 +12,7 @@ class Config extends Controller
         $perms = [];
 
         if(!empty($this->session['member']))
-            ACL::getAccountPerms($this->session['member'], $perms);
+            ACL::getAccountPerms($this->session['uuid'], $this->session['member']['username'], $perms);
 
         if(!in_array('config', $perms) && !in_array('developer', $perms)) {
             $error = ['code' => 'no_permission'];

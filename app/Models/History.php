@@ -4,6 +4,7 @@ namespace PressDo\app\Models;
 use \PDO as PDO;
 use \PDOException as PDOException;
 use \ErrorException as ErrorException;
+use PressDo\app\Helpers\Namespaces;
 
 class History extends \PressDo\app\Core\Model
 {
@@ -54,7 +55,8 @@ class History extends \PressDo\app\Core\Model
             'revert' => "AND h.`action`='revert'",
             'move' => "AND h.`action`='move'",
             'delete' => "AND h.`action`='delete'",
-            'all' => "AND document.namespace != '사용자'"
+            'all' => "AND document.namespace != '".Namespaces::USER.'\'',
+            'recent' => "AND document.namespace = '".Namespaces::DOCUMENT.'\''
         ];
 
         if($sidebar)
@@ -71,14 +73,14 @@ class History extends \PressDo\app\Core\Model
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public static function hideHistory($uuid)
+    public static function hideHistory(string $uuid)
     {
         $db = self::db();
         $d = $db->prepare("UPDATE `history` SET `is_hidden`='true' WHERE `uuid`=?");
         $d->execute([$uuid]);
     }
     
-    public static function unhideHistory($uuid)
+    public static function unhideHistory(string $uuid)
     {
         $db = self::db();
         $d = $db->prepare("UPDATE `history` SET `is_hidden`='false' WHERE `uuid`=?");
@@ -92,7 +94,7 @@ class History extends \PressDo\app\Core\Model
      * @param string $title
      * @return int
      */
-    public static function getPrevUuid($document, int $rev): string
+    public static function getPrevUuid(string $document, int $rev): string
     {
         $db = self::db();
         $id = self::uuid2bin($document);
@@ -103,5 +105,61 @@ class History extends \PressDo\app\Core\Model
             throw new ErrorException($err->getMessage().': 문서 버전 조회 중 오류 발생');
         }
         return self::bin2uuid($d->fetch(PDO::FETCH_ASSOC)['uuid']);
+    }
+
+    public static function countContributionDocument(string $uuid): string
+    {
+        $db = self::db();
+        $id = self::uuid2bin($uuid);
+        try {
+            $d = $db->prepare("SELECT count(*) as cnt FROM `history` WHERE contributor_m = :id OR contributor_i = :id");
+            $d->execute(['id' => $id]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 기여내역 세는 중 오류 발생');
+        }
+        return $d->fetch(PDO::FETCH_ASSOC)['cnt'];
+    }
+    
+    public static function getContributionDocument(string $uuid, int $count, $from=null, $until=null)
+    {
+        $db = self::db();
+        $id = self::uuid2bin($uuid);
+        if (!empty($from))
+            $limit = ($count - $from).', 100';
+        elseif (!empty($until))
+            $limit = ($count - $from - 100 < 1 ? 1 : $count - $from - 100).','.($count - $from);
+        else
+            $limit = '100';
+
+
+        try {
+            $d = $db->prepare("SELECT `namespace`, `title`, h.`uuid`,h.`action`,h.`comment`,h.`reverted_version`,h.`count`,h.`document`, h.`acl_changed`, h.`moved_from`, h.`moved_to`, h.`datetime`, h.rev FROM `history` as h, document 
+                WHERE BINARY h.`is_hidden`='false' AND h.document = document.uuid AND (contributor_m = :id OR contributor_i = :id) ORDER BY `datetime` DESC LIMIT $limit");
+            $d->execute(['id' => $id]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 기여내역 가져오는 중 오류 발생');
+        }
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getRecentContributionDiscuss(string $uuid)
+    {
+        $db = self::db();
+        $id = self::uuid2bin($uuid);
+
+        try {
+            $d = $db->prepare("SELECT `namespace`, title, t.urlstr, topic, `datetime`, `no` FROM thread_content t INNER JOIN `thread` x ON t.urlstr = x.urlstr INNER JOIN `document` AS d ON x.document = d.uuid
+                WHERE (contributor_m = :id OR contributor_i = :id) AND `datetime` >= unix_timestamp() - 2592000 ORDER BY `datetime` DESC LIMIT 100");
+            $d->execute(['id' => $id]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 토론 기여내역 가져오는 중 오류 발생');
+        }
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getContributionEditrequest(string $uuid)
+    {
+        $sql = "SELECT urlstr, document, contributor_m, contributor_i, `datetime` FROM editrequest ORDER BY `datetime` DESC LIMIT 100";
+        
     }
 }

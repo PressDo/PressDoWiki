@@ -10,10 +10,13 @@ require '../app/Controllers/ACL.php';
 require '../app/Models/Member.php';
 require 'classLoader.php';
 
-use PressDo\app\Helpers\{Config,Router};
+use PressDo\app\Helpers\{Config,Router,GeoIP};
+use PressDo\app\Core\Controller;
 
-date_default_timezone_set(Config::get('wiki.timezone'));
+date_default_timezone_set(GeoIP::getTimezone(Controller::getIpAddr()) ?? Config::get('wiki.timezone'));
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+ini_set('upload_max_filesize', '10M');
+ini_set('post_max_size', '10M');
 
 if(!session_id())
     session_start();

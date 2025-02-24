@@ -107,7 +107,7 @@ class Edit extends Controller
                 'body' => [
                     'baserev' => $this->session['baserev'],
                     'section' => $section,
-                    'raw' => $this->session['raw']
+                    'raw' => $_POST['content'] ?? $this->session['raw']
                 ],
                 'document' => [
                     'namespace' => $namespace,

@@ -299,7 +299,7 @@ class Member extends \PressDo\app\Core\Model
      * @param string $uuid
      * @return mixed
      */
-    public static function ipLookup($uuid)
+    public static function ipLookup($uuid): bool|string
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);

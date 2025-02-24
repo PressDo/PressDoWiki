@@ -11,7 +11,9 @@ function loadClass($page, $menu) {
 
     switch ($page) {
         case 'wiki':
+            require $DIR.'Files.php';
             require $DIR.'Star.php';
+            require $DIR.'Search.php';
             require $HDIR.Config::get('wiki.mark').'/Loader.php';
             // no break
         case 'backlink':
@@ -41,6 +43,7 @@ function loadClass($page, $menu) {
         case 'history':
         case 'diff':
             require $DIR.'Document.php';
+        case 'contribution':
             require $DIR.'History.php';
             break;
         case 'discuss':
@@ -55,6 +58,8 @@ function loadClass($page, $menu) {
                 require $HDIR.Config::get('wiki.mark').'/Loader.php';
             } elseif ($menu == 'recent') {
                 require $DIR.'History.php';
+            } elseif ($menu == 'search') {
+                require $DIR.'Search.php';
             }
             break;
         case 'member':
@@ -62,5 +67,13 @@ function loadClass($page, $menu) {
                 require $DIR.'Document.php';
                 require $DIR.'Star.php';
             }
+            break;
+        case 'Upload':
+            require $DIR.'Document.php';
+            require $DIR.'Files.php';
+            require '../app/Helpers/Uploaders/'.Config::get('storage.type').'.php';
+            break;
+        case 'Search':
+            require $DIR.'Search.php';
     }
 }

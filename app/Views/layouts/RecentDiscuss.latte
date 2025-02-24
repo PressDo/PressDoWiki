@@ -47,7 +47,7 @@
                     </div>
                 </span>
             </div>
-            <div class="recent-td recent-datetime"><time datetime="{$he['date']-32400|date:'Y-m-d\TH:i:s'}.000Z">{$he['date']|date:'Y-m-d H:i:s'}</time></div>
+            <div class="recent-td recent-datetime">{$he['date']|localdate|noescape}</div>
         </div>
     {/foreach}
 </div>

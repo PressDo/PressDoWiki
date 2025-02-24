@@ -87,7 +87,7 @@ class History extends Controller
 
                 if (empty($mperms[$Cuuid])) {
                     $mperms[$Cuuid] = [];
-                    ACL::getAccountPerms(['username' => $member, 'uuid' => $Cuuid], $mperms[$Cuuid]);
+                    ACL::getAccountPerms($Cuuid, $member, $mperms[$Cuuid]);
                 }
             }
 

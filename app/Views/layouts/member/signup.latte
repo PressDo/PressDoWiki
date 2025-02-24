@@ -3,72 +3,69 @@
     <span>{$lang['msg'][$wiki['page']['data']['error']]}</span>
 </div>
 {var $mode = $wiki['page']['data']['step']}
-{if $mode === 0}
-    {* 초기화면 *}
-    <form class="signup-form authform" method="POST" id="regform" name="regform" action="/member/signup">
-        <div class="form-sheet">
-            <textarea class="textfield longtext" readonly value="{$config['member.tos']}">{$config['member.tos']}</textarea>
-        </div>
-        <div class="form-sheet form-action">
-            <label name="agree" class="chkbox-label">
-                <input class="chkbox" type="checkbox" name="agree" value="Y">{$lang['auth']['Iagree']}
-            </label>
-        </div>
-        <p id="erragree" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['agree']}</p>
-        <div class="form-sheet">
-            <label for="email">{$lang['auth']['email']}</label>
-            <input class="textfield" type="email" id="email" name="email">
-            <p id="errmail" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['email']}</p>
-        </div>
-    
-        {if !empty($config['member.whitelist_email_host'])}
-            <p>{$lang['msg']['use_email_whitelist']|noescape}</p>
-            <ul class="list">
-                <li n:foreach="$config['member.whitelist_email_host'] as $wl">{$wl}</li>
-            </ul>
-        {/if}
-        <div class="form-sheet form-action">
-            <div class="btn-area">
-                <button type="button" class="btn-blue pressdo-btn" id="chkmail">{$lang['auth']['signup_submit']}</button>
-            </div>
-        </div>
-        <div style="clear: both;">
-        </div>
-    </form>
+{* 초기화면 *}
+<form n:if="$mode === 0" class="signup-form authform" method="POST" id="regform" name="regform" action="/member/signup">
+    <div class="form-sheet">
+        <textarea class="textfield longtext" readonly value="{$config['member.tos']}">{$config['member.tos']}</textarea>
+    </div>
+    <div class="form-sheet form-action">
+        <label name="agree" class="chkbox-label">
+            <input class="chkbox" type="checkbox" name="agree" value="Y">{$lang['auth']['Iagree']}
+        </label>
+    </div>
+    <p id="erragree" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['agree'])}</p>
+    <div class="form-sheet">
+        <label for="email">{$lang['auth']['email']}</label>
+        <input class="textfield" type="email" id="email" name="email">
+        <p id="errmail" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['email'])}</p>
+    </div>
 
-{elseif $mode === 1}
+    {if !empty($config['member.whitelist_email_host'])}
+        <p>{$lang['msg']['use_email_whitelist']|noescape}</p>
+        <ul class="list">
+            <li n:foreach="$config['member.whitelist_email_host'] as $wl">{$wl}</li>
+        </ul>
+    {/if}
+    <div class="form-sheet form-action">
+        <div class="btn-area">
+            <button type="button" class="btn-blue pressdo-btn" id="chkmail">{$lang['auth']['signup_submit']}</button>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+</form>
+
+{if $mode === 1}
     {* 이메일 인증대기 *}
-    <p>{=$lang['msg']['sent_email']|replace: '@1@', $_POST['email']|noescape}</p>
+    <p>{sprintf($lang['msg']['sent_email'], $_POST['email'])|noescape}</p>
     <ul>
         <li>{$lang['msg']['check_spam']}</li>
         <li>{$lang['msg']['email_expiry']}</li>
     </ul>
-{elseif $mode === 3}
-    {* 계정생성 완료 *}
-    <p>{=$lang['msg']['welcome']|replace: '@1@', $_POST['username']|noescape}</p>
-{elseif $mode === 2}
-    {* 메일인증 완료 *}
-    <form class="authform" id="signupform" name="signupform" method="POST" action="/member/signup">
-        <div class="form-sheet">
-            <label for="emailInput">{$lang['auth']['email']}</label>
-            <input class="textfield" type="text" id="emailInput" name="email" readonly value="{$wiki['session']['email']}">
-            <!--p id="erruser1" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['username']}</p><p id="erruser2" class="errmsg" v="none">{$lang['msg']['err_username_exists']}</p><p id="erruser3" class="errmsg" v="none">{$lang['msg']['err_username_format']}</p-->
-        </div>
-        <div class="form-sheet">
-            <label for="username">{$lang['auth']['username']}</label>
-            <input class="textfield" type="text" id="username" name="username">
-            <p id="erruser1" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['username']}</p><p id="erruser2" class="errmsg" v="none">{$lang['msg']['err_username_exists']}</p><p id="erruser3" class="errmsg" v="none">{$lang['msg']['err_username_format']}</p>
-        </div>
-        <div class="form-sheet">
-            <label for="password">{$lang['auth']['password']}</label>
-            <input class="textfield" type="password" id="password" name="password">
-            <p id="errpwd" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['password']}</p>
-        </div>
-        <div class="form-sheet">
-            <label for="password2">{$lang['auth']['password2']}</label>
-            <input class="textfield" type="password" id="password2" name="password2">
-            <p id="errpwd21" class="errmsg" v="none">{=$lang['msg']['err_required_input']|replace: '@1@', $lang['auth']['password2']}</p><p id="errpwd22" class="errmsg" v="none">{$lang['msg']['err_wrong_password2']}</p>
-        </div>
-        <button type="button" class="btn-blue pressdo-btn-nonflex btn-right" id="signup">{$lang['auth']['signup_submit']}</button>
-    </form>
 {/if}
+{* 계정생성 완료 *}
+<p n:if="$mode === 3">{sprintf($lang['msg']['welcome'], $_POST['username'])|noescape}</p>
+{* 메일인증 완료 *}
+<form n:if="$mode === 2" class="authform" id="signupform" name="signupform" method="POST" action="/member/signup">
+    <div class="form-sheet">
+        <label for="emailInput">{$lang['auth']['email']}</label>
+        <input class="textfield" type="text" id="emailInput" name="email" readonly value="{$wiki['session']['email']}">
+        <!--p id="erruser1" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['username'])}</p><p id="erruser2" class="errmsg" v="none">{$lang['msg']['err_username_exists']}</p><p id="erruser3" class="errmsg" v="none">{$lang['msg']['err_username_format']}</p-->
+    </div>
+    <div class="form-sheet">
+        <label for="username">{$lang['auth']['username']}</label>
+        <input class="textfield" type="text" id="username" name="username">
+        <p id="erruser1" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['username'])}</p><p id="erruser2" class="errmsg" v="none">{$lang['msg']['err_username_exists']}</p><p id="erruser3" class="errmsg" v="none">{$lang['msg']['err_username_format']}</p>
+    </div>
+    <div class="form-sheet">
+        <label for="password">{$lang['auth']['password']}</label>
+        <input class="textfield" type="password" id="password" name="password">
+        <p id="errpwd" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['password'])}</p>
+    </div>
+    <div class="form-sheet">
+        <label for="password2">{$lang['auth']['password2']}</label>
+        <input class="textfield" type="password" id="password2" name="password2">
+        <p id="errpwd21" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['password2'])}</p><p id="errpwd22" class="errmsg" v="none">{$lang['msg']['err_wrong_password2']}</p>
+    </div>
+    <button type="button" class="btn-blue pressdo-btn-nonflex btn-right" id="signup">{$lang['auth']['signup_submit']}</button>
+</form>

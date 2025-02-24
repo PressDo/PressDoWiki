@@ -15,8 +15,7 @@
     </ul>
 </div>
 <div class="w">
-    <div>
-    {if $wiki['page']['data']['user']} 
+    <div n:if="$wiki['page']['data']['user']">
         <div n:if="$wiki['page']['data']['userData']['admin'] === true" onmouseover="this.style.borderTopColor='red';" onmouseout="this.style.borderTopColor='orange';" style="border-width: 5px 1px 1px; border-style: solid; border-color: orange gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
             <span>{$lang['msg']['this_is_admin']}</span>
         </div>
@@ -25,19 +24,30 @@
             {if $wiki['page']['data']['userData']['block']['until'] == '0'}
                 {var $until = $lang['msg']['b_forever']}
             {else}
-                {var $until = ($lang['until']|replace: '@1@', $wiki['page']['data']['userData']['block']['until'])}
+                {var $until = sprintf($lang['until'], $wiki['page']['data']['userData']['block']['until'])}
             {/if}
 
             <div onmouseover="this.style.borderTopColor='blue';" onmouseout="this.style.borderTopColor='red';" style="border-width: 5px 1px 1px; border-style: solid; border-color: red gray gray; border-image: initial; padding: 10px; margin-bottom: 10px;">
                 <span>{$lang['msg']['this_is_blocked']} (#{$wiki['page']['data']['userData']['block']['seq']})</span>
                 <br><br>
-                {$lang['msg']['this_is_blocked_user']|replace: ['@1@' => '<time datetime="'.($wiki['page']['data']['userData']['block']['datetime']-32400|date: 'Y-m-d\TH:i:s').'.000Z">'.($wiki['page']['data']['userData']['block']['datetime']|date: 'Y-m-d H:i:s').'</time>', '@2@' => $until]|noescape}
+                {sprintf($lang['msg']['this_is_blocked_user'], ($wiki['page']['data']['userData']['block']['datetime']|localdate), $until)|noescape}
                 <br>
                 {$lang['blocked_reason']}: {$wiki['page']['data']['userData']['block']['memo']}
             </div>
         {/if}
-    {/if}
     </div>
+    <span n:if="$wiki['page']['data']['document']['namespace'] === '파일'" class="wiki-image-align-normal">
+        <span class="wiki-image-wrapper">
+            {if $wiki['page']['data']['document']['forceShowNamespace'] !== false}
+                {var $title = $ns.':'.$wiki['page']['data']['document']['title']}
+            {else}
+                {var $title = $wiki['page']['data']['document']['title']}
+            {/if}
+            {$wiki['page']['data']['transparent_img']|noescape}
+            <img src="{$wiki['page']['data']['transparent_img']|noescape}">
+            <img class="wiki-image" src="{$config['storage.host'].$wiki['page']['data']['file_endpoint']}" alt="{$title}" loading="lazy">
+        </span>
+    </span>
     {htmlspecialchars_decode($wiki['page']['data']['document']['content'])|noescape}
     <div class="popper">
         <div class="popper__arrow"></div>
@@ -45,9 +55,9 @@
     </div>
 </div>
 <div class="subcategories" n:foreach="$wiki['page']['data']['category_documents'] as $ns => $cat">
-    <h2>{$ns == '분류' ? $lang['category']['subcategories'] : ($lang['category']['sub_something']|replace: ['@1@' => $wiki['page']['data']['document']['title'], '@2@' => $ns])}</h2>
+    <h2>{$ns == '분류' ? $lang['category']['subcategories'] : sprintf($lang['category']['sub_something'], $wiki['page']['data']['document']['title'], $ns)}</h2>
     <div>
-        <div>{$lang['category']['count']|replace: '@1@', $cat['count']}</div>
+        <div>{sprintf($lang['category']['count'], $cat['count'])}</div>
         {if $cat['count'] > 50}
             {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
         {/if}
@@ -55,9 +65,14 @@
             {continueIf $key == 'count'}
             <h3>{$key}</h3>
             <ul class="lists" n:inner-foreach="$val as $v">
+                {if $v['document']['forceShowNamespace'] !== false}
+                    {var $title = $ns.':'.$v['document']['title']}
+                {else}
+                    {var $title = $v['document']['title']}
+                {/if}
                 {$v['title']}
                 <li class="backlinks">
-                    <a href="/w/{$ns.$v['document']['title']}">{($v['document']['forceShowNamespace'] !== false ? $ns : '').$v['document']['title']}</a>
+                    <a href="/w/{$title|escapeUrl}">{$title}</a>
                 </li>
             </ul>
         </div>

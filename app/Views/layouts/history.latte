@@ -17,7 +17,7 @@
     {var $idset = []}
     <form>
         <div class="history-menu-area history-goto page-btn-area">
-            <input class="textfield" type="number" name="from" pattern="\d+" required>
+            <input class="textfield" type="number" name="from" pattern="\d+" required n:attr="value: $_GET['from'] ?? (isset($_GET['until']) ? min([$_GET['until'] + 30, $wiki['page']['data']['history'][0]['rev']]): null)">
             <span>r</span>
             <button class="pressdo-btn" type="submit">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2l0 64-112 0C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96l96 0 0 64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z"></path></svg>
@@ -29,7 +29,6 @@
     <p><button class="pressdo-btn bt-white" type="submit">{$lang['history']['compare_revision']}</button></p>
     <ul class="lists">
         {foreach $wiki['page']['data']['history'] as $d}
-
             {if $d['count'] > 0}
                 {var $color = 'green'}
                 {var $flag = '+'}
@@ -40,7 +39,7 @@
                 {var $color = 'red'}
                 {var $flag = ''}
             {/if}
-            <li class="history"><time datetime="{$d['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z">{$d['date']|date: 'Y-m-d H:i:s'}</time> 
+            <li class="history">{$d['date']|localdate|noescape} 
                 <span class="history-btns">(<a href="/w/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">{$lang['history']['view']}</a> | 
                 <a href="/raw/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">RAW</a> | 
                 {*<a href="/blame/{$uri_data['title']|escapeUrl}?uuid={$d['uuid']}">Blame</a> | *}
@@ -55,13 +54,13 @@
                 <span><input type="radio" name="olduuid" value="{$d['uuid']}" v="inline-block"><input type="radio" name="uuid" value="{$d['uuid']}" v="inline-block"></span>
                 <i>{switch $d['logtype']}
                     {case 'revert'}
-                        ({=$lang['log']['revert']|replace: '@1@', $d['target_rev']})
+                        ({sprintf($lang['log']['revert'], $d['target_rev'])})
                     {case 'delete', 'create'}
                         ({$lang['log'][$d['logtype']]})
                     {case 'move'}
-                        ({=$lang['log']['move']|replace: ['@1@' => $d['from'], '@2@' => $d['to']]})
+                        ({sprintf($lang['log']['move'], $d['from'], $d['to'])})
                     {case 'acl'}
-                        ({=$lang['log']['acl']|replace: '@1@', $d['acl']})
+                        ({sprintf($lang['log']['acl'], $d['acl'])})
                 {/switch}</i>
                 <strong>r{$d['rev']}</strong> <span>(<span class="history-{$color}">{$flag.$d['count']}</span>)</span>
                 <div class="context-menu v-popper v-popper--theme-contextmenu">

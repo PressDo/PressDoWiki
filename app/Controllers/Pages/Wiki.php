@@ -1,10 +1,10 @@
 <?php
 namespace PressDo\app\Controllers\Pages;
 
-use PressDo\app\Models\{Backlink,Document,Star,ACL as ACLModels,Member};
+use PressDo\app\Models\{Backlink,Document,Star,ACL as ACLModels,Member,Files,Search};
 use PressDo\app\Core\Controller;
 use PressDo\app\Controllers\ACL;
-use PressDo\app\Helpers\{Namespaces,Languages,Database,Config};
+use PressDo\app\Helpers\{Namespaces,Languages,DefaultConfig};
 
 class Wiki extends Controller
 {
@@ -82,8 +82,11 @@ class Wiki extends Controller
             'thread' => false
         ]);
 
-        if (!$backlinkrefreshed)
+        // Refresh Backlinks and Search Index
+        if (!$backlinkrefreshed) {
+            self::updateSearchIndex($uuid, $content['html']);
             self::updateLinktable($uuid, $content['links']);
+        }
 
         if (!empty($content['links']['redirect'])) {
             [$lns, $lt] = self::parseTitle($content['links']['redirect'][0]);
@@ -148,7 +151,7 @@ class Wiki extends Controller
             $block = ['blocked' => false];
             $mdata = Member::exist($title);
 
-            ACLModels::getAccountPerms(['username' => $title, 'uuid' => $mdata['uuid']], $mperms);
+            ACLModels::getAccountPerms($mdata['uuid'], $title, $mperms);
             $groups = ACLModels::getUserAclgroups(uuid: $mdata['uuid']);
 
             foreach ($groups as $g) {
@@ -168,6 +171,11 @@ class Wiki extends Controller
                 'admin' => in_array('admin', $mperms),
                 'block' => $block
             ];
+        } elseif ($namespace == Namespaces::FILE) {
+            $file = Files::load($uuid);
+            $ext = str_replace(['jpg', 'png'], 'webp', implode('', array_slice(explode('.', $title), -1, 1)));
+            $data['file_endpoint'] = '/'.substr($file['hash'], 0, 2).'/'.$file['hash'].'.'.$ext;
+            $data['transparent_img'] = self::getTransparentBackground($file['width'], $file['height']);
         } else {
             $data['user'] = false;
             $data['userData'] = null;
@@ -181,5 +189,66 @@ class Wiki extends Controller
         //var_dump($page);
         //'debug' => $this->uri_data
         return $page;
+    }
+
+    private function updateSearchIndex(string $uuid, string $t): void
+    {
+        if (DefaultConfig::get('wiki.search_engine') !== 'SQL')
+            return;
+        /*$t = preg_replace('/<style[^>]*>[^<]*<\/style>/', '', $t);
+        $t = preg_replace('/<div class=\"wiki-macro-toc\"[^>]*>[^<]*<\/div>/', '', $t);
+        $t = preg_replace('/<a id[^>]*href=\"#toc\">[^<]*<\/a><span id[^>]>([^<]*)<span[^>]><\/span>/', '$1', $t);
+        $t = strip_tags($t);*/
+        //Dom\HTMLDocument::createFromString();
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true); // HTML 파싱 오류 방지
+        //$dom->loadHTML('<?xml encoding="UTF-8">'.$t);
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$t);
+        libxml_clear_errors();
+        $xp = new \DOMXPath($dom);
+        // style 태그
+        //$rs = $dom->getElementsByTagName('style');
+        //foreach ($rs as $r) {
+        //    $r->remove();
+        //}
+        // 목차
+        if ($dom->getElementById('toc'))
+            $dom->getElementById('toc')->remove();
+
+        // 각주
+        /*$nds = $xp->query("//a[contains(@class, 'wiki-fn-content')]");
+        foreach ($nds as $node) {
+            $span = $node->getElementsByTagName('span')->item(0);
+            if ($span && $span->hasAttribute('id')) {
+                $originalId = $span->getAttribute('id');
+                $newId = substr($originalId, 1);
+                
+                $existingSpan = $xp->query("//span[@id='$newId']")->item(0);
+                
+                if ($existingSpan) {
+                    $parentNode = $existingSpan->parentNode;
+                    $node->parentNode->replaceWith($node, $parentNode);
+                }
+            }
+        }*/
+        
+        // 문단
+        for ($i=1; $i<=6; $i++) {
+            $rs = $dom->getElementsByTagName('h'.$i);
+            foreach ($rs as $r) {
+                $rtg = $r->getElementsByTagName('a')->item(0);
+                $rtgt = $r->getElementsByTagName('span')->item(0);
+                $r->removeChild($rtg);
+            }
+        }
+        $t = $dom->saveHTML();
+        $t = preg_replace('/<style[^>]*>[^<]*<\/style>/', '', $t);
+        $t = strip_tags($t);
+        $t = preg_replace('/{{{#!wiki style=\"[^"]*\"\n(.*)}}}/', ' $1 ', $t);
+
+        $result = html_entity_decode($t);
+        $result = preg_replace('/( {2,})/', ' ', $result);
+        $result = str_replace("\n", ' ', $result);
+        Search::updateIndex($uuid, $result);
     }
 }

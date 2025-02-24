@@ -1,33 +1,51 @@
-<div class="wiki-content">
+<form class="spacing-ud" method="GET">
+    <input type="hidden" name="page" value="Search">
+    <select class="search" name="namespace">
+        <option>{$lang['recent']['logtype_all']}</option>
+        <option n:foreach="$namespace as $n" value="{$n}">{$n}</option>
+    </select>
+    <select class="search" name="target">
+        <option n:attr="selected: $wiki['page']['data']['body']['target'] == 'title_content'" value="title_content">{$lang['search']['title_content']}</option>
+        <option n:attr="selected: $wiki['page']['data']['body']['target'] == 'title'" value="title">{$lang['search']['title']}</option>
+        <option n:attr="selected: $wiki['page']['data']['body']['target'] == 'content'" value="content">{$lang['search']['content']}</option>
+        <option n:attr="selected: $wiki['page']['data']['body']['target'] == 'raw'" value="raw">{$lang['search']['raw']}</option>
+    </select>
+    <input class="search" type="text" name="query" value="{$wiki['page']['data']['body']['query']}">
+    <button type="submit" class="pressdo-btn-nonflex btn-lightblue">{$lang['btn']['search']}</button>
+</form>
+<div class="a-mono search">
     <div>
-        <form class="spacing-ud" method="GET">
-            <input type="hidden" name="page" value="Search">
-            <select class="search" name="namespace">
-                <option n:foreach="array_keys($_ns) as $n" value="{$_ns[$n]}">{$_ns[$n]}</option>
-            </select>
-            <select class="search" name="target">
-                <option value="title_content">{$lang['search']['title_content']}</option>
-                <option value="title">{$lang['search']['title']}</option>
-                <option value="content">{$lang['search']['content']}</option>
-                <option value="raw">{$lang['search']['raw']}</option>
-            </select>
-            <input class="search" type="text" name="query">
-            <button type="submit" class="pressdo-btn btn-blue">{$lang['search']}</button>
-        </form>
-        <div class="a search">
-            <div class="l">
-                <i class="ion-ios-arrow-forward"></i>{$lang['msg']['search_go_directly']}
-            </div>
-            <div class="r">
-                <a class="bt-white" href="/w/{$keyword}">{=$lang['search']['go']|replace: '@1@', $keyword}</a>
-            </div>
+        <div class="l">
+            <i class="ion-ios-arrow-forward"></i>{$lang['msg']['search_go_directly']}
         </div>
-        <div class="s">
-            {=$lang['search']['count']|replace: '@1@', $resultCount} / {=$lang['search']['period']|replace: '@1@', $period}
+        <div class="r">
+            <a class="pressdo-btn-nonflex" href="/w/{$wiki['page']['data']['body']['query']}">{sprintf($lang['search']['go'], $wiki['page']['data']['body']['query'])}</a>
         </div>
-        <ul data-pressdo-blockhistory>
-            <li n:foreach="$data['history'] as $h">
-            </li>
-        </ul>
+        <div class="clearfix"></div>
     </div>
 </div>
+<div class="s">
+    {sprintf($lang['search']['count'], $wiki['page']['data']['resultCount'])} / {sprintf($lang['search']['period'], $wiki['page']['data']['period'])}
+</div>
+<section class="search">
+    <div n:foreach="$wiki['page']['data']['result'] as $r">
+        {if $r['document']['forceShowNamespace'] === false}
+            {var $title = $r['document']['title']}
+        {else}
+            {var $title = $r['document']['namespace'].':'.$r['document']['title']}
+        {/if}
+        <h4>
+            <i class="ion-md-document"></i>
+            <a href="/w/{$title|escapeUrl}">{$title}</a>
+        </h4>
+        <div>
+            {$r['content']}
+        </div>
+    </div>
+    <nav class="pages-nums">
+        <ul>
+            <li><a href="/Search?">1</a></li>
+        </ul>
+    </nav>
+    <div class="clearfix"></div>
+</section>

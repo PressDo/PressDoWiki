@@ -30,7 +30,7 @@
                                     </div>
                                 </div>
                                 <span class="d">
-                                    <time datetime="{$d['date']|date:'Y-m-d\TH:i:s'}.000Z">{$d['date']|date:'Y-m-d H:i:s'}</time>
+                                    {$d['date']|localdate|noescape}
                                     <div n:if="!$sta" v="inline" class="p">
                                         <div v="inline-block">
                                             <button class="pressdo-btn thread-btn"></button>
@@ -42,9 +42,9 @@
                             <div n:class="$sta? s, thread, b">
                                 <div>
                                     <div class="w">
-                                        <div data-pressdo-doc-paragraph>
+                                        <div>
                                             {if $sta}
-                                                {=$lang['msg']['changed_thread_'.$d['type']]|replace: '@1@', $d['text']|noescape}
+                                                {sprintf($lang['msg']['changed_thread_'.$d['type']], $d['text'])|noescape}
                                             {else}
                                                 {$d['text']|noescape}
                                             {/if}
@@ -77,12 +77,10 @@
                 <button class="pressdo-btn" type="submit">{$lang['change']}</button>
             </form>
         <form method="post" class="editor">
-            {* Unsupported
             <ul class="selector">
                 <li class="selector"><button class="selector-btn btn-wideright">{$lang['editor']['raw']}</button></li>
                 <li class="selector"><button class="selector-btn btn-wideright">{$lang['editor']['preview']}</button></li>
             </ul>
-            *}
             <div data-pressdo-loginform class="c">
                 {if $wiki['page']['data']['status'] != 'normal'}
                     {var $disabled1 = 'disabled'}
@@ -92,7 +90,7 @@
                     {var $_name = false}
                 {/if}
                 <textarea data-pressdo-thread id="contentInput" rows="5" n:attr="disabled: $disabled1, name: $_name" required>{if $wiki['page']['data']['status']!='normal'} {$lang['msg']['thread_status_'.$wiki['page']['data']['status']]} {/if}</textarea>
-                <p n:if="!$wiki['session']['member']['username']" data-pressdo-warning-unlogined>{=$lang['msg']['unlogined_comment']|replace: '@1@', $wiki['session']['ip']}</p>
+                <p n:if="!$wiki['session']['member']['username']" data-pressdo-warning-unlogined>{sprintf($lang['msg']['unlogined_comment'], $wiki['session']['ip'])}</p>
             </div>
             <button type="submit" n:attr="disabled: $disabled1" class="pressdo-btn btn-wideright btn-blue">{$lang['submit']}</button>
             <div style="clear: both;">

@@ -25,6 +25,8 @@ class View
     public function renderInit()
     {
         $this->latte = new Latte;
+        $this->latte->addFilter('localdate',
+            fn(int $t): string => '<time datetime="'.gmdate('Y-m-d\TH:i:s', $t).'.000Z">'.date('Y-m-d H:i:s', $t).'</time>');
         $this->latte->setTempDirectory('../temp');
         $this->latte->addFilter('formatTime', fn($time) => Controller::formatTime($time));
 

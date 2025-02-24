@@ -21,15 +21,14 @@
     {foreach $wiki['page']['data']['content'] as $he}
         {var $diff = 'a'}
         {var $disdiff = false}
+        {var $Diff = $he['count']}
 
         {if $he['document']['forceShowNamespace'] === false}
-            {var $ns = ''}
+            {var $title = $he['document']['title']}
         {else}
-            {var $ns = $he['document']['namespace'].':'}
+            {var $title = $he['document']['namespace'].':'.$he['document']['title']}
         {/if}
 
-        {var $title = $ns.$he['document']['title']}
-        {var $Diff = $he['count']}
         
         {if $Diff > 0}
             {var $color = 'green'}
@@ -42,7 +41,7 @@
             {var $flag = ''}
         {/if}
 
-        {if $he['logtype'] == 'create'}
+        {if $he['rev'] == 1}
             {var $diff = 'span'}
             {var $disdiff = true}
         {/if}
@@ -62,29 +61,29 @@
             <div class="recent-td">
                 <span>
                     <div class="context-menu v-popper v-popper--theme-contextmenu">
-            {if $he['author'] === null}
-                {var $idset[$he['contributor_uuid']] = ['IP', $he['ip']]}
-                <a style="{$he['style']}" class="user" href="/contribution/{$he['contributor_uuid']}/document" class="user" aria-describedby="contextmenu-{$he['contributor_uuid']}">{$he['ip']}</a>
-            {else}
-                {var $idset[$he['contributor_uuid']] = [$lang['acl']['member'].($he['admin'] ? ' ('.$lang['perm']['admin'].')':''), $he['author']]}
-                <a style="{$he['style']}" class="user user-member" href="/w/{'사용자:'.$he['author']|escapeUrl}" class="user user-member" aria-describedby="contextmenu-{$he['contributor_uuid']}">{$he['author']}</a>
-            {/if}
-            </div>
+                    {if $he['author'] === null}
+                        {var $idset[$he['contributor_uuid']] = ['IP', $he['ip']]}
+                        <a style="{$he['style']}" class="user" href="/contribution/{$he['contributor_uuid']}/document" class="user" aria-describedby="contextmenu-{$he['contributor_uuid']}">{$he['ip']}</a>
+                    {else}
+                        {var $idset[$he['contributor_uuid']] = [$lang['acl']['member'].($he['admin'] ? ' ('.$lang['perm']['admin'].')':''), $he['author']]}
+                        <a style="{$he['style']}" class="user user-member" href="/w/{'사용자:'.$he['author']|escapeUrl}" class="user user-member" aria-describedby="contextmenu-{$he['contributor_uuid']}">{$he['author']}</a>
+                    {/if}
+                    </div>
                 </span>
             </div>
-            <div class="recent-td recent-datetime"><time datetime="{$he['date']-32400|date: 'Y-m-d\TH:i:s'}.000Z" title="{$he['date']|date: 'Y-m-d H:i:s'}">{$he['date']|date:'Y-m-d H:i:s'}</time></div>
+            <div class="recent-td recent-datetime">{$he['date']|localdate|noescape}</div>
             <div n:if="($he['log']|length) > 0 || $he['logtype'] !== 'modify'" class="recent-td recent-log">
                 <span class="recent-changes" n:ifcontent>{$he['log']}</span>
                 <i>
                 {switch $he['logtype']}
                     {case 'revert'}
-                        ({=$lang['log']['revert']|replace: '@1@', $he['target_rev']})
+                        ({sprintf($lang['log']['revert'], $he['target_rev'])})
                     {case 'delete', 'create'}
                         ({$lang['log'][$he['logtype']]})
                     {case 'move'}
-                        ({=$lang['log']['move']|replace: ['@1@' => $he['from'], '@2@' => $he['to']]})
+                        ({sprintf($lang['log']['move'], $he['from'], $he['to'])})
                     {case 'acl'}
-                        ({=$lang['log']['acl']|replace: '@1@', $he['acl']})
+                        ({sprintf($lang['log']['acl'], $he['acl'])})
                 {/switch}
                 </i>
             </div>

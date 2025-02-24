@@ -6,6 +6,8 @@
         "geoip2/geoip2": "~2.0",
         "spomky-labs/otphp": "^11.3",
         "endroid/qr-code": "^6.0",
-        "lbuchs/webauthn": "^2.2"
+        "lbuchs/webauthn": "^2.2",
+        "aws/aws-sdk-php": "^3.339",
+        "meyfa/php-svg": "^0.16.0"
     }
 }

@@ -36,9 +36,9 @@ class Signup extends Controller
                     $error = $update;
                 else {
                     $code = Member::regCodeAdd($_POST['email'], $this->session['ip'], $update);
-                    $body = str_replace(['@1@', '@2@', '@3@'], [Config::get('wiki.site_name'), Config::get('wiki.canonical_url').'/member/signup?x='.$code, $this->session['ip']], $content);
+                    $body = sprintf($content, Config::get('wiki.site_name'), Config::get('wiki.canonical_url').'/member/signup?x='.$code, $this->session['ip']);
 
-                    $send = self::sendMail($_POST['email'], str_replace('@1@', Config::get('wiki.site_name'), $lang['signup_title']) ,$body);
+                    $send = self::sendMail($_POST['email'], sprintf($lang['signup_title'], Config::get('wiki.site_name')) ,$body);
                     $step = 1;
 
                     // error in mailserver

@@ -4,7 +4,9 @@ namespace PressDo\app\Core;
 use PressDo\app\Models\Member;
 use PressDo\app\Helpers\{Config,Namespaces,Languages};
 use PressDo\app\Helpers\Mark\Loader;
-use \yidas\socketMailer\Mailer;
+use yidas\socketMailer\Mailer;
+use SVG\SVG;
+use SVG\Nodes\Shapes\SVGRect;
 
 class Controller
 {
@@ -166,7 +168,7 @@ class Controller
     /**
      * Get IP of user.
      */
-    protected static function getIPAddr(): string
+    public static function getIPAddr(): string
     {
         return $_SERVER['REMOTE_ADDR'];
     }
@@ -184,6 +186,23 @@ class Controller
         return ['week' => $week, 'day' => $day, 'hour' => $hour, 'minute' => $min, 'second' => $sec];
     }
 
+    public static function formatBefore(int $timestamp): string
+    {
+        $diff = time() - $timestamp;
+        if ($diff < 10)
+            return Languages::get('recent', 'rightbefore');
+        if ($diff < 60)
+            return Languages::get('recent', 'before');
+        if ($diff < 3600)
+            return Languages::get('recent', 'before');
+        if ($diff < 86400)
+            return Languages::get('recent', 'before');
+        if ($diff < 2592000)
+            return Languages::get('recent', 'before');
+
+        return date('Y-m-d H:i:s', $timestamp);
+    }
+
     /**
      * Generate random string
      * @param int $len  length of string
@@ -194,8 +213,10 @@ class Controller
     protected static function rand(int $len=16, bool $u=false, string $add=''): string
     {
         $c = '0123456789abcdefghijklmnopqrstuvwxyz';
-        if($u) $c .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        if(strlen($add) > 0) $c .= $add;
+        if ($u)
+            $c .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (strlen($add) > 0)
+            $c .= $add;
         
         $cl = strlen($c);
         $s = '';
@@ -208,34 +229,82 @@ class Controller
     protected static function utf8_ord($c)
     {
         $len = strlen($c);
-        if($len <= 0) return false;
+        if ($len <= 0)
+            return false;
         $h = ord($c[0]);
-        if ($h <= 0x7F) return $h;
-        if ($h < 0xC2) return false;
-        if ($h <= 0xDF && $len>1) return ($h & 0x1F) <<  6 | (ord($c[1]) & 0x3F);
-        if ($h <= 0xEF && $len>2) return ($h & 0x0F) << 12 | (ord($c[1]) & 0x3F) <<  6 | (ord($c[2]) & 0x3F);		  
-        if ($h <= 0xF4 && $len>3) return ($h & 0x0F) << 18 | (ord($c[1]) & 0x3F) << 12 | (ord($c[2]) & 0x3F) << 6 | (ord($c[3]) & 0x3F);
+        if ($h <= 0x7F)
+            return $h;
+        if ($h < 0xC2)
+            return false;
+        if ($h <= 0xDF && $len>1)
+            return ($h & 0x1F) <<  6 | (ord($c[1]) & 0x3F);
+        if ($h <= 0xEF && $len>2)
+            return ($h & 0x0F) << 12 | (ord($c[1]) & 0x3F) <<  6 | (ord($c[2]) & 0x3F);		  
+        if ($h <= 0xF4 && $len>3)
+            return ($h & 0x0F) << 18 | (ord($c[1]) & 0x3F) << 12 | (ord($c[2]) & 0x3F) << 6 | (ord($c[3]) & 0x3F);
         return false;
     }
+
+    protected static function utf8_chr($num) {
+        if ($num<128)
+            return chr($num);
+        if ($num<2048)
+            return chr(($num>>6)+192).chr(($num&63)+128);
+        if ($num<65536)
+            return chr(($num>>12)+224).chr((($num>>6)&63)+128).chr(($num&63)+128);
+        if ($num<2097152)
+            return chr(($num>>18)+240).chr((($num>>12)&63)+128).chr((($num>>6)&63)+128).chr(($num&63)+128);
+        return false;
+     }
     
     protected static function is_hangeul(string $c)
     {
         $o = self::utf8_ord($c);
-        if( 0x1100<=$o && $o<=0x11FF ) return true;
-        if( 0x3130<=$o && $o<=0x318F ) return true;
-        if( 0xAC00<=$o && $o<=0xD7A3 ) return true;
+        if (0x1100<=$o && $o<=0x11FF )
+            return true;
+        if (0x3130<=$o && $o<=0x318F )
+            return true;
+        if (0xAC00<=$o && $o<=0xD7A3 )
+            return true;
         return false;
     }
 
     protected static function ko_head(string $char)
     {
-        $heads = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+        $chars = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
         $code = self::utf8_ord($char) - 44032;
         if ($code > -1 && $code < 11172) {
-            $result = $heads[$code / 588];
-        }else{//if(in_array($char, $heads)) {
+            $result = $chars[$code / 588];
+        } else {//if(in_array($char, $chars)) {
+            // not hangul
             $result = $char;
         }
         return $result;
+    }
+
+    protected static function ko_last(string $char)
+    {
+        $chars = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ',' ㅌ','ㅍ','ㅎ'];
+        $code = self::utf8_ord($char) - 44032;
+        if ($code > -1 && $code < 11172) {
+            $result = $chars[$code % 28];
+        } else {//if(in_array($char, $chars)) {
+            // not hangul
+            $result = '';
+        }
+        return $result;
+    }
+
+    protected static function ko_exceptlast(string $char)
+    {
+        $code = self::utf8_ord($char) - 44032;
+        return self::utf8_chr($code - ($code % 28) + 44032);
+    }
+
+    public static function getTransparentBackground(int $width, int $height): string
+    {
+        $image = new SVG($width, $height);
+        $doc = $image->getDocument();
+        return $image;
     }
 }

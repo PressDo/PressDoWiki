@@ -25,15 +25,21 @@ class Router
 
         if (count($uriset) > 2 && !in_array($uri_data->page, ['member', 'admin', 'api'])) {
             $uri_data->title = urldecode(implode('/', array_slice($uriset, 2)));
-            $uri_data->titleurl = implode('/', array_slice($uriset, 2));
+            if ($uriset[1] == 'contribution') {
+                [
+                    ,$uri_data->menu,
+                    $uri_data->target,
+                    $uri_data->type
+                ] = $uriset;
+            }
         } else {
             if ($uriset[2] == 'star' || $uriset[2] == 'unstar') {
                 $uri_data->menu = $uriset[2];
                 $uri_data->title = implode('/', array_slice($uriset, 3));
-            } else
-            $uri_data->menu = implode('/', array_slice($uriset, 2));
-            $uri_data->title = '';
-            $uri_data->titleurl = '';
+            } else {
+                $uri_data->menu = implode('/', array_slice($uriset, 2));
+                $uri_data->title = '';
+            }
         }
 
         $this->uri_data = $uri_data;

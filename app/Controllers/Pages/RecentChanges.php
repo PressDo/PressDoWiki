@@ -50,7 +50,7 @@ class RecentChanges extends Controller
 
                 if (empty($mperms[$uuid])) {
                     $mperms[$uuid] = [];
-                    ACL::getAccountPerms(['username' => $member, 'uuid' => $uuid], $mperms[$uuid]);
+                    ACL::getAccountPerms($uuid, $member, $mperms[$uuid]);
                 }
             }
 

@@ -33,7 +33,7 @@
 
             {switch $wiki['page']['view_name']}
                 {case 'OldPages'}
-                    <li><a href="/w/{$title|escapeUrl}">{$title}</a> ({$lang['document']['modifiedat']}:<time datetime="{$d['dt']|date:'c'}">{$d['dt']|date:'Y-m-d H:i:s'}</time>)</li>
+                    <li><a href="/w/{$title|escapeUrl}">{$title}</a> ({$lang['document']['modifiedat']}:{$d['dt']|localdate|noescape})</li>
                 {case 'LongestPages', 'ShortestPages'}
                     <li><a href="/w/{$title|escapeUrl}">{$title}</a> ({$d['len'].$lang['letters']})</li>
                 {case 'NeededPages'}

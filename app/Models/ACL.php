@@ -34,10 +34,10 @@ class ACL extends \PressDo\app\Core\Model
      * @param $document         document uuid
      * @return void            list of perms
      */
-    public static function getAccountPerms(array $member, array &$perms, $document=null): void
+    public static function getAccountPerms(string $uuid, string $username, array &$perms, $document=null): void
     {
         $db = self::db();
-        $memberuuid = self::uuid2bin($member['uuid']);
+        $memberuuid = self::uuid2bin($uuid);
 
         try {
             $c = $db->prepare("SELECT `perm`, `registered` FROM `member` WHERE `uuid`=?");
@@ -59,7 +59,7 @@ class ACL extends \PressDo\app\Core\Model
             if ($c->rowCount() > 0)
                 array_push($perms, 'document_contributor', 'contributor');
             
-            if (Document::getTitleByUuid(self::bin2uuid($document))['title'] == $member['username'])
+            if (Document::getTitleByUuid(self::bin2uuid($document))['title'] == $username)
                 array_push($perms, 'match_username_and_document_title');
         }
 

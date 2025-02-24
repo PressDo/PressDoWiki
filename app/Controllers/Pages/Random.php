@@ -10,5 +10,6 @@ class Random extends Controller
     {
         $r = Document::getRandom()[0];
         Header('Location: /w/'.self::makeTitle($r['namespace'], $r['title']));
+        exit;
     }
 }

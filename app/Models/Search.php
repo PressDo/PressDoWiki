@@ -7,81 +7,68 @@ use \ErrorException as ErrorException;
 
 class Search extends \PressDo\app\Core\Model
 {
-    public static function Search(string $keyword): array
+    public static function updateIndex(string $uuid, string $text): void
     {
-        /*
-        * 검색 엔진 제작 시 참고사항
-        * Whitespace로 쪼개 LIKE %a% 형태로 OR 검색
-        * 데이터 많아지면 검색구간 분할
-        * 역색인 결과의 교집합을 찾을 것
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        try {
+            $d = $db->prepare("UPDATE search_index SET `text`=? WHERE document=?");
+            $d->execute([$text, $uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 색인 업데이트 중 오류 발생');
+        }
+    }
 
-        Inverted index 구조 개요
-        - 편집 후 저장 시 HTML에서 문법요소가 아닌 모든 단어 추출
-        - Words 배열로 반환
-        - 각각의 단어를 DB에 저장
+    public static function softSearch(string $namespace, string $toplevel, string $midlevel, string $lowlevel): array
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("SELECT `namespace`, `title` FROM document WHERE `namespace` = :ns AND (`title` REGEXP :q OR `title` REGEXP :c OR `title` REGEXP :r)
+                ORDER BY CASE WHEN `title` REGEXP :q THEN 1 WHEN `title` REGEXP :c THEN 2 WHEN `title` REGEXP :r THEN 3 END, title ASC LIMIT 10");
+            $d->execute(['ns' => $namespace, 'q' => $toplevel, 'c' => $midlevel, 'r' => $lowlevel]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서명 검색 중 오류 발생');
+        }
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        - 주석의 경우는 삽입 위치로 원문 이동
+    public static function hardSearch(string $keystring, string $target, ?string $namespace): array
+    {
+        $db = self::db();
+        try {
+            $db->query("SHOW VARIABLES LIKE 'innodb_ft_min_token_size'");
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': InnoDB 매개변수 확인 중 오류 발생');
+        }
 
-        - 편집 후 저장 시 모든 형태의 링크 추출(include, redirect 포함)
-        - Links 배열로 반환
-        - 역링크 테이블에 추가
-        */
-        global $db, $DB_ASSOC;
-        $len = strlen($keyword);
-        $words = [];
-        $thisword = '';
-        $sqlstr = '';
-        $quotopen = false;
-        $append_plus = false;
-        $resSet = [];
+        $sql = "SELECT d.namespace, d.title, s.text FROM search_index s JOIN document d ON d.uuid = s.document WHERE";
+        $args = [$keystring];
+        switch ($target) {
+            case 'title_content':
+                $sql .= ' MATCH(`text`) AGAINST(? IN BOOLEAN MODE) OR ';
+                array_push($args, $keystring);
+                // no break
+            case 'title':
+                $sql .= 'd.title = ?'; // 제목에도 IN BOOLEAN 적용 필요
+                break;
+            case 'content':
+                $sql .= ' MATCH(`text`) AGAINST(? IN BOOLEAN MODE)';
+                break;
+            case 'raw':
+                // raw 검색 구현 필요
+        }
 
-        for($i=0; $i<$len; ++$i):
-            $s = $keyword[$i];
-            switch($s){
-                case '"':
-                    if($quotopen === false)
-                        $quotopen = true;
-                    elseif($quotopen === true)
-                        $quotopen = false;
-                    break;
-                case ' ':
-                    if($quotopen === false){
-                        if($append_plus === true){
-                            $append_plus = false;
-                            $sqlstr .= " `content` LIKE ?) OR";
-                        }else
-                            $sqlstr .= " `content` LIKE ? OR";
-                        array_push($words, '%'.$thisword.'%');
-                        $thisword = '';
-                    }else
-                        $thisword .= $s;
-                    break;
-                case '+':
-                    if($quotopen === false){
-                        if($append_plus === true){
-                            $sqlstr .= " `content` LIKE ? AND";
-                        }else{
-                            $append_plus = true;
-                            $sqlstr .= " (`content` LIKE ? AND";
-                        }
-                        array_push($words, '%'.$thisword.'%');
-                        $thisword = '';
-                    }else
-                        $thisword .= $s;
-                    break;
-                default:
-                    $thisword .= $s;
-            }
-        endfor;
-        if($append_plus === true){
-            $sqlstr .= " `content` LIKE ?)";
-        }else
-            $sqlstr .= " `content` LIKE ?";
-        array_push($words, '%'.$thisword.'%');
+        if (!empty($namespace)){
+            $sql .= " AND d.namespace = ?";
+            array_push($args, $namespace);
+        }
 
-        $c = $db->prepare("SELECT `docid` FROM `history` WHERE `is_latest`='true' AND $sqlstr");
-        $c->execute($words);
-        $r = $c->fetchAll($DB_ASSOC);
-        return $resSet;
+        try {
+            $c = $db->prepare($sql);
+            $c->execute($args);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 검색 실행 중 오류 발생');
+        }
+        return $c->fetchAll(PDO::FETCH_ASSOC);
     }
 }

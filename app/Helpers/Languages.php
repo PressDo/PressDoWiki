@@ -31,7 +31,7 @@ class Languages
     /**
      * get all language string
      */
-    public static function all()
+    public static function all(): array
     {
         self::init();
         return static::$Languages;

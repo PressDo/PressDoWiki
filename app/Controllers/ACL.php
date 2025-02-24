@@ -33,7 +33,7 @@ class ACL extends Controller
     public function __construct(private string $namespace, private string $title, private string|bool $uuid, public array $session, public array &$error)
     {
         if ($this->session['member'])
-            ACLModels::getAccountPerms($this->session['member'], $this->perms);
+            ACLModels::getAccountPerms($this->session['uuid'], $this->session['member']['username'], $this->perms);
         else
             array_push($this->perms, 'ip');
 
@@ -71,9 +71,9 @@ class ACL extends Controller
         if ($this->status === null) {
             $this->status = 'deny';
             if (count($this->allow_list) < 1)
-                $msg = str_replace(['@1@', '@t@'], [$access, $full_title], Languages::get('msg')['aclerr_no_rules']);
+                $msg = sprintf(Languages::get('msg')['aclerr_no_rules'], $access, $full_title);
             else
-                $msg = str_replace(['@1@', '@3@', '@t@'], [$access, $allowed, $full_title], Languages::get('msg')['aclerr_not_target']);
+                $msg = sprintf(Languages::get('msg')['aclerr_not_target'], $access, $full_title, $allowed);
 
             $this->error = [
                 'code' => 'permission_'.$this->access,
@@ -81,10 +81,9 @@ class ACL extends Controller
                 'errbox' => !($this->access == 'read')
             ];
         } elseif ($this->status === 'deny') {
-            $this->error['message'] = str_replace(
-                ['@1@', '@3@', '@4@', '@5@', '@6@', '@7@', '@t@'], 
-                [$access, $allowed, $this->error['target']['id'], $this->error['target']['until'], $this->error['target']['comment'], self::formatCondition($this->error['cond']), $full_title], 
-                Languages::get('msg')[$this->error['message']]
+            $this->error['message'] = sprintf(
+                Languages::get('msg')[$this->error['message']],
+                $access, $full_title, $allowed, $this->error['target']['id'], $this->error['target']['until'], $this->error['target']['comment'], self::formatCondition($this->error['cond']), 
             );
             $this->error['errbox'] = true;
         }

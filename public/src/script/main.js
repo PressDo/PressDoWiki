@@ -83,10 +83,12 @@ pin = ''
 before = 0
 Ctrl = Alt = false
 NowDisplayPopper = ''
+let searchText = ''
 Lock = true
 document.onkeyup = (e) => {
     switch(e.key){
         case 'Control':
+        case 'Meta':
             Ctrl = false
             break
         case 'Alt':
@@ -105,6 +107,7 @@ document.onkeydown = (e) => {
     if(t !== 'INPUT' && t !== 'SELECT' && t !== 'TEXTAREA' && Ctrl === false && Alt === false){
         switch (e.key){
             case 'Control':
+            case 'Meta':
                 Ctrl = true
                 break
             case 'Alt':
@@ -512,7 +515,7 @@ if(g('fubtn')){
         var fn = f.files[0].name.split('.')
         var fil = fn.pop()
         g('fakeFileInput').value = f.value
-        g('documentInput').value = a.g(f,'ns')+':'+fn[fn.length - 1]+'.'+fil.toLowerCase()
+        g('documentInput').value = a.g(f,'ns')+':'+fn[fn.length - 1]+'.'+fil.toLowerCase().replace('jpeg', 'jpg')
     })
 }
 qa('div[dropdown-toggle]').forEach(r => {
@@ -539,6 +542,7 @@ qa('li[dropdown-option]').forEach(r => {
         var y = q('input[dropdown-input=arrow_'+x+']')
         var z = q('#list-dropdown-menu[dropdown-name=arrow_'+x+']')
         q('span[dropdown-selected='+x+']').innerText = r.innerText
+        q('input[option-type='+x+']').value = r.innerText
         a.s(q('input[dropdown-input=arrow_'+x+']'), 'placeholder', '')
         c.r(g('arrow_'+x),'rot')
         a.s(z, 'data-pressdo-toc-fold', 'hide')
@@ -546,6 +550,7 @@ qa('li[dropdown-option]').forEach(r => {
         y.blur()
     })
 })
+
 qa('a.tfa').forEach(r => {
     e(r, 'click', () => {
         var x = g('loginform') // form of button
@@ -575,13 +580,14 @@ qa('input[type=checkbox]').forEach(r => {
             r.removeAttribute('checked')
     })
 })
+// copy uuid
 qa('a[copy-id]').forEach(r => {
     e(r, 'click', () => {
         window.navigator.clipboard.writeText(r.getAttribute('copy-id')).then(() => {
             var selector = 'div#contextmenu-' + r.getAttribute('copy-id');
             var text = r.getAttribute('copy-msg')
-                .replace('@1@', q(selector + ' .user-type').innerText)
-                .replace('@2@', q(selector + ' .user-name').innerText)
+                .replace('%1$s', q(selector + ' .user-type').innerText)
+                .replace('%2$s', q(selector + ' .user-name').innerText)
             alert(text)
         })
     })
@@ -654,13 +660,15 @@ qa('div.context-menu a').forEach(r => {
     })
 })
 
-let updated = false;
 softSearch = () => {
-    updated = true;
-    var searchText = $('#searchInput').val();
+    // 이벤트 중복 실행 방지
+    if (searchText == $('#searchInput').val())
+        return;
+
+    searchText = $('#searchInput').val();
     if (searchText.length < 1){
         $('div.v-autocomplete-list').empty()
-        return false;
+        return;
     }
     const xhr = new XMLHttpRequest()
     const data = new FormData()
@@ -691,35 +699,3 @@ softSearch = () => {
     xhr.send(data)
 }
 $('#searchInput').on('keydown', softSearch)
-
-getRecent = () => {
-    const xhr = new XMLHttpRequest()
-    const data = new FormData()
-
-    xhr.open('GET', window.location.protocol + '//' + window.location.host + '/api/recent')
-    xhr.onreadystatechange = () => {
-        if(xhr.readyState === xhr.DONE && xhr.status === 200) {
-            var searchData = JSON.parse(xhr.responseText);
-            $('.recent-item').each(function(index) {
-                if (searchData[index]) {
-                    var r = searchData[index]
-                    var date = new Date(r.date * 1000);
-                    var targetdate = date.getFullYear().toString() + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + ("0" + date.getDate()).slice(-2)
-                    var now = new Date();
-                    var nowdate = now.getFullYear().toString() + '/' + ("0" + (now.getMonth() + 1)).slice(-2) + '/' + ("0" + now.getDate()).slice(-2)
-                    if (targetdate === nowdate)
-                        var displaydate = ("0" + date.getHours()).slice(-2) + ':' + ("0" + date.getMinutes()).slice(-2) + ':' + ("0" + date.getSeconds()).slice(-2)
-                    else
-                        var displaydate = targetdate
-                    var docnm = (r.document.forceShowNamespace === false ? '' : r.document.namespace + ':') + r.document.title;
-                    $(this).text('['+displaydate+'] '+docnm); // jQuery 방식으로 값 설정
-                    $(this).contents().unwrap().wrap('<a class="recent-item" href="/w/'+docnm+'"></a>')
-                } else
-                    $(this).text('&nbsp;');
-            });
-        }
-    }
-    xhr.send(data)
-}
-getRecent();
-setInterval(getRecent, 30000)

@@ -38,7 +38,7 @@
                 <th><strong>IP</strong></th>
             </thead>
             <tr n:foreach="$wiki['page']['data']['history'] as $h">
-                <td>{$h['datetime']|date: 'Y-m-d H:i:s'}</td>
+                <td>{$h['datetime']|localdate|noescape}</td>
                 <td>{$h['ip']}</td>
             </tr>
         </table>

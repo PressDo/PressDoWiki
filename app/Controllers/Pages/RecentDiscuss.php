@@ -63,7 +63,7 @@ class RecentDiscuss extends Controller
 
                 if (empty($mperms[$uuid])) {
                     $mperms[$uuid] = [];
-                    ACL::getAccountPerms(['username' => $member, 'uuid' => $uuid], $mperms[$uuid]);
+                    ACL::getAccountPerms($uuid, $member, $mperms[$uuid]);
                 }
             }
             $_e = Document::getTitleByUuid(Model::bin2uuid($f['document']));
