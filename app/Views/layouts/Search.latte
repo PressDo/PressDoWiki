@@ -39,7 +39,7 @@
             <a href="/w/{$title|escapeUrl}">{$title}</a>
         </h4>
         <div>
-            {$r['content']}
+            {$r['content']|noescape}
         </div>
     </div>
     <nav class="pages-nums">

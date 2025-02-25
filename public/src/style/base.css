@@ -378,6 +378,12 @@ nav.pages-nums {
         }
     }
 }
+section>div>div span.search-highlight {
+    background-color: #555;
+    border-radius: 4px;
+    color: #fff;
+    padding: 0 .2em;
+}
 
 
 /* Apple Compatibility */
@@ -682,9 +688,6 @@ svg.rot{transform: rotate(180deg) scale(1); -webkit-transform: rotate(180deg) sc
 li[dropdown-option] {line-height: 1.42857;display: block; padding: 3px 20px;clear: both;white-space: nowrap;}
 li[dropdown-option]:hover {background: rgb(88, 151, 251);color: rgb(255, 255, 255);}
 #list-dropdown-menu[data-pressdo-toc-fold=hide]{display:none;}
-
-/* delete */
-p[data-pressdo-delete]{font-weight: 700;margin-bottom: 1rem;margin-top: 0;}
 
 /* Config */
 table.config input[type=text] {width: 100%;}

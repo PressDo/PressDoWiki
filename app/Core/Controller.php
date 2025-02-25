@@ -38,6 +38,7 @@ class Controller
                 $this->session['menus'] = $sess['menus'];
                 $this->session['member'] = $sess['member'];
                 $this->session['uuid'] = $sess['uuid'];
+                $this->session['admin'] = $sess['admin'];
             }
         }
         $ipuuid = Member::getIpUuid($this->session['ip'], true);
@@ -76,6 +77,7 @@ class Controller
         return [
             'menus' => $menus,
             //'email' => $email,
+            'admin' => in_array('admin', $sps),
             'uuid' => $uuid,
             'member' => [
                 'user_document_discuss' => null,

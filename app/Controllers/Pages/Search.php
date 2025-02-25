@@ -1,9 +1,8 @@
 <?php
 namespace PressDo\app\Controllers\Pages;
 
-use PressDo\app\Models\Search as S;
 use PressDo\app\Core\Controller;
-use PressDo\app\Helpers\{Languages,Namespaces};
+use PressDo\app\Helpers\{Languages,Namespaces,DefaultConfig};
 
 class Search extends Controller
 {
@@ -34,7 +33,8 @@ class Search extends Controller
                         'title' => $s['title'],
                         'forceShowNamespace' => self::forceShowNamespace($s['namespace'], $s['title'])
                     ],
-                    'content' => mb_substr($s['text'], 0, 256)
+                    // 추후 검색어의 정확한 파싱 + 텍스트 발췌 개선 필요
+                    'content' => str_replace($_GET['q'], '<span class="search-highlight">'.$_GET['q'].'</span>', mb_substr($s['text'], 0, 256))
                 ];
             }
         } else
@@ -59,9 +59,19 @@ class Search extends Controller
         return $page;
     }
 
+    /**
+     * Search with designated search engine
+     * @param string $keyword
+     * @param string $target
+     * @param mixed $namespace
+     * @return array
+     */
     private function searchQuery(string $keyword, string $target, ?string $namespace): array
     {
-        // if (DefaultConfig::get('wiki.search_engine') == 'SQL')
-        return S::hardSearch($keyword, $target, $namespace);
+        $engine = (new \ReflectionClass('PressDo\app\Helpers\SearchEngines\\'.DefaultConfig::get('searchengine.type')))->newInstance();
+        $engine->keyword = $keyword;
+        $engine->target = $target;
+        $engine->namespace = $namespace;
+        return $engine->getSearchResult();
     }
 }

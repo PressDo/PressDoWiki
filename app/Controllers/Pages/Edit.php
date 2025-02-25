@@ -72,9 +72,15 @@ class Edit extends Controller
                     $this->session['uuid'] = $ip;
                 }
 
-                if (!$uuid) {
-                    $uuid = Document::create($namespace, $title);
+                if ($this->session['baserev'] === 0)
                     $action = 'create';
+                
+                if (!$uuid)
+                    $uuid = Document::create($namespace, $title);
+                else {
+                    $this->session['baserev'] = Document::getVersion($uuid);
+                    if ($action == 'create')
+                        Document::recreate($uuid);
                 }
                 
                 Document::save(
@@ -96,7 +102,7 @@ class Edit extends Controller
 
         $doc = Document::load($uuid);
 
-        $this->session['baserev'] = $uuid ? Document::getVersion($uuid) : 0;
+        $this->session['baserev'] = $doc['status'] !== 'delete' && $uuid ? Document::getVersion($uuid) : 0;
         $this->session['raw'] = $uuid ? $doc['content'] : '';
         $section = $_GET['section'];
 

@@ -38,7 +38,7 @@ class ACL extends Controller
             array_push($this->perms, 'ip');
 
         $this->geoip = GeoIP::get($this->session['ip']);
-        $this->aclgroups = ACLModels::getUserAclgroups($this->session['ip'], $this->session['member']['uuid'] ?? null);
+        $this->aclgroups = ACLModels::getUserAclgroups($this->session['ip'], $this->session['uuid'] ?? null);
     }
 
     /**
@@ -178,11 +178,11 @@ class ACL extends Controller
         // return 하므로 break가 불요
         switch ($con[0]) {
             case 'aclgroup':
-                return $con[1];
+                return Languages::get('acl', 'aclgroup').' '.$con[1];
             case 'perm':
                 return Languages::get('perm', $con[1]) ?? $cond;
             case 'user':
-                return Languages::get('acl')['specific_user'];
+                return Languages::get('acl', 'specific_user');
             default:
                 return $cond;
         }

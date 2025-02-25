@@ -102,37 +102,4 @@
     </li>
 </ul>
 {include '../pagebutton.latte', ptag: $ptag, phref: $phref, ntag: $ntag, nhref: $nhref}
-<div n:foreach="$idset as $k => $i" class="context-tooltip" id="contextmenu-{$k}" v="none">
-    <div class="popper__backdrop"></div>
-    <div class="v-popper__wrapper">
-        <div class="v-popper__inner">
-            <div>
-                <div class="tooltip-top">
-                    <div class="user-type">{$i[0]}</div>
-                    <div class="user-name">{$i[1]}</div>
-                </div>
-                {if $i[0] !== 'IP'}
-                <hr>
-                <a href="/w/{$i[0]|escapeUrl}:{$i[1]}" role="button" class="pressdo-btn">사용자 문서</a>
-                {/if}
-                <hr>
-                <a href="/contribution/{$k}/document" role="button" class="pressdo-btn">문서 기여 내역</a>
-                <a href="/contribution/{$k}/discuss" role="button" class="pressdo-btn">토론 기여 내역</a>
-                {if $wiki['session']['admin']}
-                <hr>
-                <a role="button" copy-id="{$k}" copy-msg="{$lang['msg']['uuid_copied']}" href="#" class="pressdo-btn">UUID 복사</a>
-                <a href="/BlockHistory?query={$k}&target=text" role="button" class="pressdo-btn">차단 내역 조회</a>
-                <hr>
-                <a role="button" href="#" class="pressdo-btn btn-darkred" danger>차단</a>
-                {/if}
-            </div>
-            <div class="resize-observer" tabindex="-1">
-                <object aria-hidden="true" tabindex="-1" type="text/html" data="about:blank"></object>
-            </div>
-        </div>
-        <div class="v-popper__arrow-container" style="left: 21.963875px;">
-            <div class="v-popper__arrow-outer"></div>
-            <div class="v-popper__arrow-inner"></div>
-        </div>
-    </div>
-</div>
+{include '../userpopper.latte', idset: $idset}

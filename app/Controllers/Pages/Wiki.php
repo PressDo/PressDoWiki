@@ -1,10 +1,10 @@
 <?php
 namespace PressDo\app\Controllers\Pages;
 
-use PressDo\app\Models\{Backlink,Document,Star,ACL as ACLModels,Member,Files,Search};
+use PressDo\app\Models\{Backlink,Document,Star,ACL as ACLModels,Member,Files,Search,History};
 use PressDo\app\Core\Controller;
 use PressDo\app\Controllers\ACL;
-use PressDo\app\Helpers\{Namespaces,Languages,DefaultConfig};
+use PressDo\app\Helpers\{Namespaces,Languages,DefaultConfig, Config};
 
 class Wiki extends Controller
 {
@@ -61,8 +61,8 @@ class Wiki extends Controller
         $doc = Document::load($uuid, $rev_uuid);
 
         if ($doc['content'] === null) {
-            # If Not Found
-            return [
+            # Deleted Document
+            $page = [
                 'view_name' => 'notfound',
                 'title' => $this->uri_data->title,
                 'data' => [
@@ -71,10 +71,60 @@ class Wiki extends Controller
                         'title' => $title,
                         'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                     ],
+                    'history' => [],
                     'discuss_progress' => false,
                     'user' => $namespace == Namespaces::USER
                 ]
             ];
+            
+            $his = History::load($uuid, count: 3);
+            foreach ($his as $f) {
+                if (!empty($f['contributor_i'])) {
+                    $Cuuid = Document::bin2uuid($f['contributor_i']);
+                    $ip = Member::ipLookup($Cuuid);
+                    $member = null;
+    
+                    if (empty($userStyleSet[$ip])):
+                        $groups = array_map(fn($r) => $r[0]['groupid'], ACLModels::getUserAclgroups($ip));
+                        $userStyleSet[$ip] = implode(' ', array_map(fn($r) => Config::get('aclgroup.'.$r.'.style', ' '), $groups));
+                    endif;
+                } elseif(!empty($f['contributor_m'])) {
+                    $Cuuid = Document::bin2uuid($f['contributor_m']);
+                    $member = Member::lookup($Cuuid);
+                    $ip = null;
+    
+                    if (empty($userStyleSet[$Cuuid])):
+                        $groups = array_map(fn($r) => $r[0]['groupid'], ACLModels::getUserAclgroups(uuid: $Cuuid));
+                        $userStyleSet[$Cuuid] = implode(' ', array_map(fn($r) => Config::get('aclgroup.'.$r.'.style', ' '), $groups));
+                    endif;
+    
+                    if (empty($mperms[$Cuuid])) {
+                        $mperms[$Cuuid] = [];
+                        ACLModels::getAccountPerms($Cuuid, $member, $mperms[$Cuuid]);
+                    }
+                }
+    
+                array_push($page['data']['history'], [
+                    'rev' => $f['rev'],
+                    'uuid' => Document::bin2uuid($f['uuid']),
+                    'log' => $f['comment'],
+                    'date' => $f['datetime'],
+                    'count' => $f['count'],
+                    'logtype' => $f['action'],
+                    'target_rev' => $f['reverted_version'],
+                    'author' => $member,
+                    'ip' => $ip,
+                    'contributor_uuid' => $Cuuid,
+                    'style' => $userStyleSet[$Cuuid] ?? $userStyleSet[$ip],
+                    'admin' => $ip ?? in_array('admin', $mperms[$Cuuid]),
+                    'edit_request' => $f['edit_request_uri'],
+                    'acl' => $f['acl_changed'],
+                    'from' => $f['moved_from'],
+                    'to' => $f['moved_to'],
+                    'user_mode' => []
+                ]);
+            }
+            return $page;
         }
         
         $content = self::readSyntax($doc['content'], [

@@ -14,6 +14,7 @@ function loadClass($page, $menu) {
             require $DIR.'Files.php';
             require $DIR.'Star.php';
             require $DIR.'Search.php';
+            require $DIR.'History.php';
             require $HDIR.Config::get('wiki.mark').'/Loader.php';
             // no break
         case 'backlink':
@@ -28,6 +29,7 @@ function loadClass($page, $menu) {
             // no break
         case 'edit':
         case 'move':
+        case 'delete':
         case 'acl':
         case 'raw':
         case 'random':
@@ -75,5 +77,6 @@ function loadClass($page, $menu) {
             break;
         case 'Search':
             require $DIR.'Search.php';
+            require '../app/Helpers/SearchEngines/'.Config::get('searchengine.type').'.php';
     }
 }

@@ -16,7 +16,7 @@ class History extends \PressDo\app\Core\Model
      * @throws ErrorException
      * @return array
      */
-    public static function load(string $uuid, ?int $from=null, ?int $until=null): array
+    public static function load(string $uuid, ?int $from=null, ?int $until=null, int $count=31): array
     {
         $db = self::db();
         try {
@@ -30,7 +30,7 @@ class History extends \PressDo\app\Core\Model
             else
                 $str = 'DESC LIMIT';
 
-            $d = $db->prepare("SELECT uuid, `comment`, `action`, `reverted_version`, contributor_m, contributor_i, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `history` WHERE `document`=? AND `is_hidden`='false' ORDER BY `datetime` $str 31");
+            $d = $db->prepare("SELECT uuid, `comment`, `action`, `reverted_version`, contributor_m, contributor_i, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `history` WHERE `document`=? AND `is_hidden`='false' ORDER BY `datetime` $str $count");
             $d->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 역사 조회 중 오류 발생');

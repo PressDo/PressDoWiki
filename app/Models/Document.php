@@ -30,6 +30,19 @@ class Document extends \PressDo\app\Core\Model
         return self::bin2uuid($uuid);
     }
 
+    public static function recreate(string $uuid): void
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin(self::generateUuid());
+
+        try {
+            $d = $db->prepare("UPDATE `document` SET `status`='normal' WHERE uuid=?");
+            $d->execute([$uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 재생성 중 오류 발생');
+        }
+    }
+
     /**
      * Load document data
      * @param string $uuid     uuid of document
@@ -41,7 +54,7 @@ class Document extends \PressDo\app\Core\Model
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);
-        $sql = "SELECT h.uuid,h.content,h.comment,h.datetime,h.action,h.rev,h.count,h.reverted_version,h.contributor_m,h.contributor_i, h.edit_request_uri,h.acl_changed,h.moved_from,h.moved_to,h.is_hidden
+        $sql = "SELECT h.uuid,h.content,h.comment,h.datetime,h.action,h.rev,h.count,h.reverted_version,h.contributor_m,h.contributor_i, h.edit_request_uri,h.acl_changed,h.moved_from,h.moved_to,h.is_hidden, d.status
         FROM `history` as h INNER JOIN `document` as d ON d.uuid = h.document WHERE h.`document`=?";
 
         if ($rev === null) {
@@ -65,7 +78,7 @@ class Document extends \PressDo\app\Core\Model
             $res = null;
         else {
             $res = $d->fetch(PDO::FETCH_ASSOC);
-            if ($res['content'] == null && $res['rev'] !== 1) {
+            if ($res['content'] == null && $res['rev'] !== 1 && $res['status'] !== 'delete') {
                 $q = $db->prepare("SELECT content FROM history WHERE content IS NOT NULL AND document=? AND rev < ? ORDER BY `datetime` DESC LIMIT 1");
                 try {
                     $q->execute([$uuid, $res['rev']]);
@@ -161,6 +174,37 @@ class Document extends \PressDo\app\Core\Model
             $b->execute($d);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 이동 중 오류 발생');
+        }
+    }
+
+    public static function delete(string $uuid, ?string $cont_m, ?string $cont_i, int $length, int $baserev, string $comment): void
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+
+        if($cont_m !== null)
+            $cont_m = self::uuid2bin($cont_m);
+        elseif($cont_i !== null)
+            $cont_i = self::uuid2bin($cont_i);
+
+        $a = $db->prepare("UPDATE `document` SET `status`='delete' WHERE `uuid`=?");
+        $a->execute([$uuid]);
+
+        $d = [
+            self::uuid2bin(self::generateUuid()),
+            $uuid,
+            $comment,
+            $baserev + 1,
+            -$length,
+            $cont_m,
+            $cont_i
+        ];
+        
+        try {
+            $b = $db->prepare("INSERT INTO `history`(uuid,document,comment,action,rev,count,contributor_m,contributor_i) VALUES(?,?,?,'delete',?,?,?,?)");
+            $b->execute($d);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 문서 삭제 중 오류 발생');
         }
     }
 

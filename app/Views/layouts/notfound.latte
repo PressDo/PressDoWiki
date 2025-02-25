@@ -6,3 +6,45 @@
 <p>
     <a href="/edit/{$uri_data['title']|escapeUrl}">[{$lang['document']['create_document']}]</a>
 </p>
+<div style="margin-top: 40px; margin-bottom: 15px;"></div>
+{if !empty($wiki['page']['data']['history'])}
+    <h3>{$lang['history']['history_of_doc']}</h3>
+    <ul class="lists">
+        {foreach $wiki['page']['data']['history'] as $d}
+            {if $d['count'] > 0}
+                {var $color = 'green'}
+                {var $flag = '+'}
+            {elseif $d['count'] == 0}
+                {var $color = 'gray'}
+                {var $flag = ''}
+            {elseif $d['count'] < 0}
+                {var $color = 'red'}
+                {var $flag = ''}
+            {/if}
+            <li class="history">{$d['date']|localdate|noescape}
+                <strong>r{$d['rev']}</strong> <i>{switch $d['logtype']}
+                    {case 'revert'}
+                        ({sprintf($lang['log']['revert'], $d['target_rev'])})
+                    {case 'delete', 'create'}
+                        ({$lang['log'][$d['logtype']]})
+                    {case 'move'}
+                        ({sprintf($lang['log']['move'], $d['from'], $d['to'])})
+                    {case 'acl'}
+                        ({sprintf($lang['log']['acl'], $d['acl'])})
+                {/switch}</i><span>(<span class="history-{$color}">{$flag.$d['count']}</span>)</span>
+                <div class="context-menu v-popper v-popper--theme-contextmenu">
+                    {if $d['author'] === null}
+                        {var $idset[$d['contributor_uuid']] = ['IP', $d['ip']]}
+                        <a style="{$d['style']|noescape}" href="/contribution/{$d['contributor_uuid']}/document" class="user" aria-describedby="contextmenu-{$d['contributor_uuid']}">{$d['ip']}</a>
+                    {else}
+                        {var $idset[$d['contributor_uuid']] = [$lang['acl']['member'].($d['admin'] ? ' ('.$lang['perm']['admin'].')':''), $d['author']]}
+                        <a style="{$d['style']|noescape}" href="/w/{'사용자:'.$d['author']|escapeUrl}" class="user user-member" aria-describedby="contextmenu-{$d['contributor_uuid']}">{$d['author']}</a>
+                    {/if}
+                </div>
+                (<span class="history-gray">{$d['log']}</span>)
+            </li>
+        {/foreach}
+    </ul>
+    <a href="/history/{$wiki['page']['title']|escapeUrl}">[{$lang['btn']['more']}]</a>
+    {include '../userpopper.latte', idset: $idset}
+{/if}

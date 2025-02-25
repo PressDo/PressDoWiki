@@ -167,6 +167,7 @@ class Login extends Controller
         $this->session['menus'] = $this->session['temp']['menus'];
         $this->session['member'] = $this->session['temp']['member'];
         $this->session['uuid'] = $this->session['temp']['uuid'];
+        $this->session['admin'] = $this->session['temp']['admin'];
         unset($this->session['temp']);
 
         if (isset($_POST['autologin']) || $this->session['szczecin'] === true) {

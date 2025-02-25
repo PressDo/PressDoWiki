@@ -98,7 +98,8 @@
         "deactivate": "비활성화",
         "reset": "초기화",
         "upload": "업로드",
-        "search": "검색"
+        "search": "검색",
+        "more": "더 보기"
     },
     "log":{
         "create": "새 문서",
@@ -133,7 +134,7 @@
     },
     "msg":{
         "CheckDelMsg": "문서 삭제에 대한 안내를 확인해 주세요.",
-        "ThisIsNotMove": "문서 이동 목적이 아닌, 삭제하기 위함을 확인합니다.",
+        "ThisIsNotMove": "문서 이동 및 일부 내용 제거가 아닌 문서 전체를 삭제하기 위한 기능임을 확인합니다.",
         "PleaseDontMove": "알림! : 문서의 제목을 변경하려는 경우 <a href=\"/move/%s\">문서 이동</a>기능을 사용 해주세요. 문서 이동 기능을 사용할 수 없는 경우 토론 기능이나 게시판을 통해 대행 요청을 해주세요.",
         "OldPages": "편집된 지 오래된 문서의 목록입니다. (리다이렉트 제외)",
         "ShortestPages": "내용이 짧은 문서 (문서 이름공간, 리다이렉트 제외)",
@@ -345,7 +346,8 @@
         "move_ip": "이 기여를 로그인 사용자로 이전하기",
         "prev": "이전",
         "next": "다음",
-        "uploaded_file": "파일 %s을 올림"
+        "uploaded_file": "파일 %s을 올림",
+        "history_of_doc": "이 문서의 역사"
     },
     "document":{
         "content": "내용",
