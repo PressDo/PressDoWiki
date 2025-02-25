@@ -59,6 +59,7 @@ class Grant extends Controller
             'no_force_captcha',
             'batch_revert',
             'hide_document_history_log',
+            'hideip',
             'developer'
         ];
         $page['data']['have'] = array_intersect($page['data']['perms'], $perms);
