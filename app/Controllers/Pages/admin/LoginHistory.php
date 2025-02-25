@@ -41,7 +41,7 @@ class LoginHistory extends Controller
             return $page;
         }
 
-        if (in_array('hideip', Member::specialPerms($m['uuid']))) {
+        if (in_array('hideip', Member::specialPerms($m['uuid'])) && !in_array('developer', $perms)) {
             $page['data'] = ['errbox' => 'invalid_permission'];
             return $page;
         }

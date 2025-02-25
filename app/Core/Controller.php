@@ -16,15 +16,33 @@ class Controller
 
     public function __construct()
     {
-        $this->session = [
-            'menus' => [],
-            'member' => null,
-            'ip' => self::getIPAddr(),
-            'ua' => $_SERVER['HTTP_USER_AGENT']
-        ];
-        $uuid = Member::getIpUuid($this->session['ip'], true);
-        if ($uuid !== null)
-            $this->session['uuid'] = $uuid;
+        if (!empty($_SESSION))
+            $this->session = $_SESSION;
+        else {
+            $this->session = [
+                'menus' => [],
+                'member' => null,
+                'ip' => self::getIPAddr(),
+                'ua' => $_SERVER['HTTP_USER_AGENT']
+            ];
+        }
+        
+        if (empty($this->session['member']) && !empty($_COOKIE['szczecin'])) {
+            // auto-login
+            $uuid = Member::checkCookie('szczecin', $_COOKIE['szczecin']);
+            
+            if ($uuid !== null) {
+                // valid cookie
+                $l = Member::login($uuid, $this->session['ip'], $_SERVER['HTTP_USER_AGENT']);
+                $sess = self::getMemberData($uuid, $l['email'], $l['username'], $l['skin']);
+                $this->session['menus'] = $sess['menus'];
+                $this->session['member'] = $sess['member'];
+                $this->session['uuid'] = $sess['uuid'];
+            }
+        }
+        $ipuuid = Member::getIpUuid($this->session['ip'], true);
+        if ($ipuuid !== null)
+            $this->session['uuid'] = $ipuuid;
 
         $this->api_config = [
             'force_recaptcha_public' => Config::get('wiki.force_recaptcha_public'),
@@ -37,6 +55,35 @@ class Controller
             'copyright_text' => Config::get('wiki.copyright_text'),
             'sitenotice' => Config::get('wiki.sitenotice'),
             'logo_url' => Config::get('wiki.logo_url')
+        ];
+    }
+
+    public static function getMemberData(string $uuid, string $email, string $username, string $skin): array
+    {
+        $menus = [];
+        $SP = ['aclgroup', 'grant', 'login_history'];
+        $link = [
+            'aclgroup' => '/aclgroup',
+            'grant' => '/admin/grant',
+            'login_history' => '/admin/login_history'
+        ];
+        $sps = Member::specialPerms($uuid);
+        foreach ($SP as $prm) {
+            if (in_array($prm, $sps))
+                array_push($menus, ['l' => $link[$prm], 't' => $prm]);
+        }
+
+        return [
+            'menus' => $menus,
+            //'email' => $email,
+            'uuid' => $uuid,
+            'member' => [
+                'user_document_discuss' => null,
+                'username' => $username,
+                'gravatar_url' => '//www.gravatar.com/avatar/'.md5($email).'?d=retro',
+                'admin' => in_array('admin', $sps),
+                'settings' => ['skin' => $skin]
+            ]
         ];
     }
 
@@ -306,5 +353,17 @@ class Controller
         $image = new SVG($width, $height);
         $doc = $image->getDocument();
         return $image;
+    }
+
+    public static function getCookieOptions(int $duration): array
+    {
+        return [
+            'expires' => $_SERVER['REQUEST_TIME'] + $duration,
+            'path' => '/',
+            'domain' => Config::get('wiki.domain'),
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ];
     }
 }

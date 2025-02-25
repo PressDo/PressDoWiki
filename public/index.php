@@ -53,9 +53,6 @@ http://tn-skr2.smilevideo.jp data:; media-src *; child-src *; script-src 'self' 
 www.googletagmanager.com www.google-analytics.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; connect-src 'self'; font-src 'self' 
 fonts.gstatic.com data:;");
 
-if(!empty($_SESSION))
-    $wiki->session = $_SESSION;
-
 // Controller
 $wiki->page = $wiki->makeData();
 

@@ -8,20 +8,17 @@ use \ErrorException as ErrorException;
 class Member extends \PressDo\app\Core\Model
 {
     /**
-     * login user
-     * @param string $id        username
+     * check member info
+     * @param string $id        username/email
      * @param string $pw      userpw
-     * @param string $dt       datetime
-     * @param string $ip       user IP
-     * @param string $ua       user-agent
-     * @return array|bool        false or userdata
+     * @return array|bool        false or array(username, uuid, password)
      */
-    public static function login(string $id, string $pw, string $ip, string $ua): array|bool
+    public static function checkMember(string $id, string $pw): array|bool
     {
         $db = self::db();
         try {
-            $d = $db->prepare("SELECT `username`, `password`, `skin`, `uuid`,`email` FROM `member` WHERE `username`=? OR email=?");
-            $d->execute([$id, $id]);
+            $d = $db->prepare("SELECT `username`, `password`, `uuid` FROM `member` WHERE `username`=:id OR email=:id");
+            $d->execute(['id' => $id]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 유저 조회 중 오류 발생');
         }
@@ -32,20 +29,43 @@ class Member extends \PressDo\app\Core\Model
         if ($d->rowCount() !== 1 || !password_verify($pw, $user['password']))
             return false;
         
+        $user['uuid'] = self::bin2uuid($user['uuid']);
+        return $user;
+    }
+
+    /**
+     * login user
+     * @param string $uuid        uuid
+     * @param string $ip       user IP
+     * @param string $ua       user-agent
+     * @return array|bool        false or userdata
+     */
+    public static function login(string $uuid, string $ip, string $ua): array
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        try {
+            $d = $db->prepare("SELECT `username`, `skin`, `email` FROM `member` WHERE `uuid`=?");
+            $d->execute([$uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 유저 조회 중 오류 발생');
+        }
+        
+        $user = $d->fetch(PDO::FETCH_ASSOC);
+        
         try {
             $d = $db->prepare("INSERT INTO `login_history`(uuid,ip) VALUES(?,?)");
-            $d->execute([$user['uuid'], $ip]);
+            $d->execute([$uuid, $ip]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 로그인 기록 중 오류 발생');
         }
         
         try {
             $d = $db->prepare("UPDATE `member` SET `last_login_ua`=? WHERE `uuid`=?");
-            $d->execute([$ua, $user['uuid']]);
+            $d->execute([$ua, $uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 로그인 처리 중 오류 발생');
         }
-        $user['uuid'] = self::bin2uuid($user['uuid']);
         
         return $user;
     }
@@ -359,5 +379,46 @@ class Member extends \PressDo\app\Core\Model
         $d = $db->prepare("SELECT MAX(`datetime`) AS max, MIN(`datetime`) AS min FROM `login_history` WHERE `uuid`=? ORDER BY `datetime`");
         $d->execute([$exec]);
         return $d->fetch();
+    }
+
+    /**
+     * Save cookie value to database.
+     * @param string $uuid
+     * @param string $name
+     * @param int $length
+     * @return string value of saved cookie (in hex)
+     */
+    public static function saveCookies(string $uuid, string $name, int $length): string
+    {
+        $db = self::db();
+        $exec = self::uuid2bin($uuid);
+        $token = random_bytes(16);
+
+        $d = $db->prepare("INSERT INTO cookies (user, `name`, `value`, expiry) VALUES (?,?,?,?)");
+        $d->execute([$exec, $name, $token, $_SERVER['REQUEST_TIME'] + $length]);
+        return bin2hex($token);
+    }
+
+    public static function checkCookie(string $name, string $value): string|null
+    {
+        $db = self::db();
+        $token = hex2bin($value);
+
+        $d = $db->prepare("SELECT user FROM cookies WHERE `name`=? AND `value`=?");
+        $d->execute([$name, $token]);
+        if ($d->rowCount() > 0)
+            return self::bin2uuid($d->fetch(PDO::FETCH_ASSOC)['user']);
+        else
+            return null;
+    }
+
+    public static function deleteCookie(string $uuid, string $name, string $value): void
+    {
+        $db = self::db();
+        $exec = self::uuid2bin($uuid);
+        $token = self::uuid2bin($value);
+
+        $d = $db->prepare("DELETE FROM cookies WHERE user=? AND `name`=? AND `value`=?");
+        $d->execute([$exec, $name, $token]);
     }
 }
