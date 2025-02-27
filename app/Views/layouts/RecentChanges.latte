@@ -71,7 +71,7 @@
                     </div>
                 </span>
             </div>
-            <div class="recent-td recent-datetime">{$he['date']|localdate|noescape}</div>
+            <div class="recent-td recent-datetime">{$he['date']|localreldate|noescape}</div>
             <div n:if="($he['log']|length) > 0 || $he['logtype'] !== 'modify'" class="recent-td recent-log">
                 <span class="recent-changes" n:ifcontent>{$he['log']}</span>
                 <i>

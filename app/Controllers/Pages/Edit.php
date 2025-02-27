@@ -4,10 +4,12 @@ namespace PressDo\app\Controllers\Pages;
 use PressDo\app\Models\{Document,Member};
 use PressDo\app\Core\Controller;
 use PressDo\app\Controllers\ACL as WikiACL;
-use PressDo\app\Helpers\{Languages,Config};
+use PressDo\app\Helpers\{Languages,Namespaces};
 
 class Edit extends Controller
 {
+    public string $content;
+
     public function makeData(): array
     {
         [$namespace, $title] = self::parseTitle($this->uri_data->title);
@@ -31,73 +33,49 @@ class Edit extends Controller
         if ($error['code'] == 'permission_edit') {
             $error1 = $error;
             $ACL->check('edit_request');
-            if ($error['code'] !== 'permission_edit_request')
+            if ($error['code'] !== 'permission_edit_request') {
                 Header('Location: /new_edit_request/'.$this->uri_data->title);
-            else
+                exit;
+            } else
                 $this->error = $error1; // overwrite with edit-error
         }
 
         // Edit Submission
-        if (isset($_POST['token']) && isset($_POST['content'])) {
-            $_POST['content'] = htmlspecialchars_decode($_POST['content']);
-
-            $content = preg_replace('/^#(redirect|넘겨주기) (.+)$/im', '#redirect $2', $_POST['content']);
-
-            // ignore string after redirect
-            if (preg_match('/^#redirect (.+)$/im', $content, $matches)) {
-                $content = $matches[0];
+        if (isset($_POST['token']) && isset($_POST['content']) && self::editFormProcess($this, 'edittoken')) {
+            // Approve Edit
+            $member = $this->session['member'] ? $this->session['uuid'] : null;
+            $ip = !$member ? ($this->session['uuid'] ?? Member::getIpUuid($this->session['ip'])) : null;
+            if (!$member && !$this->session['uuid']) {
+                $this->session['uuid'] = $ip;
             }
 
-            if ($_POST['token'] !== $this->session['token']) {
-                // Reject: wrong anti-CSRF token
-                $error = [
-                    'code' => 'err_csrf_token',
-                    'message' => Languages::get('msg', 'err_csrf_token'),
-                    'errbox' => true
-                ];
-                $this->error = $error;
-            } elseif ($this->session['raw'] == $content) {
-                // Reject: same doc content
-                $error = [
-                    'code' => 'err_same_contents',
-                    'message' => Languages::get('msg', 'err_same_contents'),
-                    'errbox' => true
-                ];
-                $this->error = $error;
-            } else {
-                // Approve Edit
-                $member = $this->session['member'] ? $this->session['uuid'] : null;
-                $ip = !$member ? ($this->session['uuid'] ?? Member::getIpUuid($this->session['ip'])) : null;
-                if (!$member && !$this->session['uuid']) {
-                    $this->session['uuid'] = $ip;
-                }
-
-                if ($this->session['baserev'] === 0)
-                    $action = 'create';
-                
-                if (!$uuid)
-                    $uuid = Document::create($namespace, $title);
-                else {
-                    $this->session['baserev'] = Document::getVersion($uuid);
-                    if ($action == 'create')
-                        Document::recreate($uuid);
-                }
-                
-                Document::save(
-                    $uuid,
-                    $content,
-                    $_POST['comment'],
-                    $member,
-                    $ip,
-                    $this->session['baserev'],
-                    iconv_strlen($this->session['raw']),
-                    $action ?? 'modify'
-                );
-                
-
-                Header('Location: /w/'.$this->uri_data->title);
-                unset($this->session['token']);
+            if ($this->session['baserev'] === 0)
+                $action = 'create';
+            
+            if (!$uuid)
+                $uuid = Document::create($namespace, $title);
+            else {
+                $this->session['baserev'] = Document::getVersion($uuid);
+                if ($action == 'create')
+                    Document::recreate($uuid);
             }
+            
+            Document::save(
+                $uuid,
+                $this->content,
+                $_POST['comment'],
+                $member,
+                $ip,
+                $this->session['baserev'],
+                iconv_strlen($this->session['raw']),
+                $action ?? 'modify'
+            );
+            
+
+            Header('Location: /w/'.$this->uri_data->title);
+            unset($this->session['edittoken'], $this->session['baserev'], $this->session['raw']);
+            $_SESSION = $this->session;
+            exit;
         }
 
         $doc = Document::load($uuid);
@@ -120,13 +98,13 @@ class Edit extends Controller
                     'title' => $title,
                     'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
-                'user' => ($namespace == '사용자'),
+                'user' => $namespace == Namespaces::USER,
                 'token' => self::rand(64)
             //   'customData' => $ad_set
             ]
         ];
 
-        $this->session['token'] = $page['data']['token'];
+        $this->session['edittoken'] = $page['data']['token'];
         return $page;
     }
 }

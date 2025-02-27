@@ -103,11 +103,12 @@ class History extends Controller
                 'ip' => $ip,
                 'contributor_uuid' => $Cuuid,
                 'style' => $userStyleSet[$Cuuid] ?? $userStyleSet[$ip],
-                'admin' => $ip ?? in_array('admin', $mperms[$Cuuid]),
+                'admin' => $mperms[$Cuuid] === null ? false : in_array('admin', $mperms[$Cuuid]),
                 'edit_request' => $f['edit_request_uri'],
                 'acl' => $f['acl_changed'],
                 'from' => $f['moved_from'],
                 'to' => $f['moved_to'],
+                'edit_request' => $f['edit_request_uri'],
                 'user_mode' => []
             ]);
         }

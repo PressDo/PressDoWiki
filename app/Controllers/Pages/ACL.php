@@ -16,10 +16,10 @@ class ACL extends Controller
         //$doc = Models::load($uuid, $this->uri_data->rev);
         //$discussions = Models::get_doc_thread($uuid);
 
-        $ACL = new WikiACL($namespace, $title, 'acl', $this->session, $error);
+        $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $error);
         $ACL->check('acl');
 
-        $doc_editable = !($error['code'] == 'permission_acl');
+        $doc_editable = !($error['code'] == 'permission_acl') || in_array('nsacl', $ACL->perms);
         $ns_editable = in_array('nsacl', $ACL->perms);
 
         $doc_acl = ['edit' => [], 'move' => [], 'delete' => [], 'create_thread' => [], 'write_thread_comment' => [], 'edit_request' => [], 'acl' => []];

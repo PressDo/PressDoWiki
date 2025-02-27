@@ -11,6 +11,8 @@ class Namespaces
 
     public const CATEGORY = '분류';
 
+    public const TEMPLATE = '틀';
+
     protected static array $Namespaces = [];
 
     /**
@@ -19,7 +21,21 @@ class Namespaces
     protected static function init(): void
     {
         if(empty(static::$Namespaces)) {
-            static::$Namespaces = json_decode(file_get_contents('../config/namespace.json'), true);
+            $file = '../config/language/'.DefaultConfig::get('wiki.language').'/namespace.json';
+
+            if (!file_exists($file))
+                $file = '../config/language/ko-kr/namespace.json';
+
+            static::$Namespaces = array_merge(
+                [
+                    self::DOCUMENT,
+                    self::FILE,
+                    self::USER,
+                    self::CATEGORY,
+                    self::TEMPLATE
+                ],
+                json_decode(file_get_contents($file), true)
+            );
         }
     }
 

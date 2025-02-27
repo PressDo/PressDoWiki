@@ -6,7 +6,6 @@ use PressDo\app\Helpers\{Config,Namespaces,Languages};
 use PressDo\app\Helpers\Mark\Loader;
 use yidas\socketMailer\Mailer;
 use SVG\SVG;
-use SVG\Nodes\Shapes\SVGRect;
 
 class Controller
 {
@@ -44,19 +43,6 @@ class Controller
         $ipuuid = Member::getIpUuid($this->session['ip'], true);
         if ($ipuuid !== null)
             $this->session['uuid'] = $ipuuid;
-
-        $this->api_config = [
-            'force_recaptcha_public' => Config::get('wiki.force_recaptcha_public'),
-            'recaptcha_public' => Config::get('wiki.recaptcha_public'),
-            'editagree_text' => Config::get('wiki.editagree_text'),
-            'front_page' => Config::get('wiki.front_page'),
-            'site_name' => Config::get('wiki.site_name'),
-            'copyright_url' => Config::get('wiki.copyright_url'),
-            'cannonical_url' => Config::get('wiki.canonical_url'),
-            'copyright_text' => Config::get('wiki.copyright_text'),
-            'sitenotice' => Config::get('wiki.sitenotice'),
-            'logo_url' => Config::get('wiki.logo_url')
-        ];
     }
 
     public static function getMemberData(string $uuid, string $email, string $username, string $skin): array
@@ -66,7 +52,8 @@ class Controller
         $link = [
             'aclgroup' => '/aclgroup',
             'grant' => '/admin/grant',
-            'login_history' => '/admin/login_history'
+            'login_history' => '/admin/login_history',
+            'batch_revert' => 'batch_revert'
         ];
         $sps = Member::specialPerms($uuid);
         foreach ($SP as $prm) {
@@ -143,7 +130,6 @@ class Controller
     public function makePage(bool $getPage = true)
     {
         $this->dataset = (array) [
-            'config' => $this->api_config,
             //'local_config' => $local_config,
             'page' => $this->page,
             'session' => $this->session
@@ -214,6 +200,70 @@ class Controller
         return $result;
     }
 
+    protected static function editFormProcess(Controller &$page, string $tokennm): bool
+    {
+        // Edit Submission
+        $_POST['content'] = htmlspecialchars_decode($_POST['content']);
+
+        $content = preg_replace('/^#(redirect|넘겨주기) (.+)$/im', '#redirect $2', $_POST['content']);
+
+        // ignore string after redirect
+        if (preg_match('/^#redirect (.+)$/im', $content, $matches)) {
+            $content = $matches[0];
+        }
+
+        if ($_POST['token'] !== $page->session[$tokennm]) {
+            // Reject: wrong anti-CSRF token
+            $error = [
+                'code' => 'err_csrf_token',
+                'message' => Languages::get('msg', 'err_csrf_token'),
+                'errbox' => true
+            ];
+            $page->error = $error;
+        } elseif ($page->session['raw'] == $content) {
+            // Reject: same doc content
+            $error = [
+                'code' => 'err_same_contents',
+                'message' => Languages::get('msg', 'err_same_contents'),
+                'errbox' => true
+            ];
+            $page->error = $error;
+        } else {
+            // Approve Edit
+            $page->content = $content;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Load diff between two strings in HTML
+     * @param string $old
+     * @param string $new
+     * @param string $caption
+     * @return string
+     */
+    protected static function load_diff(string $old, string $new, string $caption=''): string
+    {
+        require '../app/Helpers/Libraries/diff/Diff.php';
+        require '../app/Helpers/Libraries/diff/Inline.php';
+
+        $a = explode("\n", $old);
+        $b = explode("\n", $new);
+
+        $options = array(
+            //'ignoreWhitespace' => true,
+            //'ignoreCase' => true,
+        );
+
+        $diff = new \Diff($a, $b, $options); 
+        $ren = new \Diff_Renderer_Html_Inline;
+        $ren->caption = $caption;
+        $ren->linecnt = [count($a),count($b)];
+
+        return $diff->render($ren);
+    }
+
     /**
      * Get IP of user.
      */
@@ -238,18 +288,25 @@ class Controller
     public static function formatBefore(int $timestamp): string
     {
         $diff = time() - $timestamp;
-        if ($diff < 10)
+        if ($diff < 10):
             return Languages::get('recent', 'rightbefore');
-        if ($diff < 60)
-            return Languages::get('recent', 'before');
-        if ($diff < 3600)
-            return Languages::get('recent', 'before');
-        if ($diff < 86400)
-            return Languages::get('recent', 'before');
-        if ($diff < 2592000)
-            return Languages::get('recent', 'before');
+        elseif ($diff < 60):
+            $time = $diff;
+            $unit = 'second';
+        elseif ($diff < 3600):
+            $time = $diff / 60;
+            $unit = 'minute';
+        elseif ($diff < 86400):
+            $time = $diff / 3600;
+            $unit = 'hour';
+        elseif ($diff < 2592000):
+            $time = $diff / 86400;
+            $unit = 'day';
+        else:
+            return date('Y-m-d H:i:s', $timestamp);
+        endif;
 
-        return date('Y-m-d H:i:s', $timestamp);
+        return sprintf(Languages::get('recent', 'before'), floor($time), Languages::get('acl', $unit));
     }
 
     /**

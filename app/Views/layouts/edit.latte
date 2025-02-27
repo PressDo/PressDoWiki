@@ -10,7 +10,7 @@
     {var $mobile = true}
     {var $toolbarinit = 'none'}
 {/if}
-{if $error['code'] == 'permission_edit'}
+{if $error['code'] == 'permission_edit' || $error['code'] == 'permission_edit_request'}
     {var $readonly = true}
 {/if}
 {default $readonly = false}
@@ -57,7 +57,7 @@
     {if !$readonly}
         <div class="g comment">
             <label class="comment" for="logInput">{$lang['editor']['summary']}</label>
-            <input data-pressdo-edit-summary type="text" name="comment" id="logInput">
+            <input n:attr="value: $wiki['page']['data']['body']['comment']" data-pressdo-edit-summary type="text" name="comment" id="logInput">
         </div>
         <label><input type="checkbox" name="agree" id="agree"> <span n:ifcontent>{$config['wiki.editagree_text']|noescape}</span></label>
         <p n:if="!$wiki['session']['member']['username']" class="unlogined">{sprintf($lang['msg']['unlogined_edit'], $wiki['session']['ip'])}</p>

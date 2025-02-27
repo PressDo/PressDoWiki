@@ -25,8 +25,13 @@ class View
     public function renderInit()
     {
         $this->latte = new Latte;
+
         $this->latte->addFilter('localdate',
             fn(int $t): string => '<time datetime="'.gmdate('Y-m-d\TH:i:s', $t).'.000Z">'.date('Y-m-d H:i:s', $t).'</time>');
+        
+        $this->latte->addFilter('localreldate',
+            fn(int $t): string => '<time datetime="'.gmdate('Y-m-d\TH:i:s', $t).'.000Z">'.Controller::formatBefore($t).'</time>');
+        
         $this->latte->setTempDirectory('../temp');
         $this->latte->addFilter('formatTime', fn($time) => Controller::formatTime($time));
 
@@ -51,6 +56,11 @@ class View
             case 'member':
                 $file = '../app/Views/layouts/'.$this->params['uri_data']['page'].'/'.$this->params['uri_data']['menu'].'.latte';
                 break;
+            case 'new_edit_request':
+            case 'edit_request':
+                $file = '../app/Views/layouts/edit.latte';
+                if ($this->params['uri_data']['action'] == 'edit')
+                    break;
             default:
                 $file = '../app/Views/layouts/'.$this->params['uri_data']['page'].'.latte';
         }

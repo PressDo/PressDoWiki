@@ -8,7 +8,7 @@ class Recent extends Controller
 {
     public function makeData(): never
     {
-        $fetch = History::recentChanges('recent', true);
+        $fetch = History::getRecentSidebar();
         $resultSet = [];
         
         foreach($fetch as $f){

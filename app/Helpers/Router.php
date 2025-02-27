@@ -33,20 +33,27 @@ class Router
             exit;
         endif;
 
+        $uripath = parse_url($request_uri, PHP_URL_PATH);
+
         // (0)/1/2/3
-        $uriset = explode('/', explode('?', $request_uri)[0]);
+        $uriset = explode('/', $uripath);
         $uri_data = (object) [
-            'page' => $uriset[1] == 'w' ? 'wiki' : $uriset[1]
+            'page' => $uriset[1] == 'w' ? 'wiki' : $uriset[1],
+            'path' => $uripath
         ];
 
         if (count($uriset) > 2 && !in_array($uri_data->page, ['member', 'admin', 'api'])) {
             $uri_data->title = urldecode(implode('/', array_slice($uriset, 2)));
             if ($uriset[1] == 'contribution') {
+                // 0/menu/target/type
                 [
                     ,$uri_data->menu,
                     $uri_data->target,
                     $uri_data->type
                 ] = $uriset;
+            } elseif ($uriset[1] == 'edit_request') {
+                $uri_data->title = $uriset[2];
+                $uri_data->action = $uriset[3];
             }
         } else {
             if ($uriset[2] == 'star' || $uriset[2] == 'unstar') {

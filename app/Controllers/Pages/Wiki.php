@@ -299,6 +299,6 @@ class Wiki extends Controller
         $result = html_entity_decode($t);
         $result = preg_replace('/( {2,})/', ' ', $result);
         $result = str_replace("\n", ' ', $result);
-        Search::updateIndex($uuid, $result);
+        Search::updateIndex($uuid, trim($result));
     }
 }

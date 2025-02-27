@@ -44,7 +44,7 @@ require dirname(__FILE__).'/Array.php';
 
 class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 {
-	public $oldrev, $newrev, $linecnt;
+	public $caption, $linecnt;
 	/**
 	 * Render a and return diff with changes between the two sequences
 	 * displayed inline (under each other)
@@ -64,7 +64,7 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 		$html .= '<tr>';
 		$html .= '<th></th>';
 		$html .= '<th></th>';
-		$html .= '<th class="diff">r'.$this->oldrev.' vs r'.$this->newrev.'</th>';
+		$html .= '<th class="diff">'.$this->caption.'</th>';
 		$html .= '</tr>';
 		$html .= '</thead>';
 		foreach($changes as $i => $blocks) {

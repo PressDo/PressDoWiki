@@ -154,6 +154,11 @@ qa('.hidden-trigger').forEach(h => {
     })
 })
 
+if (window.location.pathname.startsWith('/edit_request'))
+    editrequest = true;
+else
+    editrequest = false;
+
 // 편집기
 qa('button.e.editor.top').forEach(r => {
     e(r, 'click', e => {
@@ -164,27 +169,41 @@ qa('button.e.editor.top').forEach(r => {
             return false
         }else{
             var d = q('div.a.editor')
-            var f = q('li.t.editor.top')
+            if (!editrequest)
+                var f = q('li.t.editor.top')
             var g = q('button.tr.editor.top')
-            c.r(g,'tr')
+            if (!editrequest) {
+                c.r(g,'tr')
+                c.a(b,'tr')
+            }
             c.r(b,'a')
-            c.a(b,'tr')
             c.a(e.target,'a')
             c.r(d,'a')
             c.a(a,'a')
             if(e.target.id == 'm'){
                 window.monaco_namu.setValue(q('div#r textarea.editor').value)
-                SH(f,'')
+                if (!editrequest)
+                    SH(f,'')
             }else{
-                SH(f,'none')
+                if (!editrequest)
+                    SH(f,'none')
                 if (d.id == 'm')
                     q('div#r textarea.editor').value = window.monaco_namu.getValue()
             }
-            if(e.target.id == 'p')
-                getPreview()
+            if(e.target.id == 'p') {
+                if (editrequest)
+                    showERPreview()
+                else
+                    getPreview()
+
+            }
         }
     })
 })
+
+function showERPreview() {
+    
+}
 
 // 미리보기
 if(q('div#r textarea.editor') !== null){
@@ -220,7 +239,7 @@ if(g('ef')){
             q('div#r textarea.editor').value = window.monaco_namu.getValue()
         }
 
-        f.action = '/edit/'+getdoctitle() //a.g(ee,)
+        //f.action = '/edit/'+getdoctitle() //a.g(ee,)
         f.submit()
     })
 }

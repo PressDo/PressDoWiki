@@ -34,7 +34,7 @@ class Discuss extends Controller
             // 닫힌 00 목록
             if ($_GET['state'] == 'closed_edit_requests') {
                 $viewname = 'edit_request_close';
-                $threads = Editrequest::get($uuid, 'closed');
+                $threads = Editrequest::getBulk($uuid, 'close');
             } else {
                 $viewname = 'thread_list_close';
                 $threads = Thread::getDocThread($uuid, 'closed');
@@ -97,6 +97,7 @@ class Discuss extends Controller
                 ];
                 array_push($threads, $ra);
             }
+            
             $page = [
                 'view_name' => 'thread_list',
                 'title' => $this->uri_data->title,
@@ -107,9 +108,7 @@ class Discuss extends Controller
                         'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                     ],
                     'thread_list' => $threads,
-                    'editRequests' => [
-                        'slug'
-                    ],
+                    'edit_requests' => EditRequest::getBulk($uuid),
                     'perms' => $d_perms
                 ]
             ];

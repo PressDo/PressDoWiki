@@ -62,30 +62,8 @@ class Diff extends Controller
 
         $page['data']['old_uuid'] = $old_uuid;
         $page['data']['rev_uuid'] = $target_uuid ?? $new['uuid'];
-        $page['data']['diff'] = self::load_diff($old['content'], $new['content'], $old['rev'], $new['rev']);
+        $page['data']['diff'] = self::load_diff($old['content'], $new['content'], 'r'.$old['rev'].' vs r'.$new['rev']);
         //'debug' => $this->uri_data
         return $page;
-    }
-
-    private static function load_diff(string $old, string $new, int $ov, int $nv): string
-    {
-        require '../app/Helpers/Libraries/diff/Diff.php';
-        require '../app/Helpers/Libraries/diff/Inline.php';
-
-        $a = explode("\n", $old);
-        $b = explode("\n", $new);
-
-        $options = array(
-            //'ignoreWhitespace' => true,
-            //'ignoreCase' => true,
-        );
-
-        $diff = new \Diff($a, $b, $options); 
-        $ren = new \Diff_Renderer_Html_Inline;
-        $ren->oldrev = $ov;
-        $ren->newrev = $nv;
-        $ren->linecnt = [count($a),count($b)];
-
-        return $diff->render($ren);
     }
 }

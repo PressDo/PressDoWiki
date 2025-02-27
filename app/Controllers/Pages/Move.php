@@ -51,13 +51,13 @@ class Move extends Controller
             'customData' => []
         ];
 
-        if (!empty($_POST['token']) && $this->session['token'] !== $_POST['token']) {
+        if (!empty($_POST['token']) && $this->session['movetoken'] !== $_POST['token']) {
             $this->error = [
                 'code' => 'err_csrf_token',
                 'message' => Languages::get('msg', 'err_csrf_token'),
                 'errbox' => true
             ];
-        } elseif (!empty($_POST['token']) && $this->session['token'] == $_POST['token'] && !empty($_POST['new_title'])) {
+        } elseif (!empty($_POST['token']) && $this->session['movetoken'] == $_POST['token'] && !empty($_POST['new_title'])) {
             // Approve Move
             $member = $this->session['member'] ? $this->session['uuid'] : null;
             $ip = !$member ? ($this->session['uuid'] ?? Member::getIpUuid($this->session['ip'])) : null;
@@ -75,10 +75,10 @@ class Move extends Controller
                 $rev,
                 $_POST['summary']);
             Header('Location: /w/'.$_POST['new_title']);
-            unset($this->session['token']);
+            unset($this->session['movetoken']);
         }else{
-            $this->session['token'] = self::rand(64);
-            $page['data']['token'] = $this->session['token'];
+            $this->session['movetoken'] = self::rand(64);
+            $page['data']['token'] = $this->session['movetoken'];
         }
 
         return $page;

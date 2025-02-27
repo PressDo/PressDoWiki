@@ -88,7 +88,14 @@ p.unlogined{margin-top: 0; margin-bottom: 1rem;font-weight: 700; animation:blink
 textarea[disabled][data-pressdo-thread]{cursor: not-allowed;background-color: #eceeef;opacity: 1;}
 input[type=checkbox], input[type=radio]{box-sizing: border-box; padding: 0;}
 input.wrong{color:red!important;}
-input, select {padding: 0.25rem 0.5rem;border-radius: 0;line-height: 1.5;color: #55595c;background-color: #fff;background-image: none;border: 0.0625rem solid #ccc;margin: 0;font-size: .9rem;}
+hr.page-hr {
+    border: 0;
+    border-top: .0625rem solid #ccc;
+    height: 0;
+    margin: .5em 0;
+}
+/*input, select {padding: 0.25rem 0.5rem;border-radius: 0;line-height: 1.5;color: #55595c;background-color: #fff;background-image: none;border: 0.0625rem solid #ccc;margin: 0;font-size: .9rem;}
+*/
 .textfield[type="number"]::-webkit-inner-spin-button,
 .textfield[type="number"]::-webkit-outer-spin-button {-webkit-appearance: none;margin: 0;}
 .textfield{-webkit-appearance: none;-moz-appearance: none; appearance: none;background-color: #fff;background-color: var(--light-article-background-color, var(--article-background-color, #fff));border: 1px solid #d5d5d5;border-radius: 4px;display: block;font-size: .9rem;line-height: 1.5;padding: .3rem .75rem;}
@@ -223,6 +230,13 @@ div.bottom-space{margin-bottom:15px;}
     --button-background-hover-color: #c1434f;
 }
 
+button.btn-lightgreen {
+    background-color: #5cb85c!important;
+    border-color: #5cb85c!important;
+    color: #fff;
+}
+button.btn-lightgreen:not([disabled]):active, button.btn-lightgreen:not([disabled]):hover {background-color: #449d44!important;border-color: #419641!important;}
+
 a.btn-red, button.btn-red{color: #fff;background-color: #d9534f!important;border-color: #d9534f!important;}
 a.btn-red:not([disabled]):active, button.btn-red:not([disabled]):active, 
 a.btn-red:not([disabled]):hover, button.btn-red:not([disabled]):hover {text-decoration:none;background-color: #c9302c;border-color: #c12e2a;}
@@ -283,8 +297,9 @@ form li+li.editor.top {margin-left:0.2rem;}
 form li.t>div.editor.top {display:inline-block;}
 textarea.editor {border:none;font-family: inherit;color: #55595c;font-size: .9rem;margin: 0;border-radius: 0;padding: .25rem .5rem;width: 100%;height: 600px;resize: vertical; line-height: 1.5;}
 textarea {width: 100%;border: 1px solid #e1e8ed;padding: .5rem;resize: vertical;}
-form input[data-pressdo-edit-summary]{font-size: .9rem;border-radius: 0;padding: .25rem .5rem;width: 100%;line-height: 1.5;}
-input[type=text][data-pressdo-edit-summary]{ border-radius: 0;padding: .25rem .5rem; width: 100%; color: #55595c;background-color: #fff; background-image: none;border: .0625rem solid #ccc;}
+form div.g input[data-pressdo-edit-summary]{font-size: .9rem;border-radius: 0;padding: .25rem .5rem;width: 100%;line-height: 1.5;}
+form input[type=text][data-pressdo-edit-summary]{ border-radius: 0;padding: .25rem .5rem; width: 100%; color: #55595c;background-color: #fff; background-image: none;border: .0625rem solid #ccc;}
+form input[type=checkbox] {color: inherit;line-height: inherit;font: inherit;margin: 0 .25rem 0 0;padding: 0;}
 textarea[readonly]{border: .0625rem solid #ccc;background-color: #eceeef;opacity: 1;}
 form div.c.editor{border:1px solid #ddd; border-top:none;}
 form div.g{margin-top: 1rem; margin-bottom:15px;}
@@ -404,7 +419,7 @@ nav{white-space:nowrap;}
 .history-goto input{padding-left: 1.25rem; text-align: right; width: 4.5rem;}
 
 ul>li.history {font-size: .9rem;list-style: inherit!important;list-style-type: inherit!important;margin: 0.4em 0;}
-ul>li.history span.history-btns{font-size:8pt;}
+span.history-btns{font-size:8pt;}
 .history-green{color: green;}
 .history-red{color:red;}
 .history-gray{color:grey;}
@@ -427,7 +442,7 @@ button[disabled]{cursor: not-allowed!important; opacity: .65;}
 .signup-form{max-width: 40rem;}
 .longtext{height:30rem; scrollbar-width: thin;}
 
-label{vertical-align:middle; word-break: keep-all;}
+label{word-break: keep-all;}
 a[data-pressdo-button] {display: inline-block;font-size: 1rem;font-weight: 400;line-height: 1.5;text-align: center;white-space: nowrap;vertical-align: middle;touch-action: manipulation;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;padding: .2rem .7rem;color: #373a3c!important;background-color: #fff;border: .0625rem solid #ccc;font-size: .9rem;text-decoration: none!important;}
 form button.btn-right{float: right;width: 5rem;margin-top: 2rem;}
 form div.align-right{margin-top: 2rem;text-align: right;}
@@ -591,6 +606,44 @@ form.editor li+li.selector {margin-left: .2rem}
 form.editor li.selector {float:left; margin-bottom:-1px;}
 form.editor li button.selector-btn{background: 0 0;border: 1px solid transparent;border-radius: .25rem .25rem 0 0;cursor: pointer;display: block;font-size: .9rem;padding: .5em 1em;}
 
+/* EditRequest */
+h3.subject {
+    color: inherit;
+    font-family: inherit;
+    font-size: 1.75rem;
+    line-height: 1.1;
+    margin-bottom: .5rem;
+    margin-top: 0;
+}
+label.inline-data {display: inline-block;font-weight: 700;margin-bottom: .5rem;}
+div.inline-buttonset {
+    -moz-column-gap: .25rem;
+    column-gap: .25rem;
+    display: flex;
+}
+div.info-box {
+    border: .0625rem solid #e5e5e5;
+    border-radius: .25rem;
+    margin-bottom: .75rem;
+    position: relative;
+    &>div {
+        padding: 1.25rem;
+        &>h4 {
+            color: inherit;
+            font-family: inherit;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: .75rem;
+            margin-top: 0;
+        }
+        &>p {
+            margin-bottom: 1rem;
+            margin-top: 0;
+        }
+    }
+}
+
 /* BlockHistory */
 .pagelist-menu.search-form input{width: 20rem;}
 ul.list-table{display: flex;flex-direction: column;list-style: none;margin: 0;padding: 0;}
@@ -631,7 +684,6 @@ ul[data-pressdo-grant]>li{list-style-type:none; list-style-image:none;}
     padding: .3rem 2rem .3rem .75rem;
 }
 .pagelist-menu:not(.search-form) select{min-width: 12rem;}
-div[data-pressdo-pagelist]{margin-bottom: 15px;}
 
 /* Uploader */
 form div.g{margin-top: 1rem;margin-bottom: 15px;}

@@ -20,7 +20,7 @@ class Aclgroup extends Controller
         if (!empty($_POST['name']) && in_array('aclgroup', $perms)) {
             $go = ACL::addACLGroup($_POST['name']);
             if (!$go)
-                $errmsg = 'err_duplicate_aclgroup';
+                $errmsg = 'aclgroup_group_exists';
         }
 
         $aclgroups = ACL::aclgroups();

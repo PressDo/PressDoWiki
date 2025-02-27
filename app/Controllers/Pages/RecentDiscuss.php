@@ -70,8 +70,7 @@ class RecentDiscuss extends Controller
             $rs = [
                 'slug' => $f['urlstr'],
                 'document' => ['namespace' => $_e['namespace'], 'title' => $_e['title'], 'forceShowNamespace' => self::forceShowNamespace($_e['namespace'], $_e['title'])],
-                'topic' => $f['topic'],
-                'date' => $f['last_comment'],
+                'date' => $lot[1] == 'thread' ? $f['last_comment'] : $f['lastedit'],
                 'ip' => $ip,
                 'author' => $member,
                 'contributor_uuid' => $uuid,
@@ -79,13 +78,21 @@ class RecentDiscuss extends Controller
                 'admin' => $ip ?? in_array('admin', $mperms[$uuid]),
                 'user_mode' => []
             ];
+            
+            if ($lot[1] == 'thread')
+                $rs['topic'] = $f['topic'];
+            elseif ($lot[1] == 'editrequest')
+                $rs['count'] = $f['count'];
+
             array_push($resultSet, $rs);
         }
         $page = [
             'view_name' => 'RecentDiscuss',
             'title' => Languages::get('page', 'RecentDiscuss'),
             'data' => [
-                'content' => $resultSet
+                'content' => $resultSet,
+                'status' => $lot[0],
+                'type' => $lot[1]
             ]
         ];
 

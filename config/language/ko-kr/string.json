@@ -99,7 +99,8 @@
         "reset": "초기화",
         "upload": "업로드",
         "search": "검색",
-        "more": "더 보기"
+        "more": "더 보기",
+        "close": "닫기"
     },
     "log":{
         "create": "새 문서",
@@ -122,6 +123,23 @@
         "file": "파일",
         "ref": "각주",
         "template": "틀"
+    },
+    "edit_request": {
+        "requested": "%1$s가 %2$s에 요청",
+        "baserev": "기준 판",
+        "comment": "편집 요약",
+        "reason": "사유",
+        "diff": "비교",
+        "close": "편집 요청 닫기",
+        "lock": "이 편집 요청을 다시 열 수 없게 잠금",
+        "msg_state_open": "이 편집 요청을...",
+        "msg_open": "%1$s에 마지막으로 수정됨",
+        "msg_state_close": "편집 요청이 닫혔습니다.",
+        "msg_state_locked": "편집 요청이 닫혔습니다.",
+        "msg_close": "%1$s에 %2$s가 편집 요청을 닫았습니다.",
+        "msg_locked": "%1$s에 %2$s가 편집 요청을 닫고 잠갔습니다.",
+        "msg_state_accepted": "편집 요청이 승인되었습니다.",
+        "msg_accepted": "%1$s에 %2$s가 r%3$s으로 승인함."
     },
     "search":{
         "title_content": "제목/내용",
@@ -232,7 +250,9 @@
         "err_document_exists": "문서가 이미 존재합니다.",
         "err_file_toobig": "파일 크기가 서버 설정값보다 큽니다.",
         "err_file_upload_disabled": "파일 업로드 기능이 비활성화 상태입니다.",
-        "err_keyword_too_short": "검색어를 %s자 이상 입력하세요."
+        "err_keyword_too_short": "검색어를 %s자 이상 입력하세요.",
+        "editrequest_not_found": "편집 요청을 찾을 수 없습니다.",
+        "err_not_self_modify": "자신의 편집 요청만 수정할 수 있습니다."
     },
     "mail":{
         "signup_title": "[%s] 계정 생성 이메일 주소 인증.",
@@ -347,7 +367,10 @@
         "prev": "이전",
         "next": "다음",
         "uploaded_file": "파일 %s을 올림",
-        "history_of_doc": "이 문서의 역사"
+        "history_of_doc": "이 문서의 역사",
+        "mark_troll_revision": "반달로 표시",
+        "hide_document_history_log": "편집요약 숨기기",
+        "hide_revision": "리비전 숨기기"
     },
     "document":{
         "content": "내용",
@@ -364,7 +387,7 @@
         "editor": "수정자",
         "ago": "시간",
         "rightbefore": "방금 전",
-        "before": "%1$s 전",
+        "before": "%1$s%2$s 전",
         "logtype_all": "전체",
         "logtype_create": "새 문서",
         "logtype_delete": "삭제",

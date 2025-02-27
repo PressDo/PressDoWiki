@@ -75,6 +75,13 @@ class Diff_SequenceMatcher
 		'ignoreCase' => false
 	);
 
+	private function count($o){
+		if(is_countable($o))
+			return count($o);
+		else
+			return 0;
+	}
+
 	/**
 	 * The constructor. With the sequences being passed, they'll be set for the
 	 * sequence matcher and it will perform a basic cleanup & calculate junk
@@ -84,13 +91,6 @@ class Diff_SequenceMatcher
 	 * @param string|array $b A string or array containing the lines to compare.
 	 * @param string|array $junkCallback Either an array or string that references a callback function (if there is one) to determine 'junk' characters.
 	 */
-	private function count($o){
-		if(is_countable($o))
-			return count($o);
-		else
-			return 0;
-	}
-
 	public function __construct($a, $b, $junkCallback=null, $options)
 	{
 		$this->a = null;
@@ -619,7 +619,7 @@ class Diff_SequenceMatcher
 	{
 		if($this->fullBCount === null) {
 			$this->fullBCount = array();
-			$bLength = $this->count ($b);
+			$bLength = $this->count ($this->b);
 			for($i = 0; $i < $bLength; ++$i) {
 				$char = $this->b[$i];
 				$this->fullBCount[$char] = $this->arrayGetDefault($this->fullBCount, $char, 0) + 1;

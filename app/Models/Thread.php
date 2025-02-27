@@ -42,13 +42,18 @@ class Thread extends \PressDo\app\Core\Model
     {
         $db = self::db();
 
+        if ($status == 'close')
+            $locked = "OR `status`='locked'";
+        else
+            $locked = '';
+
         if ($from == 'editrequest') {
-            $sql = "SELECT urlstr, document, contributor_m, contributor_i, `datetime` FROM editrequest ORDER BY `datetime` DESC LIMIT 100";
+            $sql = "SELECT urlstr, document, contributor_m, contributor_i, `lastedit`, count FROM editrequest WHERE `status`=? ORDER BY `datetime` DESC LIMIT 100";
         } elseif ($from == 'thread') {
             $sql = "SELECT t.urlstr, t.document, t.topic, `datetime` as last_comment, contributor_m, contributor_i, rnk FROM 
                 (SELECT urlstr, `datetime`, contributor_m, contributor_i, RANK() OVER (PARTITION BY urlstr ORDER BY `datetime` DESC) as rnk FROM thread_content) as x
                 INNER JOIN `thread` AS t ON t.urlstr = x.urlstr 
-                WHERE `status`=? AND `rnk` = 1 ORDER BY `last_comment` $order LIMIT 100";
+                WHERE `status`=? $locked AND `rnk` = 1 ORDER BY `last_comment` $order LIMIT 100";
         }
 
         try {

@@ -63,6 +63,7 @@
                         ({sprintf($lang['log']['acl'], $d['acl'])})
                 {/switch}</i>
                 <strong>r{$d['rev']}</strong> <span>(<span class="history-{$color}">{$flag.$d['count']}</span>)</span>
+                <a n:if="!empty($d['edit_request'])" href="/edit_request/{$d['edit_request']}"><i>({$lang['page']['edit_request']})</i>&nbsp;</a>
                 <div class="context-menu v-popper v-popper--theme-contextmenu">
                     {if $d['author'] === null}
                         {var $idset[$d['contributor_uuid']] = ['IP', $d['ip']]}

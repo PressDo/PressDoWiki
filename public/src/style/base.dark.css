@@ -44,13 +44,14 @@
     .btn-round{--button-border-color: #484848;}
 
     form input.pressdo-form {background-color: #27292d;border-color: #383b40;color: var(--dark-text-color, var(--text-color, #e0e0e0));}
+    hr.page-hr {border-top-color: #383b40;}
 
     /* Editor */
-    form li button.a.editor.top{background-color: #383b40;color: #ddd}
-    form li button.editor.top {background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
-    form input[data-pressdo-edit-summary],  form textarea.editor,
-    div.alert a {background-color: #27292d;border-color: #383b40;color: #ddd;}
-    form div.c.editor,  form ul.editor.top {border-color: #383b40;}
+    form li button.a.editor.top{background-color: #383b40!important;}
+    form li button.editor.top {background: #444!important;background-color: #27292d!important;border-color: #383b40!important;color: #ddd!important;}
+    form input[data-pressdo-edit-summary], form textarea.editor,
+    div.alert a {background-color: #27292d!important;border-color: #383b40!important;color: #ddd!important;}
+    form div.c.editor, form ul.editor.top {border-color: #383b40;}
     textarea.editor, input, select {background-color: #000;color: #ddd;}
 
     /* Diff */
@@ -112,7 +113,7 @@
     .thread-btn{border-color: #383b40;color: #ddd;}
     form.editor li button.selector-btn{background: #444;background-color: #27292d;border-color: #383b40;color: #ddd;}
     form.editor li button.selector-btn.ak{background-color: #383b40;}
-    form.editor .c,  form.editor ul.selector{border-color: #383b40;}
+    form.editor .c,  form.editor ul.selector, div.info-box{border-color: #383b40;}
 
     /* Media Query */
     @media screen and (max-width: 1023.98px){

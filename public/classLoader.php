@@ -28,6 +28,7 @@ function loadClass($page, $menu) {
             require $DIR.'Thread.php';
             // no break
         case 'edit':
+            require $HDIR.Config::get('wiki.mark').'/Loader.php';
         case 'move':
         case 'delete':
         case 'acl':
@@ -40,6 +41,12 @@ function loadClass($page, $menu) {
         case 'NeededPages':
         case 'UncategorizedPages':
             require $DIR.'Document.php';
+            break;
+        case 'new_edit_request':
+        case 'edit_request':
+            require $DIR.'Document.php';
+            require $DIR.'EditRequest.php';
+            require $HDIR.Config::get('wiki.mark').'/Loader.php';
             break;
         case 'RecentChanges':
         case 'history':

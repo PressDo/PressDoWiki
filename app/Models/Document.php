@@ -46,11 +46,11 @@ class Document extends \PressDo\app\Core\Model
     /**
      * Load document data
      * @param string $uuid     uuid of document
-     * @param ?string $rev     revision uuid of document
+     * @param ?string $rev     revision uuid or number of document
      * @throws ErrorException
      * @return ?array       array (history data)
      */
-    public static function load(string $uuid, ?string $rev=null): ?array
+    public static function load(string $uuid, string|int|null $rev=null): ?array
     {
         $db = self::db();
         $uuid = self::uuid2bin($uuid);
@@ -61,8 +61,12 @@ class Document extends \PressDo\app\Core\Model
             $sql .= " AND h.`is_hidden`='false' ORDER BY h.`datetime` DESC LIMIT 1";
             $param = [$uuid];
         } else {
-            $rev = self::uuid2bin($rev);
-            $sql .= " AND h.uuid=? ";
+            if (is_numeric($rev)) {
+                $sql .= " AND h.rev=?";
+            } else {
+                $rev = self::uuid2bin($rev);
+                $sql .= " AND h.uuid=?";
+            }
             $param = [$uuid, $rev];
         }
         
@@ -89,6 +93,7 @@ class Document extends \PressDo\app\Core\Model
                 if ($q->rowCount() === 1)
                     $res['content'] = $q->fetch(PDO::FETCH_ASSOC)['content'];               
             }
+            $res['uuid'] = self::bin2uuid($res['uuid']);
         }
 
         # return null if not found
@@ -121,8 +126,8 @@ class Document extends \PressDo\app\Core\Model
         $uuid = self::uuid2bin($uuid);
 
         try {
-            $g = $db->prepare("INSERT INTO `history`(uuid, document, content, comment, datetime, action, rev, count, contributor_m, contributor_i) VALUES(?,?,?,?,?,?,?,?,?,?)");
-            $g->execute([self::uuid2bin(self::generateUuid()), $uuid, $content, $comment, $_SERVER['REQUEST_TIME'], $action, $baserev+1, $cnt, $cont_m, $cont_i]);
+            $g = $db->prepare("INSERT INTO `history`(uuid, document, content, comment, action, rev, count, contributor_m, contributor_i) VALUES(?,?,?,?,?,?,?,?,?,?)");
+            $g->execute([self::uuid2bin(self::generateUuid()), $uuid, $content, $comment, $action, $baserev+1, $cnt, $cont_m, $cont_i]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 편집 저장 중 오류 발생');
         }

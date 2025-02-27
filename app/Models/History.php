@@ -46,7 +46,7 @@ class History extends \PressDo\app\Core\Model
      * @param string $logtype  type of edit
      * @return 
      */
-    public static function recentChanges(string $logtype='all', bool $sidebar=false)
+    public static function recentChanges(string $logtype='all')
     {
         $db = self::db();
 
@@ -59,16 +59,27 @@ class History extends \PressDo\app\Core\Model
             'recent' => "AND document.namespace = '".Namespaces::DOCUMENT.'\''
         ];
 
-        if($sidebar)
-            $quota = '15';
-        else
-            $quota = '100';
-
         try {
             $d = $db->query("SELECT h.`uuid`,h.`action`,h.`comment`,h.`reverted_version`,h.`count`,h.`contributor_m`, h.`contributor_i`,h.`document`, h.`acl_changed`, h.`moved_from`, h.`moved_to`, h.`datetime`, h.rev FROM `history` as h, document 
-            WHERE BINARY h.`is_hidden`='false' AND h.document = document.uuid $lt[$logtype] ORDER BY `datetime` DESC LIMIT ".$quota);
+            WHERE BINARY h.`is_hidden`='false' AND h.document = document.uuid $lt[$logtype] ORDER BY `datetime` DESC LIMIT 100");
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 최근 변경 가져오는 중 오류 발생');
+        }
+        return $d->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getRecentSidebar(): array
+    {
+        $db = self::db();
+        $sql = "SELECT h.`uuid`,h.`action`,h.`comment`,h.`reverted_version`,h.`count`,h.`contributor_m`, h.`contributor_i`,h.`document`, h.`acl_changed`, h.`moved_from`, h.`moved_to`, h.`datetime`, h.rev FROM
+            (SELECT `uuid`,`action`,`comment`,`reverted_version`,`count`,`contributor_m`, `contributor_i`,`document`, `acl_changed`, `moved_from`, `moved_to`, `datetime`, rev,
+            RANK() OVER (PARTITION BY document ORDER BY `datetime` DESC) AS rnk FROM `history`) as h
+            INNER JOIN document ON h.document = document.uuid WHERE rnk=1 AND `namespace`= '".Namespaces::DOCUMENT."' ORDER BY `datetime` DESC LIMIT 15";
+
+        try {
+            $d = $db->query($sql);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 최근 변경 (사이드바) 가져오는 중 오류 발생');
         }
         return $d->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -11,7 +11,7 @@ class Languages
     private static function init()
     {
         if(empty(static::$Languages)) {
-            static::$Languages = json_decode(file_get_contents('../config/language/'.Config::get('wiki.language').'.json'), true);
+            static::$Languages = json_decode(file_get_contents('../config/language/'.DefaultConfig::get('wiki.language').'/string.json'), true);
         }
     }
 

@@ -5,7 +5,9 @@
 <div>
     {if $wiki['page']['data']['state'] == 'closed_edit_requests' || !$wiki['page']['data']['state']}
     <h3 n:if="!$wiki['page']['data']['state']">{$lang['page']['edit_request']}</h3>
-    <ul class="lists"></ul>
+    <ul class="lists">
+        <li n:foreach="$wiki['page']['data']['edit_requests'] as $e"><a href="/edit_request/{$e['urlstr']}">{$lang['page']['edit_request']} {$e['urlstr']}</a></li>
+    </ul>
     <p n:if="!$wiki['page']['data']['state']"><a href="/discuss/{$uri_data['title']|escapeUrl}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
     {/if}
     {if $wiki['page']['data']['state'] == 'close'  || !$wiki['page']['data']['state']}
@@ -46,7 +48,7 @@
                                             <a {$str}>{$d['author'].$d['ip']}</a>
                                         </div>
                                     </div>
-                                    <span class="d">{d['date']|localdate|noescape}</span>
+                                    <span class="d">{$d['date']|localdate|noescape}</span>
                                 </div>
                                 <div class="thread b {$sta}">
                                     <div>

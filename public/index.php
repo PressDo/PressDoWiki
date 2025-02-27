@@ -41,7 +41,15 @@ switch ($router->uri_data->page) {
         break;
     default:
         $fnClassNm = str_replace('_', '',ucwords($router->uri_data->page, '_'));
-        require '../app/Controllers/Pages/'.str_replace('_', '',ucwords($router->uri_data->page, '_')).'.php';
+        $fileNm = '../app/Controllers/Pages/'.$fnClassNm.'.php';
+        
+        if (file_exists($fileNm))
+            require $fileNm;
+        else {
+            // invalid path
+            http_response_code(404);
+            exit;
+        }
 }
 
 // initial
