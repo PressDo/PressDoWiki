@@ -1,0 +1,94 @@
+<div n:if="$error['errbox']" class="a e">
+    <strong>{$lang['msg']['error']}</strong>
+    <span>{$error['message'].$error['code']|noescape}</span>
+</div>
+<div>
+    {if $wiki['page']['data']['state'] == 'closed_edit_requests' || !$wiki['page']['data']['state']}
+    <h3 n:if="!$wiki['page']['data']['state']">{$lang['page']['edit_request']}</h3>
+    <ul class="lists">
+        <li n:foreach="$wiki['page']['data']['edit_requests'] as $e"><a href="/edit_request/{$e['urlstr']}">{$lang['page']['edit_request']} {$e['urlstr']}</a></li>
+    </ul>
+    <p n:if="!$wiki['page']['data']['state']"><a href="/discuss/{$uri_data['title']|escapeUrl}?state=closed_edit_requests">[{$lang['show_closed_edit_requests']}]</a></p>
+    {/if}
+    {if $wiki['page']['data']['state'] == 'close'  || !$wiki['page']['data']['state']}
+        <h3 n:if="!$wiki['page']['data']['state']">{$lang['page']['discuss']}</h3>
+        <ul class="lists">
+            {var $cnt = ($wiki['page']['data']['thread_list']|length)}
+            <li n:for="$i=0; $i < $cnt; ++$i">
+                <a href="#s-{$i+1}">{$i+1}</a>.
+                <a href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a>
+            </li>
+        </ul>
+        {if !$wiki['page']['data']['state']}
+            <p><a href="/discuss/{$uri_data['title']|escapeUrl}?state=close">[{$lang['show_closed_discuss']}]</a></p>
+            <div n:for="$i=0; $i<$cnt; ++$i">
+                <h2>{$i+1}. <a id="s-{$i+1}" href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}">{$wiki['page']['data']['thread_list'][$i]['topic']}</a></h2>
+                <div n:inner-foreach="$wiki['page']['data']['thread_list'][$i]['discuss'] as $d" class="t">
+                    {if $d['admin']}
+                        {var $str = 'data-pressdo-user-member'}
+                    {else}
+                        {var $str = ''}
+                    {/if}
+                    {if $d['type'] == 'comment'}
+                        {var $sta = ''}
+                    {else}
+                        {var $sta = 's'}
+                    {/if}
+
+                    {if $d['id'] == $wiki['page']['data']['thread_list'][$i]['discuss'][1]['id'] && $d['id'] > 2}
+                        <a href="/thread/{$wiki['page']['data']['thread_list'][$i]['slug']}" class="thread m">more...</a>
+                    {/if}
+                    <div class="thread r v">
+                        <div class="thread vi">
+                            <div class="thread c">
+                                <div class="thread h">
+                                    <span><a id="{$d['id']}">#{$d['id']}</a></span>
+                                    <div v="inline">
+                                        <div v="inline-block">
+                                            <a {$str}>{$d['author'].$d['ip']}</a>
+                                        </div>
+                                    </div>
+                                    <span class="d">{$d['date']|localdate|noescape}</span>
+                                </div>
+                                <div class="thread b {$sta}">
+                                    <div>
+                                        <div class="thread w">
+                                            <div data-pressdo-doc-paragraph>
+                                            {if $d['type'] == 'comment'}
+                                                {$d['text']|noescape}
+                                            {else}
+                                                {sprintf($lang['msg']['changed_thread_'.$d['type']], $d['text'])|noescape}
+                                            {/if}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {/if}
+    {/if}
+    {if !$wiki['page']['data']['state']}
+    <h3>{$lang['thread']['create_thread']}</h3>
+    <div n:if="$uri_data['title'] == $config['wiki.front_page']" class="a">
+        <strong>{$lang['msg']['warning']}</strong>
+        {sprintf($lang['msg']['discuss_in_frontpage'], $config['wiki.front_page'])}
+    </div>
+    <form method="POST" id="editForm">
+        <div data-pressdo-loginform class="c">
+            <label data-pressdo-breakline for="topicInput">{$lang['thread']['topic']} :</label>
+            <input data-pressdo-thread data-pressdo-wideinput type="text" id="topicInput" name="topic">
+        </div>
+        <div data-pressdo-loginform class="c">
+            <label data-pressdo-breakline for="contentInput">{$lang['thread']['content']|noescape} :</label>
+            <textarea data-pressdo-thread name="text" id="contentInput" rows="5"></textarea>
+            <p n:if="!$wiki['session']['member']['username']" class="unlogined">{sprintf($lang['msg']['unlogined_create'], $wiki['session']['ip'])}</p>
+        </div>
+        <button type="submit" class="pressdo-btn btn-wideright btn-blue">{$lang['submit']}</button>
+        <div class="{$api_config['captcha_class_name']}" data-sitekey="{$config['captcha.key']}" data-callback="onCaptchaSubmit" data-execution="execute" data-size="invisible"></div>
+        <div style="clear: both;"></div>
+    </form>
+    {/if}
+</div>

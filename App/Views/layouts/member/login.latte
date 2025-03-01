@@ -1,0 +1,93 @@
+<div n:if="$wiki['page']['data']['error']" class="a e">
+    <strong>{$lang['msg']['error']}</strong>
+    <span>{$lang['msg'][$wiki['page']['data']['error']] ?? $wiki['page']['data']['error']}</span>
+</div>
+<form n:if="$wiki['page']['data']['use_webauthn']" n:attr="v: (!$wiki['page']['data']['use_webauthn'] ? 'none' : '')" id="loginform" class="authform" name="loginform" method="POST" action="/member/login{$wiki['page']['data']['redirect'] ? '?redirect='.($wiki['page']['data']['redirect']|escapeUrl) : ''}">
+    <p>{$lang['msg']['force_2fa']|noescape}<br>{$lang['msg']['force_2fa_webauthn']}</p>
+    <div class="dark-symbol">
+        <svg data-v-b962c6ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17l0 80c0 13.3 10.7 24 24 24l80 0c13.3 0 24-10.7 24-24l0-40 40 0c13.3 0 24-10.7 24-24l0-40 40 0c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"></path></svg>
+    </div>
+    <div class="form-sheet btn-under">
+        <a id="webauthnInput" class="pressdo-btn btn-blue btn-wide btn-flex-full" role="button" href="#">{$lang['auth']['login_webauthn']}</a>
+        <input id="webauthnCredential" n:if="$wiki['page']['data']['use_webauthn']" type="hidden" value="{$wiki['page']['data']['webauthn_arg']}">
+    </div>
+    <div class="form-sheet form-action">
+        <label name="trust" class="chkbox-label">
+            <input class="chkbox" type="checkbox" name="trust"><span>{$lang['auth']['trust']}</span>
+        </label>
+    </div>
+    <div class="form-sheet auth-other">
+        <div>{$lang['auth']['2fa_other_methods']}</div>
+        <a to="totp" class="pressdo-btn btn-wide btn-flex-full btn-desc tfa">
+            <div class="sel-icon"><svg data-v-b962c6ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M16 64C16 28.7 44.7 0 80 0L304 0c35.3 0 64 28.7 64 64l0 384c0 35.3-28.7 64-64 64L80 512c-35.3 0-64-28.7-64-64L16 64zM144 448c0 8.8 7.2 16 16 16l64 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16zM304 64L80 64l0 320 224 0 0-320z"></path></svg></div>
+            <div class="sel-text">
+                <div>{$lang['auth']['2fa_totp']}</div>
+                <div class="desc">{$lang['auth']['2fa_totp_desc']}</div>
+            </div>
+            <div class="sel-arrow"><svg data-v-b962c6ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg></div>
+        </a>
+    </div>
+</form>
+<form n:if="$wiki['page']['data']['force_2fa']" n:attr="v: ($wiki['page']['data']['use_webauthn'] ? 'none' : '')" id="totp" class="authform" name="loginform" method="POST" action="/member/login{$wiki['page']['data']['redirect'] ? '?redirect='.($wiki['page']['data']['redirect']|escapeUrl) : ''}">
+    <p>{$lang['msg']['force_2fa']|noescape}<br>
+        {if $wiki['page']['data']['use_totp']}
+            {var $totpmsg = $lang['msg']['force_2fa_totp']}
+        {else}
+            {var $totpmsg = sprintf($lang['msg']['force_2fa_email'], $wiki['page']['data']['otp_email'])}
+        {/if}
+        {$totpmsg|noescape}
+    </p>
+    <div class="form-sheet">
+        <div class="pin-area">
+            <input class="textfield pin-digit pin-current" type="number" inputmode="numeric" pattern="\d" autocomplete="off" readonly>
+            <input class="textfield pin-digit" type="number" inputmode="numeric" pattern="\d" autocomplete="off" readonly>
+            <input class="textfield pin-digit" type="number" inputmode="numeric" pattern="\d" autocomplete="off" readonly>
+            <input class="textfield pin-digit" type="number" inputmode="numeric" pattern="\d" autocomplete="off" readonly>
+            <input class="textfield pin-digit" type="number" inputmode="numeric" pattern="\d" autocomplete="off" readonly>
+            <input class="textfield pin-digit" type="number" inputmode="numeric" pattern="\d" autocomplete="off" readonly>
+            <input type="hidden" name="pin">
+        </div>
+    </div>
+    <div class="form-sheet form-action">
+        <label name="trust" class="chkbox-label">
+            <input class="chkbox" type="checkbox" name="trust"><span>{$lang['auth']['trust']}</span>
+        </label>
+        <div class="btn-area">
+            <button type="submit" class="btn-blue pressdo-btn" id="log-in">{$lang['auth']['login']}</button>
+        </div>
+    </div>
+    <div n:if="$wiki['page']['data']['use_webauthn']" class="form-sheet auth-other">
+        <div>{$lang['auth']['2fa_other_methods']}</div>
+        <a to="webauthn" class="pressdo-btn btn-wide btn-flex-full btn-desc tfa">
+            <div class="sel-icon"><svg data-v-b962c6ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17l0 80c0 13.3 10.7 24 24 24l80 0c13.3 0 24-10.7 24-24l0-40 40 0c13.3 0 24-10.7 24-24l0-40 40 0c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"></path></svg></div>
+            <div class="sel-text">
+                <div>WebAuthn</div>
+                <div class="desc">{$lang['auth']['2fa_webauthn_desc']}</div>
+            </div>
+            <div class="sel-arrow"><svg data-v-b962c6ee="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path></svg></div>
+        </a>
+    </div>
+</form>
+<form n:if="!$wiki['page']['data']['force_2fa']" id="loginform" class="authform" name="loginform" method="POST" action="/member/login{$wiki['page']['data']['redirect'] ? '?redirect='.($wiki['page']['data']['redirect']|escapeUrl) : ''}">
+    <div class="form-sheet">
+        <label for="username">Email</label>
+        <input class="textfield" type="text" id="username" name="username" required>
+    </div>
+    <div class="form-sheet">
+        <label for="password">Password</label>
+        <input class="textfield" type="password" id="password" name="password" required>
+    </div>
+    <div class="form-sheet form-extlink">
+        <a class="a" href="/member/recover_password">{$lang['auth']['recover_password']}</a>
+    </div>
+    <div class="form-sheet form-action">
+        <label name="autologin" class="chkbox-label">
+            <input class="chkbox" type="checkbox" name="autologin">{$lang['auth']['autologin']}
+        </label>
+        <div class="btn-area">
+            <a class="pressdo-btn" href="/member/signup">{$lang['auth']['signup']}</a>
+            <button type="submit" class="btn-blue pressdo-btn" id="log-in">{$lang['auth']['login']}</button>
+            <div class="{$api_config['captcha_class_name']}" data-sitekey="{$config['captcha.key']}" data-callback="onCaptchaSubmit" data-execution="execute" data-size="invisible"></div>
+        </div>
+    </div>
+</form>

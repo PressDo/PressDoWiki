@@ -1,4 +1,9 @@
 {
+    "autoload": {
+        "psr-4": {
+            "PressDo\\App\\": "App/"
+        }
+    },  
     "require": {
         "hyungju/readable-url": "^1.2",
         "latte/latte": "^3.0.20",

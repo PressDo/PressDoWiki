@@ -76,6 +76,14 @@ pinBackspace = () => {
 
     
 }
+
+function onCaptchaSubmit(token) {
+    if (g('editForm'))
+        g('editForm').submit();
+    if (g('loginform'))
+        g('loginform').submit();
+}
+
 LS = JSON.parse(localStorage.getItem('pressdo_settings'))
 
 pinPos = 1
@@ -238,9 +246,8 @@ if(g('ef')){
         if((x == 'p' && y == 'm') || x == 'm') {
             q('div#r textarea.editor').value = window.monaco_namu.getValue()
         }
-
-        //f.action = '/edit/'+getdoctitle() //a.g(ee,)
-        f.submit()
+        if (grecaptcha)
+            grecaptcha.execute()
     })
 }
 
