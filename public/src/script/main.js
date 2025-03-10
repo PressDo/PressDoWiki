@@ -31,7 +31,7 @@ getdoctitle = () => {
 }
 
 pinInput = (n) => {
-    if (pin.length > 6)
+    if (pin.length > 6 || !q('input[name=pin]'))
         return false;
 
     pin += n.toString();
@@ -82,6 +82,8 @@ function onCaptchaSubmit(token) {
         g('editForm').submit();
     if (g('loginform'))
         g('loginform').submit();
+    if (g('regform'))
+        g('regform').submit();
 }
 
 LS = JSON.parse(localStorage.getItem('pressdo_settings'))
@@ -280,7 +282,8 @@ if(g('chkmail')){
                 return false
             }else{
                 v.n('errmail')
-                document.regform.submit()
+                if (grecaptcha)
+                    grecaptcha.execute()
             }
         }
     })
@@ -292,14 +295,14 @@ if(g('signup')){
         var u = g("username")
         var p = g("password")
         var p2 = g("password2")
-        if(u.value==''){
+        if(u && u.value==''){
             v.b('erruser1')
             v.n('erruser2')
             v.n('erruser3')
             v.n('errpwd')
             v.n('errpwd21')
             v.n('errpwd22')
-        }else if(/^[A-Za-z][A-Za-z0-9_]{2,31}$/.test(u.value) === false){
+        }else if(u && /^[A-Za-z][A-Za-z0-9_]{2,31}$/.test(u.value) === false){
             v.n('erruser1')
             v.n('erruser2')
             v.b('erruser3')

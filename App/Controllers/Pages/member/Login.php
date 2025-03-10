@@ -97,7 +97,7 @@ class Login extends Controller
         } elseif ($this->session['do2fa'] == 'email') {
             $this->session['pin'] = str_pad(rand(0, 999999), 6, 0, STR_PAD_LEFT);
             $lang = Languages::get('mail');
-            $content = $lang['new_login'];
+            $content = $lang['greeting'].$lang['new_login'].$lang['request_ip'];
             $data['otp_email'] = $userdata['email'] ?? $this->session['temp']['email'];
 
             $body = sprintf($content, Config::get('wiki.site_name'), $this->session['pin'], $this->session['ip']);

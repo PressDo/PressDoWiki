@@ -12,17 +12,33 @@ class Signup extends Controller
         if(!empty($this->session['member']))
             Header('Location: /');
 
-        $step = 0;
+        $page = [
+            'view_name' => 'signup',
+            'title' => Languages::get('page')['signup'],
+            'data' => [
+                'error' => null,
+                'step' => 0,
+                'redirect' => $_GET['redirect']? base64_decode($_GET['redirect']):null
+            ],
+            'menus' => [],
+            'customData' => []
+        ];
 
         if (isset($_POST['email']) && empty($_POST['username'])) {
+            // send email
             $host = substr($_POST['email'],strrpos($_POST['email'], '@') + 1);
 
             $weh = Config::get('member.whitelist_email_host');
-            if (is_string($weh) || is_array($weh) && in_array($host, $weh)) {
+            if (is_string($weh) && $weh == $host || is_array($weh) && in_array($host, $weh)) {
+                if (!self::validateCaptcha($_POST[$this->api_config['captcha_token_name']])) {
+                    $page['data']['error'] = 'captcha_failed';
+                    return $page;
+                }
                 $lang = Languages::get('mail');
-                $content = $lang['signup'];
+                $content = $lang['greeting'].$lang['signup'];
                 
                 if (Member::exist(email: $_POST['email']) !== false) {
+                    $duplicatesignup = true;
                     $content .= '<br>'.$lang['signup_duplicate']
                         .'<br><br>'.$lang['request_ip'];
                 } else {
@@ -33,23 +49,25 @@ class Signup extends Controller
                 $update = Member::chkEmailInput($_POST['email']);
                 // already sent (in 24h)
                 if (is_string($update))
-                    $error = $update;
+                    $page['data']['error'] = $update;
                 else {
-                    $code = Member::regCodeAdd($_POST['email'], $this->session['ip'], $update);
+                    if (!$duplicatesignup)
+                        $code = Member::regCodeAdd($_POST['email'], $this->session['ip']);
                     $body = sprintf($content, Config::get('wiki.site_name'), Config::get('wiki.canonical_url').'/member/signup?x='.$code, $this->session['ip']);
 
                     $send = self::sendMail($_POST['email'], sprintf($lang['signup_title'], Config::get('wiki.site_name')) ,$body);
-                    $step = 1;
+                    $page['data']['step'] = 1;
 
                     // error in mailserver
                     if(!$send)
-                        $error = 'err_mail_not_send';
+                        $page['data']['error'] = 'err_mail_not_send';
                 }
             } else {
-                $error = 'err_mail_whitelist';
+                $page['data']['error'] = 'err_mail_whitelist';
             }
         } elseif (!empty($_GET['x']) && empty($_POST['username']) ){
-            if ($email = Member::regCodeCheck($_GET['x'], $this->session['ip'])) {
+            // check email
+            if ($email = Member::regCodeCheck($_GET['x'], $this->session['ip'], true)) {
                 if ($email == 'err_ip_differs') {
                     $page = [
                         'view_name' => 'error',
@@ -62,7 +80,7 @@ class Signup extends Controller
                     return $page;
                 }
                 $this->session['email'] = $email;
-                $step = 2;
+                $page['data']['step'] = 2;
             } else {
                 $page = [
                     'view_name' => 'error',
@@ -74,31 +92,20 @@ class Signup extends Controller
                 ];
                 return $page;
             }
-        }elseif(!empty($_POST['username']) && !empty($_POST['password']) && !empty($this->session['email'])){
-            $step = 2;
+        } elseif (!empty($_POST['username']) && !empty($_POST['password']) && !empty($this->session['email'])){
+            // end register
+            $page['data']['step'] = 2;
             if(!preg_match('/^[0-9A-Za-z_]+$/', $_POST['username'])){
-                $error = 'err_invalid_username';
+                $page['data']['error'] = 'err_invalid_username';
             }elseif($_POST['password'] !== $_POST['password2']){
-                $error = 'err_wrong_password2';
+                $page['data']['error'] = 'err_wrong_password2';
             }else{
                 if(!empty($this->session['email'])){
                     Member::register($_POST['username'], $_POST['password'], $this->session['email']);
-                    $step = 3;
+                    $page['data']['step'] = 3;
                 }
             }
         }
-
-        $page = [
-            'view_name' => 'signup',
-            'title' => Languages::get('page')['signup'],
-            'data' => [
-                'error' => $error,
-                'step' => $step,
-                'redirect' => $_GET['redirect']? base64_decode($_GET['redirect']):null
-            ],
-            'menus' => [],
-            'customData' => []
-        ];
         
         return $page;
     }

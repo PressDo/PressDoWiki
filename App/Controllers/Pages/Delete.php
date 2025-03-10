@@ -56,8 +56,11 @@ class Delete extends Controller
         ];
 
         if (!empty($_POST['log']) && isset($_POST['agree'])) {
+            // formdata exists
             if ($namespace == Namespaces::user()) {
                 $this->error = self::makeErrorBox('disable_user_document');
+            } elseif (!self::validateCaptcha($_POST[$this->api_config['captcha_token_name']])) {
+                $this->error = self::makeErrorBox('captcha_failed');
             } else {
                 // Approve Delete
                 $member = $this->session['member'] ? $this->session['uuid'] : null;

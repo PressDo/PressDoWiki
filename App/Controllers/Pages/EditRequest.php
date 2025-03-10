@@ -171,7 +171,7 @@ class EditRequest extends Controller
                 'can_lock' => false,
                 'can_reopen' => false,
                 'can_edit' => false,
-                'diff' => self::load_diff(
+                'diff' => self::loadDiff(
                     $baserevdat['content'],
                     $erdata['content'],
                     Languages::get('page', 'edit_request').' '.$this->uri_data->title

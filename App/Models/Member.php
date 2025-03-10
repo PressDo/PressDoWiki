@@ -75,7 +75,7 @@ class Member extends \PressDo\App\Core\Model
      * @param mixed $username
      * @param mixed $email
      * @throws \ErrorException
-     * @return array|bool           Member's uuid, username and email
+     * @return array|bool           Member's uuid, username and email; false if not exists
      */
     public static function exist($username='', $email=''): array|bool
     {
@@ -105,24 +105,22 @@ class Member extends \PressDo\App\Core\Model
      * @param string $ip        requestor's IP
      * @param bool $update      if email code already exists
      */
-    public static function regCodeAdd(string $email, string $ip, bool $update=false): string
+    public static function regCodeAdd(string $email, string $ip): string
     {
         $db = self::db();
-        $time = time();
         $ip = inet_pton($ip);
+        $key = random_bytes(64);
         try {
-            if ($update) {
-                $d = $db->prepare("UPDATE `member` SET registered=? WHERE email=?");
-                $d->execute([$time, $email]);
-            } else {
-                $uuid = self::uuid2bin(self::generateUuid());
-                $d = $db->prepare("INSERT INTO `member`(uuid,email,registered,registered_ip) VALUES (?,?,?,?)");
-                $d->execute([$uuid, $email, $time, $ip]);
-            }
+            $d = $db->prepare("DELETE FROM `email_keys` WHERE email=?");
+            $d->execute([$email]);
+            
+            $d = $db->prepare("INSERT INTO `email_keys`(email,ip,`key`) VALUES (?,?,?)");
+            $d->execute([$email, $ip, $key]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 이메일 인증 정보 등록 중 오류 발생');
         }
-        $code = md5($email).'-'.md5($ip).'-'.hash('sha256', $uuid & decbin($time));
+
+        $code = md5($email).'-'.bin2hex($key);
         return $code;
     }
 
@@ -130,26 +128,37 @@ class Member extends \PressDo\App\Core\Model
      * register temporary data
      * @param string $code     email verification code
      */
-    public static function regCodeCheck(string $code, string $ip): bool|string
+    public static function regCodeCheck(string $code, string $ip, bool $strict_ip = false): bool|string
     {
         $db = self::db();
         $c = explode('-', $code);
         $ip = inet_pton($ip);
         try {
-            $d = $db->prepare("SELECT `uuid`, `registered`, email, registered_ip FROM `member` WHERE MD5(email)=?");
-            $d->execute([$c[0]]);
+            $d = $db->prepare("SELECT email, ip FROM `email_keys` WHERE MD5(email)=? AND `key`=? AND `time` >= unix_timestamp()-86400");
+            $d->execute([$c[0], hex2bin($c[1])]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 이메일 인증 확인 중 오류 발생');
         }
-        $data = $d->fetch(PDO::FETCH_ASSOC);
-        $c_code = md5($data['email']).'-'.md5($data['registered_ip']).'-'.hash('sha256', $data['uuid'] & decbin($data['registered']));
-        if($code === $c_code){
-            if($data['registered_ip'] == $ip)
-                return $data['email'];
-            else
-                return 'err_ip_differs';
-        }else
+        if ($d->rowCount() < 1)
             return false;
+
+        $data = $d->fetch(PDO::FETCH_ASSOC);
+        
+        if(!$strict_ip || $data['ip'] == $ip)
+            return $data['email'];
+        else
+            return 'err_ip_differs';
+    }
+
+    public static function regCodeUnset(string $email)
+    {
+        $db = self::db();
+        try {
+            $d = $db->prepare("DELETE FROM `email_keys` WHERE email=?");
+            $d->execute([$email]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 이메일 인증 확인 중 오류 발생');
+        }
     }
 
     /**
@@ -209,6 +218,18 @@ class Member extends \PressDo\App\Core\Model
             return false;
         else
             return true;
+    }
+
+    public static function updatePassword(string $email, string $password): void
+    {
+        $db = self::db();
+        $pw = password_hash($password, PASSWORD_BCRYPT);
+        try {
+            $d = $db->prepare("UPDATE `member` SET `password`=? WHERE email=?");
+            $d->execute([$pw, $email]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 비밀번호 변경 중 오류 발생');
+        }
     }
 
     public static function getUserInfo(string $uuid)

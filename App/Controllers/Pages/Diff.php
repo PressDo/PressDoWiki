@@ -62,7 +62,7 @@ class Diff extends Controller
 
         $page['data']['old_uuid'] = $old_uuid;
         $page['data']['rev_uuid'] = $target_uuid ?? $new['uuid'];
-        $page['data']['diff'] = self::load_diff($old['content'], $new['content'], 'r'.$old['rev'].' vs r'.$new['rev']);
+        $page['data']['diff'] = self::loadDiff($old['content'], $new['content'], 'r'.$old['rev'].' vs r'.$new['rev']);
         //'debug' => $this->uri_data
         return $page;
     }

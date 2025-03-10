@@ -29,6 +29,7 @@
     <div class="form-sheet form-action">
         <div class="btn-area">
             <button type="button" class="btn-blue pressdo-btn" id="chkmail">{$lang['auth']['signup_submit']}</button>
+            <div class="{$api_config['captcha_class_name']}" data-sitekey="{$config['captcha.key']}" data-callback="onCaptchaSubmit" data-execution="execute" data-size="invisible"></div>
         </div>
     </div>
     <div style="clear: both;">
@@ -37,7 +38,7 @@
 
 {if $mode === 1}
     {* 이메일 인증대기 *}
-    <p>{sprintf($lang['msg']['sent_email'], $_POST['email'])|noescape}</p>
+    <p>{sprintf($lang['msg']['sent_email_signup'], $_POST['email'])|noescape}</p>
     <ul>
         <li>{$lang['msg']['check_spam']}</li>
         <li>{$lang['msg']['email_expiry']}</li>
@@ -67,5 +68,5 @@
         <input class="textfield" type="password" id="password2" name="password2">
         <p id="errpwd21" class="errmsg" v="none">{sprintf($lang['msg']['err_required_input'], $lang['auth']['password2'])}</p><p id="errpwd22" class="errmsg" v="none">{$lang['msg']['err_wrong_password2']}</p>
     </div>
-    <button type="button" class="btn-blue pressdo-btn-nonflex btn-right" id="signup">{$lang['auth']['signup_submit']}</button>
+    <button type="button" class="btn-lightblue pressdo-btn-nonflex btn-right" id="signup">{$lang['auth']['signup_submit']}</button>
 </form>

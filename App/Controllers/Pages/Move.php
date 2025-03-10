@@ -13,6 +13,7 @@ class Move extends Controller
         [$namespace, $title] = self::parseTitle($this->uri_data->title);
         $uuid = Document::getUuid($namespace, $title, $backlinkrefreshed);
         $error = [];
+        $formReceived = !empty($_POST['token']);
 
         $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $error);
         $ACL->check('read');
@@ -51,9 +52,11 @@ class Move extends Controller
             'customData' => []
         ];
 
-        if (!empty($_POST['token']) && $this->session['movetoken'] !== $_POST['token']) {
+        if ($formReceived && $this->session['movetoken'] !== $_POST['token']) {
             $this->error = self::makeErrorBox('err_csrf_token');
-        } elseif (!empty($_POST['token']) && $this->session['movetoken'] == $_POST['token'] && !empty($_POST['new_title'])) {
+        } elseif ($formReceived && !self::validateCaptcha($_POST[$this->api_config['captcha_token_name']])) {
+            $this->error = self::makeErrorBox('captcha_failed');
+        } elseif ($formReceived && $this->session['movetoken'] == $_POST['token'] && !empty($_POST['new_title'])) {
             // 이동 목적지 ACL 체크
             [$tons, $totitle] = self::parseTitle($_POST['new_title']);
             $ACL2 = new WikiACL($tons, $totitle, $uuid, $this->session, $error);

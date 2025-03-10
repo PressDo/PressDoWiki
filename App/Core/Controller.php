@@ -28,23 +28,27 @@ class Controller
             ];
         }
         
-        if (empty($this->session['member']) && !empty($_COOKIE['szczecin'])) {
-            // auto-login
-            $uuid = Member::checkCookie('szczecin', $_COOKIE['szczecin']);
-            
-            if ($uuid !== null) {
-                // valid cookie
-                $l = Member::login($uuid, $this->session['ip'], $_SERVER['HTTP_USER_AGENT']);
-                $sess = self::getMemberData($uuid, $l['email'], $l['username'], $l['skin']);
-                $this->session['menus'] = $sess['menus'];
-                $this->session['member'] = $sess['member'];
-                $this->session['uuid'] = $sess['uuid'];
-                $this->session['admin'] = $sess['admin'];
+        if (empty($this->session['member'])) {
+            if (!empty($_COOKIE['szczecin'])) {
+                // auto-login
+                $uuid = Member::checkCookie('szczecin', $_COOKIE['szczecin']);
+                
+                if ($uuid !== null) {
+                    // valid cookie
+                    $l = Member::login($uuid, $this->session['ip'], $_SERVER['HTTP_USER_AGENT']);
+                    $sess = self::getMemberData($uuid, $l['email'], $l['username'], $l['skin']);
+                    $this->session['menus'] = $sess['menus'];
+                    $this->session['member'] = $sess['member'];
+                    $this->session['uuid'] = $sess['uuid'];
+                    $this->session['admin'] = $sess['admin'];
+                }
+            } else {
+                // no-logincookie
+                $ipuuid = Member::getIpUuid($this->session['ip'], true);
+                if ($ipuuid !== null)
+                    $this->session['uuid'] = $ipuuid;
             }
         }
-        $ipuuid = Member::getIpUuid($this->session['ip'], true);
-        if ($ipuuid !== null)
-            $this->session['uuid'] = $ipuuid;
 
         if (Config::get('wiki.use_captcha')) {
             $captchaClassName = 'PressDo\App\Helpers\Captcha\\'.DefaultConfig::get('captcha.type');
@@ -194,19 +198,19 @@ class Controller
 
     protected static function sendMail(string $recipient, string $title, string $content): bool
     {
-        $mail = Config::get('mail.smtp_password');
+        $mail = DefaultConfig::get('mail.smtp_password');
         $mailer = new Mailer([
-            'host' => Config::get('mail.smtp_host'),
-            'username' => Config::get('mail.smtp_username'),
-            'password' => Config::get('mail.smtp_password'),
-            'port' => Config::get('mail.smtp_port'),
-            'encryption' => strtolower(Config::get('mail.smtp_protocol'))
+            'host' => DefaultConfig::get('mail.smtp_host'),
+            'username' => DefaultConfig::get('mail.smtp_username'),
+            'password' => DefaultConfig::get('mail.smtp_password'),
+            'port' => DefaultConfig::get('mail.smtp_port'),
+            'encryption' => strtolower(DefaultConfig::get('mail.smtp_protocol'))
         ]);
         $result = $mailer
             ->setSubject($title)
             ->setBody($content)
             ->setTo([$recipient])
-            ->setFrom([$mail['smtp_address'] => Config::get('wiki.site_name_en')])
+            ->setFrom([DefaultConfig::get('mail.smtp_address') => Config::get('wiki.site_name_en')])
             ->send();
 
         return $result;
@@ -266,13 +270,16 @@ class Controller
      * @param string $caption
      * @return string
      */
-    protected static function load_diff(string $old, string $new, string $caption=''): string
+    protected static function loadDiff(string $old, string $new, string $caption=''): string
     {
         require '../App/Helpers/Libraries/diff/Diff.php';
         require '../App/Helpers/Libraries/diff/Inline.php';
 
         $a = explode("\n", $old);
         $b = explode("\n", $new);
+
+        if ($old === $new)
+            return self::diffSame($a, $caption);
 
         $options = array(
             //'ignoreWhitespace' => true,
@@ -285,6 +292,28 @@ class Controller
         $ren->linecnt = [count($a),count($b)];
 
         return $diff->render($ren);
+    }
+
+    protected static function diffSame(array $lines, string $caption)
+    {
+        $html = '<table class="diff">'
+            .'<thead>'
+            .'<tr>'
+            .'<th></th>'
+            .'<th></th>'
+            .'<th class="diff">'.$caption.'</th>'
+            .'</tr>'
+            .'</thead>'
+            .'<tbody>';
+        $len = count($lines);
+
+        for ($i = 0; $i < $len; $i++) {
+            $html .= '<tr><th>'.$i.'</th><th>'.$i.'</th><td class="equal"><div>'.htmlspecialchars($lines[$i]).'</div></td></tr>';
+        }
+
+		$html .= '</tbody></table>';
+
+        return $html;
     }
 
     /**

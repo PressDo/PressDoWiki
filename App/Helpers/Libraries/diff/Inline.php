@@ -59,14 +59,15 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 			return $html;
 		}
 
-		$html .= '<table class="diff">';
-		$html .= '<thead>';
-		$html .= '<tr>';
-		$html .= '<th></th>';
-		$html .= '<th></th>';
-		$html .= '<th class="diff">'.$this->caption.'</th>';
-		$html .= '</tr>';
-		$html .= '</thead>';
+		$html .= '<table class="diff">'
+			.'<thead>'
+			.'<tr>'
+			.'<th></th>'
+			.'<th></th>'
+			.'<th class="diff">'.$this->caption.'</th>'
+			.'</tr>'
+			.'</thead>'
+			.'<tbody>';
 		foreach($changes as $i => $blocks) {
 			// Skipped line before and between changes.
 			if($i > 0 || ($i === 0 && $blocks[0]['base']['offset'] > 0)) {
@@ -145,7 +146,7 @@ class Diff_Renderer_Html_Inline extends Diff_Renderer_Html_Array
 				$html .= '</tr>';
 			}
 		}
-		$html .= '</table>';
+		$html .= '</tbody></table>';
 		return $html;
 	}
 }

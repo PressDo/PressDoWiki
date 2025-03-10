@@ -16,6 +16,7 @@ class NewEditRequest extends Controller
         [$namespace, $title] = self::parseTitle($this->uri_data->title);
         $error = [];
         $uuid = Document::getUuid($namespace, $title, $backlinkrefreshed);
+        $formReceived = isset($_POST['token']) && isset($_POST['content']);
 
         $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $error);
         $ACL->check('read');
@@ -25,6 +26,9 @@ class NewEditRequest extends Controller
         
         if ($error['code'] == 'permission_edit_request')
             $this->error = $error;
+
+        if ($formReceived && !self::validateCaptcha($_POST[$this->api_config['captcha_token_name']]))
+            $this->error = self::makeErrorBox('captcha_failed');
         
         if (!$uuid)
             $error = ['code' => 'no_such_document'];
@@ -44,7 +48,7 @@ class NewEditRequest extends Controller
         }
 
         // Edit Submission
-        if (isset($_POST['token']) && isset($_POST['content']) && self::editFormProcess($this, 'ertoken')) {
+        if ($formReceived && self::editFormProcess($this, 'ertoken') && empty($this->error)) {
             // Approve Edit
             $member = $this->session['member'] ? $this->session['uuid'] : null;
             $ip = !$member ? ($this->session['uuid'] ?? Member::getIpUuid($this->session['ip'])) : null;
