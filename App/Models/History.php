@@ -30,13 +30,13 @@ class History extends \PressDo\App\Core\Model
             else
                 $str = 'DESC LIMIT';
 
-            $d = $db->prepare("SELECT uuid, `comment`, `action`, `reverted_version`, contributor_m, contributor_i, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev` FROM `history` WHERE `document`=? ORDER BY `datetime` $str $count");
+            $d = $db->prepare("SELECT uuid, `comment`, `action`, `reverted_version`, contributor_m, contributor_i, `acl_changed`, `moved_from`, `moved_to`, `datetime`, `edit_request_uri`, `count`, `rev`, revstatus, hide_log_user, mark_troll_user FROM `history` WHERE `document`=? ORDER BY `datetime` $str $count");
             $d->execute([$uuid]);
         } catch (PDOException $err) {
             throw new ErrorException($err->getMessage().': 문서 역사 조회 중 오류 발생');
         }
 
-        $ra = !empty($until) ? array_reverse($d->fetchAll(PDO::FETCH_ASSOC)) : $ra = $d->fetchAll(PDO::FETCH_ASSOC);
+        $ra = !empty($until) ? array_reverse($d->fetchAll(PDO::FETCH_ASSOC)) : $d->fetchAll(PDO::FETCH_ASSOC);
 
         return $ra;
     }
@@ -158,5 +158,26 @@ class History extends \PressDo\App\Core\Model
     {
         $sql = "SELECT urlstr, document, contributor_m, contributor_i, `datetime` FROM editrequest ORDER BY `datetime` DESC LIMIT 100";
         
+    }
+
+    /**
+     * Mark revision as troll
+     * @param string $uuid      uuid of revision
+     * @param string $executor  uuid of executor
+     * @throws \ErrorException
+     * @return void
+     */
+    public static function markTroll(string $uuid, string $executor)
+    {
+        $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+        $executor = self::uuid2bin($executor);
+
+        try {
+            $d = $db->prepare("UPDATE history SET mark_troll_user = CASE WHEN `mark_troll_user` IS NULL THEN ? ELSE NULL END WHERE uuid = ?;");
+            $d->execute([$executor, $uuid]);
+        } catch (PDOException $err) {
+            throw new ErrorException($err->getMessage().': 반달 표시 중 오류 발생');
+        }
     }
 }

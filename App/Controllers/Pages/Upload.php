@@ -26,7 +26,7 @@ class Upload extends Controller
             }
 
             // 사진 아님
-            if (strpos($_FILES['file']['type'], 'image') === false) {
+            if (!str_contains($_FILES['file']['type'], 'image')) {
                 $error = 'err_invalid_file';
             }
 

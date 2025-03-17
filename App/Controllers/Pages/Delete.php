@@ -11,7 +11,7 @@ class Delete extends Controller
     public function makeData(): array
     {
         [$namespace, $title] = self::parseTitle($this->uri_data->title);
-        $uuid = Document::getUuid($namespace, $title, $backlinkrefreshed);
+        $uuid = Document::getUuid($namespace, $title);
         $error = [];
 
         $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $error);

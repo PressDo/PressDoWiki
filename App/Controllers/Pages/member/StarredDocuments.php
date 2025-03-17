@@ -14,22 +14,12 @@ class StarredDocuments extends Controller
             exit;
         }
 
-        $starred = Star::getStarred($this->session['member']['username']);
+        $starred = Star::getStarred($this->session['uuid']);
         
         if (count($starred) > 0) {
-            $starred_mod = Star::getStarredModifiedDate($starred);
-            $starred_name = Document::getBulkTitle($starred);
-            $starred_doc = [];
-
-            $cnt = count($starred);
-            for ($i=0; $i<$cnt; $i++) {
-                $starred_doc[$starred_mod[$i]['uuid']]['datetime'] = $starred_mod[$i]['datetime'];
-            }
-            for ($i=0; $i<$cnt; $i++) {
-                $starred_doc[$starred_name[$i]['uuid']]['title'] = self::makeTitle($starred_name[$i]['namespace'], $starred_name[$i]['title']);
-            }
+            $starred_list = Star::getStarredModifiedDate($starred);
         } else
-            $starred_doc = null;
+            $starred_list = null;
 
         $error = null;
         $page = [
@@ -37,7 +27,7 @@ class StarredDocuments extends Controller
             'title' => Languages::get('page', 'starred_documents'),
             'data' => [
                 'error' => $error,
-                'starred_documents' => $starred_doc
+                'starred_documents' => $starred_list
             ],
             'menus' => [],
             'customData' => []

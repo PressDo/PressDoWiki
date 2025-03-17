@@ -92,11 +92,12 @@ class Member extends \PressDo\App\Core\Model
             throw new ErrorException($err->getMessage().': 사용자 조회 중 오류 발생');
         }
         $data = $d->fetch(PDO::FETCH_ASSOC);
-        $data['uuid'] = self::bin2uuid($data['uuid']);
         if($d->rowCount() < 1)
             return false;
-        else
+        else {
+            $data['uuid'] = self::bin2uuid($data['uuid']);
             return $data;
+        }
     }
 
     /**

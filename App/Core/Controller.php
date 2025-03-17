@@ -4,7 +4,10 @@ namespace PressDo\App\Core;
 use PressDo\App\Models\Member;
 use PressDo\App\Helpers\{Config,Languages,Namespaces,DefaultConfig};
 use PressDo\App\Services\Mark\MarkHandler;
-use yidas\socketMailer\Mailer;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\{Transport, Mailer};
+use Symfony\Component\Mime\Crypto\SMimeSigner;
+use Symfony\Component\Mime\{Email, Address};
 use SVG\SVG;
 
 class Controller
@@ -173,7 +176,7 @@ class Controller
     }
 
     /**
-     * Parse namespace and title in full title.
+     * Make a full title with namespace and title.
      * 
      * @param string $namespace     raw namespace of document
      * @param string $title     title of document
@@ -199,21 +202,29 @@ class Controller
     protected static function sendMail(string $recipient, string $title, string $content): bool
     {
         $mail = DefaultConfig::get('mail.smtp_password');
-        $mailer = new Mailer([
-            'host' => DefaultConfig::get('mail.smtp_host'),
-            'username' => DefaultConfig::get('mail.smtp_username'),
-            'password' => DefaultConfig::get('mail.smtp_password'),
-            'port' => DefaultConfig::get('mail.smtp_port'),
-            'encryption' => strtolower(DefaultConfig::get('mail.smtp_protocol'))
-        ]);
-        $result = $mailer
-            ->setSubject($title)
-            ->setBody($content)
-            ->setTo([$recipient])
-            ->setFrom([DefaultConfig::get('mail.smtp_address') => Config::get('wiki.site_name_en')])
-            ->send();
+        $dsn = 'smtp://'.DefaultConfig::get('mail.smtp_username').':'.DefaultConfig::get('mail.smtp_password').'@'
+            .DefaultConfig::get('mail.smtp_host').':'.DefaultConfig::get('mail.smtp_port');
+        $mailer = new Mailer(Transport::fromDsn($dsn));
+        $email = (new Email())
+            ->from(new Address(DefaultConfig::get('mail.smtp_address'), Config::get('wiki.site_name_en')))
+            ->to($recipient)
+            ->subject($title)
+            ->html($content);
 
-        return $result;
+        if (
+            DefaultConfig::get('mail.sign_smime') === true
+            && file_exists('../config/certificate.crt') && file_exists('../config/privkey.key')) {
+            $signer = new SMimeSigner('../config/certificate.crt', '../config/privkey.key', DefaultConfig::get('mail.smime_passphrase'));
+            $email = $signer->sign($email);
+        }
+
+        try {
+            $mailer->send($email);
+        } catch (TransportExceptionInterface $e) {
+            //error_log($e->getDebug());
+            return false;
+        }
+        return true;
     }
 
     protected static function editFormProcess(Controller &$page, string $tokennm): bool

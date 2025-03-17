@@ -44,7 +44,7 @@ class Aclgroup extends Controller
                 $errmsg = 'err_required_note';
 
             // ip만 입력해도 처리
-            if (!empty($_POST['ip']) && strpos($_POST['ip'], '/') === false)
+            if (!empty($_POST['ip']) && str_contains($_POST['ip'], '/'))
                 $_POST['ip'] .= '/32';
 
             if ($_POST['mode'] == 'ip' && !self::validateCIDR($_POST['ip']))
@@ -190,7 +190,7 @@ class Aclgroup extends Controller
 
     private static function validateCIDR(string $CIDR): bool
     {
-        if (strpos($CIDR, '/') !== false) {
+        if (str_contains($CIDR, '/')) {
             [$ip, $mask] = explode('/', $CIDR, 2);
             if (!filter_var($ip, FILTER_VALIDATE_IP))
                 return false;

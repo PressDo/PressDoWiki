@@ -65,7 +65,7 @@
     table.diff ins.diff{background-color: #1c751c;}
 
     /* Recent */
-    .recent-tr, .contr-tr{border-bottom-color:#575757}
+    .recent-tr, .contr-tr, .starred-tr {border-bottom-color:#575757}
     .recent-td+.recent-log{color:#bbb;}
     .recent-toolbox>*{border-bottom-color:#575757;border-top-color:#575757}
     .recent-toolbox>:first-of-type{border-left-color: #575757;}
@@ -117,6 +117,6 @@
 
     /* Media Query */
     @media screen and (max-width: 1023.98px){
-        .recent-th+.recent-tr, .recent-th+.contr-tr{border-top-color: #575757;}
+        .recent-th+.recent-tr, .recent-th+.contr-tr, .recent-th+.starred-tr {border-top-color: #575757;}
     }
 }

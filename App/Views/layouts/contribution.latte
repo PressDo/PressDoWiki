@@ -36,12 +36,7 @@
         {var $diff = 'a'}
         {var $disdiff = false}
         {var $Diff = $he['count']}
-
-        {if $he['document']['forceShowNamespace'] === false}
-            {var $title = $he['document']['title']}
-        {else}
-            {var $title = $he['document']['namespace'].':'.$he['document']['title']}
-        {/if}
+        {var $title = ($he['document']['title']|makeTitle: $he['document']['namespace'])}
         
         {if $Diff > 0}
             {var $color = 'green'}
@@ -72,7 +67,7 @@
                     <a class="pressdo-btn btn-round" role="button" href="/discuss/{$title|escapeUrl}" title="토론">토론</a>
                 </div>
             </div>
-            <div class="recent-td recent-datetime">{$he['date']|localdate|noescape}</div>
+            <div class="recent-td recent-datetime">{$he['date']|localreldate|noescape}</div>
             <div n:if="($he['log']|length) > 0 || $he['logtype'] !== 'modify'" class="recent-td recent-log">
                 <span class="recent-changes" n:ifcontent>{$he['log']}</span>
                 <i>
@@ -110,7 +105,7 @@
                 </span>
                 <a class="recent-document-title" href="/discuss/{$ns.$he['document']['title']|escapeUrl}">{$ns.$he['document']['title']}</a>
             </div>
-            <div class="recent-td recent-datetime">{$he['date']|localdate}</div>
+            <div class="recent-td recent-datetime">{$he['date']|localreldate}</div>
         </div>
     {/foreach}
 </div>

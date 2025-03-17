@@ -7,12 +7,12 @@
     "require": {
         "hyungju/readable-url": "^1.2",
         "latte/latte": "^3.0.20",
-        "yidas/socket-mailer": "^1.1",
         "geoip2/geoip2": "~2.0",
         "spomky-labs/otphp": "^11.3",
         "endroid/qr-code": "^6.0",
         "lbuchs/webauthn": "^2.2",
         "aws/aws-sdk-php": "^3.339",
-        "meyfa/php-svg": "^0.16.0"
+        "meyfa/php-svg": "^0.16.0",
+        "symfony/mailer": "^7.2"
     }
 }

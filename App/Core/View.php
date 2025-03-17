@@ -31,6 +31,9 @@ class View
         
         $this->latte->addFilter('localreldate',
             fn(int $t): string => '<time datetime="'.gmdate('Y-m-d\TH:i:s', $t).'.000Z">'.Controller::formatBefore($t).'</time>');
+
+        $this->latte->addFilter('makeTitle',
+            fn(string $title, string $namespace): string => Controller::makeTitle($namespace, $title));
         
         $this->latte->setTempDirectory('../temp');
         $this->latte->addFilter('formatTime', fn($time) => Controller::formatTime($time));

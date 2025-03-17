@@ -26,7 +26,10 @@ class History extends Controller
                     'title' => $title,
                     'forceShowNamespace' => self::forceShowNamespace($namespace, $title)
                 ],
-                'history' => []
+                'history' => [],
+                'can_mark_troll' => in_array('mark_troll_revision', $ACL->perms),
+                'can_hide_log' => in_array('hide_document_history_log', $ACL->perms),
+                'can_hide_revision' => in_array('hide_revision', $ACL->perms)
             ],
             'menus' => [],
             'customData' => []
@@ -91,6 +94,30 @@ class History extends Controller
                 }
             }
 
+            $hideloguser = null;
+            $marktrolluser = null;
+
+            
+            if ($f['mark_troll_user'] !== null) {
+                $mt_uuid = H::bin2uuid($f['mark_troll_user']);
+                $mt_perm = [];
+                $marktrolluser = [
+                    'uuid' => $mt_uuid,
+                    'username' => Member::lookup($mt_uuid)
+                ];
+                ACL::getAccountPerms($mt_uuid, $marktrolluser['username'], $mt_perm);
+                $hideloguser['admin'] = in_array('admin', $mt_perm);
+            } elseif ($f['hide_log_user'] !== null) {
+                $hl_uuid = H::bin2uuid($f['hide_log_user']);
+                $hl_perm = [];
+                $hideloguser = [
+                    'uuid' => $hl_uuid,
+                    'username' => Member::lookup($hl_uuid)
+                ];
+                ACL::getAccountPerms($hl_uuid, $hideloguser['username'], $hl_perm);
+                $hideloguser['admin'] = in_array('admin', $hl_perm);
+            }
+
             array_push($page['data']['history'], [
                 'rev' => $f['rev'],
                 'uuid' => Document::bin2uuid($f['uuid']),
@@ -108,7 +135,10 @@ class History extends Controller
                 'acl' => $f['acl_changed'],
                 'from' => $f['moved_from'],
                 'to' => $f['moved_to'],
-                'user_mode' => []
+                'user_mode' => [],
+                'log_hidden' => $hideloguser,
+                'marked_troll' => $marktrolluser,
+                'revision_hidden' => $f['revstatus'] == 'hidden'
             ]);
         }
         

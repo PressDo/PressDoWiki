@@ -14,7 +14,7 @@ class Edit extends Controller
     {
         [$namespace, $title] = self::parseTitle($this->uri_data->title);
         $error = [];
-        $uuid = Document::getUuid($namespace, $title, $backlinkrefreshed);
+        $uuid = Document::getUuid($namespace, $title);
         $formReceived = isset($_POST['token']) && isset($_POST['content']);
 
         $ACL = new WikiACL($namespace, $title, $uuid, $this->session, $error);

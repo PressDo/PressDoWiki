@@ -52,6 +52,8 @@ class Star extends \PressDo\App\Core\Model
     public static function getStarred(string $uuid) : array
     {
         $db = self::db();
+        $uuid = self::uuid2bin($uuid);
+
         try{
             $d = $db->prepare("SELECT `document` FROM `starred` WHERE `user`=?");
             $d->execute([$uuid]);
@@ -64,9 +66,13 @@ class Star extends \PressDo\App\Core\Model
     public static function getStarredModifiedDate(array $uuidset): array
     {
         $db = self::db();
+        $ORSTATEMENT = str_repeat(',?', count($uuidset) - 1);
+        $sql = "SELECT `namespace`, `title`, `datetime` FROM  
+            (SELECT document, `datetime`,
+                RANK() OVER (PARTITION BY document ORDER BY `datetime` DESC) AS rnk FROM `history`
+            ) AS h INNER JOIN `document` as d ON d.uuid = document WHERE rnk = 1 AND `document` IN (?".$ORSTATEMENT.") ORDER BY `datetime`";
         try{
-            $ORSTATEMENT = str_repeat(',?', count($uuidset) - 1);
-            $d = $db->prepare("SELECT `document`, `datetime` FROM `history` WHERE `is_latest`='true' AND `document` IN (?".$ORSTATEMENT.") ORDER BY `datetime`");
+            $d = $db->prepare($sql);
             $d->execute($uuidset);
             return $d->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $err) {

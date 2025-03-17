@@ -302,6 +302,7 @@
         "starred_documents": "내 문서함",
         "contribution_document": "내 문서 기여 목록",
         "contribution_discuss": "내 토론 기여 목록",
+        "contribution_editrequest": "내 편집 요청 목록",
         "contribution": "기여 목록",
         "login_history": "로그인 내역",
         "grant": "권한 부여",
@@ -378,8 +379,12 @@
         "uploaded_file": "파일 %s을 올림",
         "history_of_doc": "이 문서의 역사",
         "mark_troll_revision": "반달로 표시",
+        "unmark_troll_revision": "반달표시 해제",
         "hide_document_history_log": "편집요약 숨기기",
-        "hide_revision": "리비전 숨기기"
+        "unhide_document_history_log": "편집요약 숨기기 해제",
+        "hide_revision": "리비전 숨기기",
+        "unhide_revision": "리비전 숨기기 해제",
+        "marked_troll": "%s 사용자에 의해 반달로 표시됨"
     },
     "document":{
         "content": "내용",
@@ -395,6 +400,7 @@
         "function": "기능",
         "editor": "수정자",
         "ago": "시간",
+        "modified_time": "문서 수정 시각",
         "rightbefore": "방금 전",
         "before": "%1$s%2$s 전",
         "logtype_all": "전체",
